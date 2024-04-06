@@ -8,7 +8,7 @@ class Department(models.Model):
         ('accessory', 'Accessory Dept'),
         ('administrative', 'Administrative'),
     )
-    codename = models.CharField(max_length=50)
+    codename = models.CharField(max_length=50, unique=True)
     name = models.CharField(max_length=50)
     display_name = models.CharField(max_length=50)
     dept_type = models.CharField(choices=dept_types, max_length=50)
@@ -21,7 +21,7 @@ class Department(models.Model):
     
 class Lab(models.Model):
     dept = models.ForeignKey(Department, on_delete=models.CASCADE)
-    codename = models.CharField(max_length=50)
+    codename = models.CharField(max_length=50, unique=True)
     name = models.CharField(max_length=50)
     incharge = models.ForeignKey('accounts.AdminAccount', null=True, blank=True, on_delete=models.SET_NULL)
     
