@@ -66,7 +66,7 @@ class AdminAccount(BaseAccount):
             return self.user.username
     
     @property
-    def user_full_name(self):
+    def full_name(self):
         first_name = self.user.first_name
         last_name = self.user.last_name
         if first_name or last_name:
@@ -97,7 +97,7 @@ class StudentAccount(BaseAccount):
         return str(self.registration)
         
     @property
-    def student_name(self):
+    def full_name(self):
         if self.user.last_name:
             return f"{self.user.first_name} {self.user.last_name}"
         else:
