@@ -88,6 +88,8 @@ class AdminAccount(BaseAccount):
 class StudentAccount(BaseAccount):
     registration = models.IntegerField(primary_key=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    is_approved = models.BooleanField(default=False)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
     session = models.ForeignKey(Session, on_delete=models.CASCADE)
     
     class Meta:

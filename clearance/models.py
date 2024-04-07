@@ -43,7 +43,7 @@ class Session(models.Model):
         ]
         
     def __str__(self):
-        return f"{self.dept.name.upper()} {self.session_code}"
+        return f"{self.dept.codename.upper()} {self.session_code}"
     
             
     @property

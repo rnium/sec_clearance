@@ -1,11 +1,14 @@
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.generics import ListAPIView, CreateAPIView
+from rest_framework.generics import ListAPIView, DestroyAPIView, CreateAPIView
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import authenticate, login
 from django.urls import reverse
+from django.shortcuts import get_object_or_404
+from accounts.serializer import StudentAccountSerializer, PendingStudentSerializer
+from accounts.models import StudentAccount
 
 
 @api_view(['POST'])
@@ -38,3 +41,21 @@ def api_login(request):
         return Response({'data': data})
     else:
         return Response({'details': 'Invalid Credentials'}, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+
+class PendingStudents(ListAPIView):
+    serializer_class = PendingStudentSerializer
+    queryset = StudentAccount.objects.filter(is_approved=False).order_by('user__date_joined')
+
+
+@api_view(['POST'])
+def approve_student_ac(request, registration):
+    student_ac = get_object_or_404(StudentAccount, pk=registration)
+    student_ac.is_approved = True
+    student_ac.save()
+    return Response(data={'info': 'Account Approved'})
+
+
+class DeleteStudentAc(DestroyAPIView):
+    queryset = StudentAccount.objects.filter(is_approved=False).order_by('user__date_joined')
+    serializer_class = StudentAccountSerializer
