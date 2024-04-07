@@ -80,24 +80,40 @@ departments = {
         },
         'labs': [
             {
-                'codename': 'hydraulics_lab',
-                'name': 'Hydraulics Lab',
+                'codename': 'atts_lab_ce',
+                'name': 'ATTS Lab',
             },
             {
-                'codename': 'transportation_lab',
-                'name': 'Transportation Lab',
+                'codename': 'env_eng_lab',
+                'name': 'Environment Engineering Lab',
             },
             {
-                'codename': 'materials_lab',
-                'name': 'Materials Lab',
+                'codename': 'geotechnical_engr_lab',
+                'name': 'Geotechnical And Engineering Materials Lab',
+            },
+            {
+                'codename': 'hydraulic_lab',
+                'name': 'Hydraulic Lab',
             },
             {
                 'codename': 'machine_shop',
                 'name': 'Machine Shop',
             },
             {
-                'codename': 'welding_shop',
-                'name': 'Welding Shop',
+                'codename': 'structure_lab',
+                'name': 'Structure Lab',
+            },
+            {
+                'codename': 'surveying_lab',
+                'name': 'Surveying Lab',
+            },
+            {
+                'codename': 'transportation_lab',
+                'name': 'Transportation Lab',
+            },
+            {
+                'codename': 'wfw_shop',
+                'name': 'Welding, Foundry & Wood Shop',
             },
         ]
     },
