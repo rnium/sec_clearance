@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 ALLOWED_IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png']
+
 INVITATION_VALIDITY_DAYS = 7
 
 INSTALLED_APPS = [

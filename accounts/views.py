@@ -9,6 +9,10 @@ from django.urls import reverse
 from django.shortcuts import get_object_or_404
 from accounts.serializer import StudentAccountSerializer, PendingStudentSerializer
 from accounts.models import StudentAccount
+from clearance.models import Session, Department
+from django.contrib.auth.models import User
+from django.db.models import Q
+from accounts.utils import compress_image
 
 
 @api_view(['POST'])
@@ -59,3 +63,51 @@ def approve_student_ac(request, registration):
 class DeleteStudentAc(DestroyAPIView):
     queryset = StudentAccount.objects.filter(is_approved=False).order_by('user__date_joined')
     serializer_class = StudentAccountSerializer
+    
+@api_view(['POST'])
+def student_signup(request):
+    email = request.data['email']
+    user_queryset = User.objects.filter(Q(email=email) | Q(username=email))
+    if len(user_queryset) > 0:
+        return Response({'details':'Email already used'}, status=status.HTTP_400_BAD_REQUEST)
+    try:
+        dept_codename = request.data['department'].strip().lower()
+        dept = Department.objects.get(codename=dept_codename)
+    except Exception as e:
+        return Response({'details':'Department not found'}, status=status.HTTP_404_NOT_FOUND)
+    try:
+        from_year, to_year = list(map(int, request.data['session'].split('-')))
+        to_year += 2000
+        session = Session.objects.get(from_year=from_year, to_year=to_year, dept=dept)
+    except Exception as e:
+        return Response({'details':'Session not found'}, status=status.HTTP_404_NOT_FOUND)
+    try:
+        compressed_dp = compress_image(request.data.get('profilePhoto'))
+    except Exception as e:
+        return Response({'details':f'Cannot process image. Error: {e}'}, status=status.HTTP_400_BAD_REQUEST)
+    # login(request, user=user)
+    user = User(
+        username = email,
+        email = email,
+        first_name = request.data.get('first_name'),
+        last_name = request.data.get('last_name'),
+    )
+    try:
+        user.set_password(request.data.get('password'))
+        user.save()
+    except Exception as e:
+        return Response({'details':f'Cannot create user. Error: {e}'}, status=status.HTTP_400_BAD_REQUEST)
+    account_kwargs = {}
+    account_kwargs['user'] = user
+    account_kwargs['session'] = session
+    account_kwargs['registration'] = request.data.get('registration_no')
+    account_kwargs['session'] = session
+    account_kwargs['ip_address'] = request.META.get('REMOTE_ADDR')
+    account_kwargs['profile_picture'] = compressed_dp
+    try:
+        student_ac = StudentAccount(**account_kwargs)
+        student_ac.save()
+    except Exception as e:
+        user.delete()
+        return Response({'details':f'Cannot create account. Error: {e}'}, status=status.HTTP_400_BAD_REQUEST)
+    return Response(data={'info': 'Account created'})
