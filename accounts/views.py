@@ -12,7 +12,7 @@ from accounts.models import StudentAccount
 from clearance.models import Session, Department
 from django.contrib.auth.models import User
 from django.db.models import Q
-from accounts.utils import compress_image
+from accounts.utils import compress_image, get_userinfo_data
 
 
 @api_view(['POST'])
@@ -20,28 +20,9 @@ def api_login(request):
     user = authenticate(
         username=request.data['email'], password=request.data['password'])
     if user:
-        data = {
-            'is_authenticated': False,
-            'username': '',
-            'user_fullname': '',
-            'account_type': '',
-            'user_type': '',
-        }
-        if hasattr(user, 'adminaccount'):
-            admin_ac = user.adminaccount
-            data['account_type'] = 'admin'
-            data['username'] = user.get_username()
-            data['user_type'] = admin_ac.user_type
-            data['user_fullname'] = admin_ac.full_name
-        elif hasattr(user, 'studentaccount'):
-            student_ac = user.studentaccount
-            data['account_type'] = 'student'
-            data['username'] = user.get_username()
-            data['user_fullname'] = student_ac.full_name
-        else:
-            return Response(data={'details': 'User has no associated account!'}, status=status.HTTP_400_BAD_REQUEST)
-        data['is_authenticated'] = True
-        login(request, user)
+        data = get_userinfo_data(user)
+        if(data['is_authenticated']):
+            login(request, user)
         return Response({'data': data})
     else:
         return Response({'details': 'Invalid Credentials'}, status=status.HTTP_406_NOT_ACCEPTABLE)
@@ -110,4 +91,4 @@ def student_signup(request):
     except Exception as e:
         user.delete()
         return Response({'details':f'Cannot create account. Error: {e}'}, status=status.HTTP_400_BAD_REQUEST)
-    return Response(data={'info': 'Account created'})
+    return Response(data={'info': get_userinfo_data(user)})

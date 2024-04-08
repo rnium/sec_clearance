@@ -9,7 +9,7 @@ from accounts.utils import get_userinfo_data
 
 @api_view()
 def get_userinfo(request):
-    data = get_userinfo_data(request)
+    data = get_userinfo_data(request.user)
     return Response(data=data)
     
     
