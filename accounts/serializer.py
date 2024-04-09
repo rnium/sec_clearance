@@ -29,10 +29,26 @@ class PendingStudentSerializer(ModelSerializer):
 class ProgressiveStudentInfoSerializer(ModelSerializer):
     session = serializers.StringRelatedField()
     state = serializers.SerializerMethodField()
+    email = serializers.SerializerMethodField()
+    first_name = serializers.SerializerMethodField()
+    last_name = serializers.SerializerMethodField()
+    avatar_url = serializers.SerializerMethodField()
     
     class Meta:
         model = models.StudentAccount
-        exclude = ['user']
+        exclude = ['user', 'profile_picture']
     
     def get_state(self, obj):
         return obj.account_state
+    
+    def get_email(self, obj):
+        return obj.user.email
+    
+    def get_first_name(self, obj):
+        return obj.user.first_name
+    
+    def get_last_name(self, obj):
+        return obj.user.last_name
+    
+    def get_avatar_url(self, obj):
+        return obj.avatar_url

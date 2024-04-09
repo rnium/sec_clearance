@@ -5,6 +5,8 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.hashers import make_password
+from django.contrib.auth import update_session_auth_hash
 from django.urls import reverse
 from django.shortcuts import get_object_or_404
 from accounts.serializer import (StudentAccountSerializer, 
@@ -93,6 +95,54 @@ def student_signup(request):
         user.delete()
         return Response({'details':f'Cannot create account. Error: {e}'}, status=status.HTTP_400_BAD_REQUEST)
     return Response(data={'info': get_userinfo_data(user)})
+
+
+@api_view(['POST'])
+def student_profile_update(request):
+    student = StudentAccount.objects.get(registration=2018338514)
+    email = request.data.get('email')
+    if email:
+        user_queryset = User.objects.filter(Q(email=email) | Q(username=email)).exclude(id=student.user.id)
+        if len(user_queryset) > 0:
+            return Response({'details':'Email already used'}, status=status.HTTP_400_BAD_REQUEST)
+    display_pic = request.data.get('profilePhoto')
+    if display_pic:
+        try:
+            display_pic = compress_image(display_pic)
+        except Exception as e:
+            return Response({'details':f'Cannot process image. Error: {e}'}, status=status.HTTP_400_BAD_REQUEST)
+    user = student.user
+    if email:
+        user.username = email
+        user.email = email
+    if first_name:=request.data.get('first_name'):
+        print('fn')
+        user.first_name = first_name
+    if last_name:=request.data.get('last_name'):
+        print('ln')
+        user.last_name = last_name
+    if password:=request.data.get('password'):
+        print('pass')
+        user.password = make_password(password)
+        update_session_auth_hash(request, user) 
+    try:
+        user.save()
+    except Exception as e:
+        return Response({'details':f'Cannot update user info. Error: {e}'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+    student.ip_address = request.META.get('REMOTE_ADDR')
+    if display_pic:
+        if student.profile_picture is not None:
+            student.profile_picture.delete(save=True)
+        student.profile_picture = display_pic
+    student.save()
+    # try:
+    #     student.save()
+    # except Exception as e:
+    #     return Response({'details':f'Cannot update account. Error: {e}'}, status=status.HTTP_400_BAD_REQUEST)
+    serializer = ProgressiveStudentInfoSerializer(student)
+    return Response(data={'info': serializer.data})
 
 
 @api_view()
