@@ -1,13 +1,14 @@
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.generics import ListAPIView, DestroyAPIView, CreateAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView, DestroyAPIView, CreateAPIView
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import authenticate, login
 from django.urls import reverse
 from django.shortcuts import get_object_or_404
-from accounts.serializer import StudentAccountSerializer, PendingStudentSerializer
+from accounts.serializer import (StudentAccountSerializer, 
+                                 PendingStudentSerializer, ProgressiveStudentInfoSerializer)
 from accounts.models import StudentAccount
 from clearance.models import Session, Department
 from django.contrib.auth.models import User
@@ -92,3 +93,11 @@ def student_signup(request):
         user.delete()
         return Response({'details':f'Cannot create account. Error: {e}'}, status=status.HTTP_400_BAD_REQUEST)
     return Response(data={'info': get_userinfo_data(user)})
+
+
+@api_view()
+def progressive_studentinfo(request):
+    student = StudentAccount.objects.get(registration=2018338502)
+    serializer = ProgressiveStudentInfoSerializer(student)
+    return Response(data={'info': serializer.data})
+    

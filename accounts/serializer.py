@@ -24,3 +24,15 @@ class PendingStudentSerializer(ModelSerializer):
         return reverse('accounts:approve_studentac', args=(obj.registration,))
     def get_delete_url(self, obj):
         return reverse('accounts:delete_studentac', args=(obj.registration,))
+
+
+class ProgressiveStudentInfoSerializer(ModelSerializer):
+    session = serializers.StringRelatedField()
+    state = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = models.StudentAccount
+        exclude = ['user']
+    
+    def get_state(self, obj):
+        return obj.account_state

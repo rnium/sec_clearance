@@ -61,6 +61,7 @@ def get_userinfo_data(user):
         'username': '',
         'user_fullname': '',
         'account_type': '',
+        'avatar_url': '',
         'user_type': '',
     }
     if user.is_authenticated:
@@ -71,9 +72,13 @@ def get_userinfo_data(user):
         data['account_type'] = 'admin'
         data['user_type'] = admin_ac.user_type
         data['user_fullname'] = admin_ac.full_name
+        data['avatar_url'] = admin_ac.avatar_url
     elif hasattr(user, 'studentaccount'):
         student_ac = user.studentaccount
         data['account_type'] = 'student'
         data['user_fullname'] = student_ac.full_name
+        data['avatar_url'] = student_ac.avatar_url
     return data
+
     
+       

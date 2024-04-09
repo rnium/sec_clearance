@@ -37,7 +37,7 @@ class BaseAccount(models.Model):
         if bool(self.profile_picture):
             return self.profile_picture.url
         else:
-            return static('results/images/blank-dp.svg')
+            return static('clearance/images/blank-dp.svg')
 
 
 class AdminAccount(BaseAccount):
@@ -104,3 +104,16 @@ class StudentAccount(BaseAccount):
             return f"{self.user.first_name} {self.user.last_name}"
         else:
             return self.first_name
+
+    @property
+    def account_state(self):
+        if not self.is_approved:
+            return 1
+        elif not hasattr(self, 'clearance'):
+            return 2
+        elif not self.clearance.is_approved:
+            return 3
+        elif self.clearance.is_approved:
+            return 4
+        else:
+            return 0

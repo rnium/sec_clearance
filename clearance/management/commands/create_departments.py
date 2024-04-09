@@ -73,7 +73,7 @@ departments = {
     },
     'ce': {
         'meta': {
-            'codename': 'cr',
+            'codename': 'ce',
             'name': 'Civil Engineering',
             'display_name': 'Department of CE',
             'dept_type': 'academic'

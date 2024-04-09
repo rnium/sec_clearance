@@ -26,7 +26,7 @@ class Lab(models.Model):
     incharge = models.ForeignKey('accounts.AdminAccount', null=True, blank=True, on_delete=models.SET_NULL)
     
     def __str__(self) -> str:
-        return f"{self.name}, {self.dept.name}"
+        return f"{self.name}, {self.dept.codename.upper()}"
 
 
 class Session(models.Model):
@@ -88,6 +88,9 @@ class AdministrativeApproval(BaseApproval):
             models.UniqueConstraint(fields=['clearance', 'admin_role'], name='unique_adminrole_per_clearance')
         ]
 
+        
+    def __str__(self):
+         return f"{self.get_admin_role_display()} Approval for {self.clearance.id}"
 
 class DeptApproval(BaseApproval):
     dept = models.ForeignKey(Department, on_delete=models.CASCADE)
@@ -105,6 +108,9 @@ class DeptApproval(BaseApproval):
             return False
         return True
 
+    def __str__(self):
+         return f"{self.dept} DeptApproval for {self.clearance.id}"
+
 
 class ClerkApproval(BaseApproval):
     dept_approval = models.ForeignKey(DeptApproval, on_delete=models.CASCADE)
@@ -113,6 +119,9 @@ class ClerkApproval(BaseApproval):
         constraints = [
             models.UniqueConstraint(fields=['dept_approval', 'clearance'], name='unique_clerk_approval_per_clearance')
         ]
+        
+    def __str__(self):
+         return f"{self.dept_approval.dept} ClerkApproval for {self.clearance.id}"
 
     
 class LabApproval(BaseApproval):
@@ -124,5 +133,8 @@ class LabApproval(BaseApproval):
         constraints = [
             models.UniqueConstraint(fields = ['lab', 'clearance'], name='unique_lab_approval_per_clearance')
         ]
+    
+    def __str__(self):
+         return f"{self.lab} LabApproval for {self.clearance.id}"
 
     
