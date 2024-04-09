@@ -97,7 +97,7 @@ def student_signup(request):
 
 @api_view()
 def progressive_studentinfo(request):
-    student = StudentAccount.objects.get(registration=2018338502)
+    student = StudentAccount.objects.get(registration=2018338514)
     serializer = ProgressiveStudentInfoSerializer(student)
     return Response(data={'info': serializer.data})
     

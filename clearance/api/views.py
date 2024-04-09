@@ -16,7 +16,10 @@ def get_userinfo(request):
 
 @api_view()
 def apply_for_clearance(request):
-    student = StudentAccount.objects.get(registration=2018338502)
+    student = StudentAccount.objects.get(registration=2018338514)
+    if not student.is_approved:
+        return Response(data={'details': 'Account not approved'}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
     if hasattr(student, 'clearance'):
         return Response(data={'details': 'Already applied for clearance'}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
     create_clearance_entities(student)
+    return Response(data={'info': 'Applied for clearance'})
