@@ -62,7 +62,25 @@ class Session(models.Model):
 class Clearance(models.Model):
     student = models.OneToOneField('accounts.StudentAccount', on_delete=models.CASCADE)
     is_approved = models.BooleanField(default=False)
+    progress = models.FloatField(default=0)
     added_at = models.DateTimeField(auto_now_add=True)
+    
+    def save(self, *args, **kwargs):
+        admin_app_qs = self.administrativeapproval.all()
+        dept_app_qs = self.deptapproval.all()
+        clerk_app_qs = self.clerkapproval.all()
+        lab_app_qs = self.labapproval.all()
+        admin_app_qs_pending = admin_app_qs.filter(is_approved=True)
+        dept_app_qs_pending = dept_app_qs.filter(is_approved=True)
+        clerk_app_qs_pending = clerk_app_qs.filter(is_approved=True)
+        lab_app_qs_pending = lab_app_qs.filter(is_approved=True)
+        total_approvals = admin_app_qs.count() + dept_app_qs.count() + clerk_app_qs.count() + lab_app_qs.count()
+        approved_approvals = (admin_app_qs_pending.count() + dept_app_qs_pending.count() 
+                              + clerk_app_qs_pending.count() + lab_app_qs_pending.count())
+        percent_progress = round(((approved_approvals/total_approvals) * 100), 2)
+        self.progress = percent_progress
+        super().save(*args, **kwargs)
+        
 
 
 class BaseApproval(models.Model):
@@ -73,6 +91,10 @@ class BaseApproval(models.Model):
     
     class Meta:
         abstract = True
+        
+    def save(self, *args, **kwargs):
+        self.clearance.save()
+        super().save(*args, **kwargs)
 
 
 class AdministrativeApproval(BaseApproval):
@@ -105,6 +127,7 @@ class AdministrativeApproval(BaseApproval):
         else:
             other_admin_approvals = self.clearance.administrativeapproval_set.filter(is_approved=False).exclude(admin_role='academic')
             return not bool(other_admin_approvals.count())
+
 
 class DeptApproval(BaseApproval):
     dept = models.ForeignKey(Department, on_delete=models.CASCADE)
