@@ -97,20 +97,36 @@ class AdminAccount(BaseAccount):
     
     @property
     def roles_dict(self):
-        roles = {
-            'administrative': '',
-            'dept_head': [],
-            'lab_incharge': [],
-            'dept_clerk': [],
-        }
+        roles = []
         if self.user_type in [utype[0] for utype in account_types]:
-            roles['administrative'] = self.get_user_type_display()
-        for lab in self.labs_incharge:
-            roles['lab_incharge'].append(str(lab)) 
+            roles.append(
+                {
+                    'type': 'administrative',
+                    'title': self.get_user_type_display(),
+                }
+            )
         for dept in self.head_of_the_departments:
-            roles['dept_head'].append(dept.name)
+            roles.append(
+                {
+                    'type': 'dept_head',
+                    'title': dept.name,
+                }
+            )
         for dept in self.dept_clerks:
-            roles['dept_clerk'].append(dept.name)
+            roles.append(
+                {
+                    'type': 'dept_clerk',
+                    'title': dept.name,
+                }
+            )
+        for lab in self.labs_incharge:
+            roles.append(
+                {
+                    'type': 'lab_incharge',
+                    'title': str(lab),
+                }
+            )
+        
         return roles
             
         
