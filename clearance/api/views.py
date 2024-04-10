@@ -5,8 +5,10 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from accounts.utils import get_userinfo_data
-from accounts.models import StudentAccount
-from clearance.api.utils import create_clearance_entities
+from accounts.models import StudentAccount, AdminAccount
+from clearance.api.utils import (create_clearance_entities, get_administrative_clearance_requests, 
+                                 get_dept_head_clearance_requests, get_dept_clerk_clearance_requests, 
+                                 get_lab_incharge_clearance_requests)
 
 @api_view()
 def get_userinfo(request):
@@ -24,6 +26,14 @@ def apply_for_clearance(request):
     create_clearance_entities(student)
     return Response(data={'info': 'Applied for clearance'})
 
+
 @api_view()
 def dashboard_clearance_requests(request):
-    pass
+    admin_ac = AdminAccount.objects.filter(user__username='rony').first()
+    clearance_requests = {
+        'administrative': get_administrative_clearance_requests(admin_ac, 5),
+        'department_head': get_dept_head_clearance_requests(admin_ac, 5),
+        'department_clerk': get_dept_clerk_clearance_requests(admin_ac, 5),
+        'lab_incharge': get_lab_incharge_clearance_requests(admin_ac, 5),
+    }
+    return Response(data=clearance_requests)

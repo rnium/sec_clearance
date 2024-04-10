@@ -82,8 +82,9 @@ class AdministrativeApproval(BaseApproval):
         ('cashier', 'Cashier'),
     )
     admin_role = models.CharField(choices=administrative_roles, max_length=50)
-    
+    remarks = models.TextField(null=True, blank=True)
     class Meta:
+        ordering = ['clearance__added_at']
         constraints = [
             models.UniqueConstraint(fields=['clearance', 'admin_role'], name='unique_adminrole_per_clearance')
         ]
@@ -91,20 +92,35 @@ class AdministrativeApproval(BaseApproval):
         
     def __str__(self):
          return f"{self.get_admin_role_display()} Approval for {self.clearance.id}"
+     
+    @property
+    def approval_seekable(self):
+        pending_depts = self.clearance.deptapproval_set.filter(is_approved=False)
+        pending_clerks = self.clearance.clerkapproval_set.filter(is_approved=False)
+        pending_labs = self.clearance.labapproval_set.filter(is_approved=False)
+        if pending_depts.count() or pending_labs.count() or pending_clerks.count():
+            return False
+        if self.admin_role in ['principal', 'cashier']:
+            return True
+        else:
+            other_admin_approvals = self.clearance.administrativeapproval_set.filter(is_approved=False).exclude(admin_role='academic')
+            return bool(other_admin_approvals.count())
 
 class DeptApproval(BaseApproval):
     dept = models.ForeignKey(Department, on_delete=models.CASCADE)
+    remarks = models.TextField(null=True, blank=True)
     
     class Meta:
+        ordering = ['clearance__added_at']
         constraints = [
             models.UniqueConstraint(fields=['dept', 'clearance'], name='unique_dept_approval_per_clearance')
         ]
         
     @property
     def approval_seekable(self):
-        pending_labs = self.labapproval_set.filter(is_approved=False)
-        pending_clerks = self.clerkapproval_set.filter(is_approved=False)
-        if self.clearance.is_approved or pending_labs.count() or pending_clerks.count():
+        pending_labs = self.clearance.labapproval_set.filter(is_approved=False)
+        pending_clerks = self.clearance.clerkapproval_set.filter(is_approved=False)
+        if pending_labs.count() or pending_clerks.count():
             return False
         return True
 
@@ -115,7 +131,10 @@ class DeptApproval(BaseApproval):
 class ClerkApproval(BaseApproval):
     dept_approval = models.ForeignKey(DeptApproval, on_delete=models.CASCADE)
     owed = models.IntegerField(default=0)
+    remarks = models.TextField(null=True, blank=True)
+    
     class Meta:
+        ordering = ['clearance__added_at']
         constraints = [
             models.UniqueConstraint(fields=['dept_approval', 'clearance'], name='unique_clerk_approval_per_clearance')
         ]
@@ -128,8 +147,10 @@ class LabApproval(BaseApproval):
     lab = models.ForeignKey(Lab, on_delete=models.CASCADE)
     dept_approval = models.ForeignKey(DeptApproval, on_delete=models.CASCADE)
     owed = models.IntegerField(default=0)
+    remarks = models.TextField(null=True, blank=True)
     
     class Meta:
+        ordering = ['clearance__added_at']
         constraints = [
             models.UniqueConstraint(fields = ['lab', 'clearance'], name='unique_lab_approval_per_clearance')
         ]
