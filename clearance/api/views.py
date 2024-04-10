@@ -30,13 +30,18 @@ def apply_for_clearance(request):
 @api_view()
 def dashboard_clearance_requests(request):
     admin_ac = AdminAccount.objects.filter(user__username='rony').first()
-    clearance_requests = {
-        'administrative': get_administrative_clearance_requests(admin_ac, 5),
-        'department_head': get_dept_head_clearance_requests(admin_ac, 5),
-        'department_clerk': get_dept_clerk_clearance_requests(admin_ac, 5),
-        'lab_incharge': get_lab_incharge_clearance_requests(admin_ac, 5),
-    }
-    return Response(data=clearance_requests)
+    sections = []
+    # clearance_requests = {
+    #     'administrative': ,
+    #     'department_head': get_dept_head_clearance_requests(admin_ac, 5),
+    #     'department_clerk': get_dept_clerk_clearance_requests(admin_ac, 5),
+    #     'lab_incharge': get_lab_incharge_clearance_requests(admin_ac, 5),
+    # }
+    sections.extend(get_administrative_clearance_requests(admin_ac, 5))
+    sections.extend(get_dept_head_clearance_requests(admin_ac, 5))
+    sections.extend(get_dept_clerk_clearance_requests(admin_ac, 5))
+    sections.extend(get_lab_incharge_clearance_requests(admin_ac, 5))
+    return Response(data=sections)
 
 
 @api_view()

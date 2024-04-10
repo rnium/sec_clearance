@@ -31,20 +31,34 @@ def get_administrative_clearance_requests(admin_ac, limit=None):
             approvals.append(serializer.data)
         if type(limit) == int and count >= limit:
             break
-    return approvals
+    section = {
+        'type': 'administrative',
+        'title': admin_ac.get_user_type_display(),
+        'approvals': approvals
+    }
+    return [section]
 
 
 def get_dept_head_clearance_requests(admin_ac, limit=None):
     approvals = []
     approvals_qs = DeptApproval.objects.filter(dept__head=admin_ac, is_approved=False)
-    count = 0
-    for app_req in approvals_qs:
-        count += 1
-        if app_req.approval_seekable:
-            serializer = DeptApprovalSerializer(app_req)
-            approvals.append(serializer.data)
-        if type(limit) == int and count >= limit:
-            break
+    for dept in Department.objects.all():
+        dept_approval_qs = approvals_qs.filter(dept=dept)
+        seekable_approvals = []
+        for approval in dept_approval_qs:
+            if approval.approval_seekable:
+                seekable_approvals.append(approval)
+        if type(limit) == int:
+            seekable_approvals = seekable_approvals[:limit]
+        if len(seekable_approvals):
+            serializer = DeptApprovalSerializer(seekable_approvals, many=True)
+            approvals.append(
+                {
+                    'type': 'dept_head',
+                    'title': dept.name,
+                    'approvals': serializer.data
+                }
+            )
     return approvals
 
 
@@ -59,7 +73,8 @@ def get_dept_clerk_clearance_requests(admin_ac, limit=None):
             serializer = ClerkApprovalSerializer(clerk_approval_qs, many=True)
             approvals.append(
                 {
-                    'deparment': dept.name,
+                    'type': 'dept_clerk',
+                    'title': dept.name,
                     'approvals': serializer.data
                 }
             )
@@ -74,10 +89,11 @@ def get_lab_incharge_clearance_requests(admin_ac, limit=None):
         if type(limit) == int:
             lab_approval_qs = lab_approval_qs[:limit]
         if lab_approval_qs.count():
-            serializer = ClerkApprovalSerializer(lab_approval_qs, many=True)
+            serializer = LabApprovalSerializer(lab_approval_qs, many=True)
             approvals.append(
                 {
-                    'lab': str(lab),
+                    'type': 'dept_lab',
+                    'title': str(lab),
                     'approvals': serializer.data
                 }
             )
