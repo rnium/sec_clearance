@@ -16,6 +16,7 @@ from clearance.models import Session, Department
 from django.contrib.auth.models import User
 from django.db.models import Q
 from accounts.utils import compress_image, get_userinfo_data
+from accounts.models import AdminAccount
 
 
 @api_view(['POST'])
@@ -99,10 +100,10 @@ def student_signup(request):
 
 @api_view(['POST'])
 def student_profile_update(request):
-    student = StudentAccount.objects.get(registration=2018338514)
+    student = StudentAccount.objects.get(registration=2018338502)
     email = request.data.get('email')
     if email:
-        user_queryset = User.objects.filter(Q(email=email) | Q(username=email)).exclude(id=student.user.id)
+        user_queryset = User.objects.filter(Q(email=email) | Q(username=email)).exclude(email=student.user.email)
         if len(user_queryset) > 0:
             return Response({'details':'Email already used'}, status=status.HTTP_400_BAD_REQUEST)
     display_pic = request.data.get('profilePhoto')
@@ -147,7 +148,13 @@ def student_profile_update(request):
 
 @api_view()
 def progressive_studentinfo(request):
-    student = StudentAccount.objects.get(registration=2018338514)
+    student = StudentAccount.objects.get(registration=2018338502)
     serializer = ProgressiveStudentInfoSerializer(student)
     return Response(data={'info': serializer.data})
-    
+
+
+
+@api_view()
+def admin_roles(request):
+    admin_ac = AdminAccount.objects.filter(user__username='rony').first()
+    return Response(data={'info': admin_ac.roles_dict})

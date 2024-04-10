@@ -5,10 +5,13 @@ from django.urls import reverse
 
 class StudentAccountSerializer(ModelSerializer):
     session = serializers.StringRelatedField()
-    
+    name = serializers.SerializerMethodField()
     class Meta:
         model = models.StudentAccount
         exclude = ['user']
+        
+    def get_name(self, obj):
+        return obj.full_name
 
 
 class PendingStudentSerializer(ModelSerializer):

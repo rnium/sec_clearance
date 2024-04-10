@@ -65,11 +65,11 @@ class Clearance(models.Model):
     progress = models.FloatField(default=0)
     added_at = models.DateTimeField(auto_now_add=True)
     
-    def save(self, *args, **kwargs):
-        admin_app_qs = self.administrativeapproval.all()
-        dept_app_qs = self.deptapproval.all()
-        clerk_app_qs = self.clerkapproval.all()
-        lab_app_qs = self.labapproval.all()
+    def update_stats(self, *args, **kwargs):
+        admin_app_qs = self.administrativeapproval_set.all()
+        dept_app_qs = self.deptapproval_set.all()
+        clerk_app_qs = self.clerkapproval_set.all()
+        lab_app_qs = self.labapproval_set.all()
         admin_app_qs_approved = admin_app_qs.filter(is_approved=True)
         dept_app_qs_approved = dept_app_qs.filter(is_approved=True)
         clerk_app_qs_approved = clerk_app_qs.filter(is_approved=True)
@@ -77,11 +77,13 @@ class Clearance(models.Model):
         total_approvals = admin_app_qs.count() + dept_app_qs.count() + clerk_app_qs.count() + lab_app_qs.count()
         approved_approvals = (admin_app_qs_approved.count() + dept_app_qs_approved.count() 
                               + clerk_app_qs_approved.count() + lab_app_qs_approved.count())
-        percent_progress = round(((approved_approvals/total_approvals) * 100), 2)
+        percent_progress = 0
+        if total_approvals:
+            percent_progress = round(((approved_approvals/total_approvals) * 100), 2)
         self.progress = percent_progress
-        if total_approvals == approved_approvals:
+        if percent_progress == 100:
             self.is_approved = True
-        super().save(*args, **kwargs)
+        self.save(*args, **kwargs)
         
 
 
@@ -95,7 +97,7 @@ class BaseApproval(models.Model):
         abstract = True
         
     def save(self, *args, **kwargs):
-        self.clearance.save()
+        self.clearance.update_stats()
         super().save(*args, **kwargs)
 
 

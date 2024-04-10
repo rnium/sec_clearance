@@ -18,7 +18,7 @@ def get_userinfo(request):
 
 @api_view()
 def apply_for_clearance(request):
-    student = StudentAccount.objects.get(registration=2018338514)
+    student = StudentAccount.objects.get(registration=2018338502)
     if not student.is_approved:
         return Response(data={'details': 'Account not approved'}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
     if hasattr(student, 'clearance'):
@@ -37,3 +37,12 @@ def dashboard_clearance_requests(request):
         'lab_incharge': get_lab_incharge_clearance_requests(admin_ac, 5),
     }
     return Response(data=clearance_requests)
+
+
+@api_view()
+def approve_clearance_entity(request, modelname, pk):
+    return Response({'info': 'test'})
+
+@api_view()
+def archive_clearance_entity(request, modelname, pk):
+    return Response({'info': 'test'})
