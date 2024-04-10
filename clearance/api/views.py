@@ -23,3 +23,7 @@ def apply_for_clearance(request):
         return Response(data={'details': 'Already applied for clearance'}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
     create_clearance_entities(student)
     return Response(data={'info': 'Applied for clearance'})
+
+@api_view()
+def dashboard_clearance_requests(request):
+    pass

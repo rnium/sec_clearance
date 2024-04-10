@@ -7,6 +7,13 @@ from django.templatetags.static import static
 from clearance.models import Department, Session
 
 
+account_types = (
+    ('principal', 'Principal'),
+    ('academic', 'SEC Academic'),
+    ('cashier', 'Cashier'),
+    ('general', 'General Admin User'),
+)
+
 class InviteToken(models.Model):
     def get_uuid():
         return uuid.uuid4().hex
@@ -41,12 +48,6 @@ class BaseAccount(models.Model):
 
 
 class AdminAccount(BaseAccount):
-    account_types = (
-        ('principal', 'Principal'),
-        ('academic', 'SEC Academic'),
-        ('cashier', 'Cashier'),
-        ('general', 'General Admin User'),
-    )
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     is_super_admin = models.BooleanField(default=False)
     dept = models.ForeignKey(Department, null=True, blank=True, on_delete=models.CASCADE)
@@ -83,6 +84,36 @@ class AdminAccount(BaseAccount):
     def head_of_the_departments(self):
         depts = self.department_set.all()
         return depts
+            
+    @property
+    def labs_incharge(self):
+        labs = self.lab_set.all()
+        return labs    
+            
+    @property
+    def dept_clerks(self):
+        clerks = Department.objects.filter(clerk=self)
+        return clerks
+    
+    @property
+    def roles_dict(self):
+        roles = {
+            'administrative': '',
+            'dept_head': [],
+            'lab_incharge': [],
+            'dept_clerk': [],
+        }
+        if self.user_type in [utype[0] for utype in account_types]:
+            roles['administrative'] = self.get_user_type_display()
+        for lab in self.labs_incharge:
+            roles['lab_incharge'].append(str(lab)) 
+        for dept in self.head_of_the_departments:
+            roles['dept_head'].append(dept.name)
+        for dept in self.dept_clerks:
+            roles['dept_clerk'].append(dept.name)
+        return roles
+            
+        
 
 
 class StudentAccount(BaseAccount):
