@@ -70,15 +70,17 @@ class Clearance(models.Model):
         dept_app_qs = self.deptapproval.all()
         clerk_app_qs = self.clerkapproval.all()
         lab_app_qs = self.labapproval.all()
-        admin_app_qs_pending = admin_app_qs.filter(is_approved=True)
-        dept_app_qs_pending = dept_app_qs.filter(is_approved=True)
-        clerk_app_qs_pending = clerk_app_qs.filter(is_approved=True)
-        lab_app_qs_pending = lab_app_qs.filter(is_approved=True)
+        admin_app_qs_approved = admin_app_qs.filter(is_approved=True)
+        dept_app_qs_approved = dept_app_qs.filter(is_approved=True)
+        clerk_app_qs_approved = clerk_app_qs.filter(is_approved=True)
+        lab_app_qs_approved = lab_app_qs.filter(is_approved=True)
         total_approvals = admin_app_qs.count() + dept_app_qs.count() + clerk_app_qs.count() + lab_app_qs.count()
-        approved_approvals = (admin_app_qs_pending.count() + dept_app_qs_pending.count() 
-                              + clerk_app_qs_pending.count() + lab_app_qs_pending.count())
+        approved_approvals = (admin_app_qs_approved.count() + dept_app_qs_approved.count() 
+                              + clerk_app_qs_approved.count() + lab_app_qs_approved.count())
         percent_progress = round(((approved_approvals/total_approvals) * 100), 2)
         self.progress = percent_progress
+        if total_approvals == approved_approvals:
+            self.is_approved = True
         super().save(*args, **kwargs)
         
 
