@@ -104,7 +104,7 @@ class AdministrativeApproval(BaseApproval):
             return True
         else:
             other_admin_approvals = self.clearance.administrativeapproval_set.filter(is_approved=False).exclude(admin_role='academic')
-            return bool(other_admin_approvals.count())
+            return not bool(other_admin_approvals.count())
 
 class DeptApproval(BaseApproval):
     dept = models.ForeignKey(Department, on_delete=models.CASCADE)
