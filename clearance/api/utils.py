@@ -22,6 +22,8 @@ def create_clearance_entities(student):
 
 def get_administrative_clearance_requests(admin_ac, limit=None):
     approvals = []
+    if (admin_ac.user_type not in [utype[0] for utype in AdministrativeApproval._meta.get_field('admin_role').choices]):
+        return approvals
     approvals_qs = AdministrativeApproval.objects.filter(admin_role=admin_ac.user_type, is_approved=False)
     count = 0
     for app_req in approvals_qs:

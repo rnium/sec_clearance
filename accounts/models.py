@@ -98,7 +98,7 @@ class AdminAccount(BaseAccount):
     @property
     def roles_dict(self):
         roles = []
-        if self.user_type in [utype[0] for utype in account_types]:
+        if self.user_type in [utype[0] for utype in account_types[:3]]:
             roles.append(
                 {
                     'type': 'administrative',
