@@ -51,10 +51,19 @@ def approve_student_ac(request):
     return Response(data={'info': 'Account Approved'})
 
 
-class DeleteStudentAc(DestroyAPIView):
-    queryset = StudentAccount.objects.filter(is_approved=False).order_by('user__date_joined')
-    serializer_class = StudentAccountSerializer
-    
+@api_view(['POST'])
+def delete_student_ac(request):
+    try:
+        reg = request.data['registration']
+    except KeyError:
+        return Response(data={'details': 'Registration empty'}, status=status.HTTP_400_BAD_REQUEST)
+    student_ac = get_object_or_404(StudentAccount, pk=reg)
+    if hasattr(student_ac, 'clearance'):
+        return Response(data={'details': 'Cannot Delete Now'}, status=status.HTTP_400_BAD_REQUEST)
+    student_ac.delete()
+    return Response(data={'info': 'Account Deleted'})
+
+ 
 @api_view(['POST'])
 def student_signup(request):
     email = request.data['email']
