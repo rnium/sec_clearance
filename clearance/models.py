@@ -97,8 +97,8 @@ class BaseApproval(models.Model):
         abstract = True
         
     def save(self, *args, **kwargs):
-        self.clearance.update_stats()
         super().save(*args, **kwargs)
+        self.clearance.update_stats()
 
 
 class AdministrativeApproval(BaseApproval):

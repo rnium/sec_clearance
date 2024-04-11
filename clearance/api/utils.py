@@ -20,11 +20,11 @@ def create_clearance_entities(student):
         clerk_approval, created = ClerkApproval.objects.get_or_create(clearance=clearance, dept_approval=dept_approval)
 
 
-def get_administrative_clearance_requests(admin_ac, limit=None):
+def get_administrative_clearance_requests(admin_ac, limit=None, approved=False, archived=False):
     approvals = []
     if (admin_ac.user_type not in [utype[0] for utype in AdministrativeApproval._meta.get_field('admin_role').choices]):
         return approvals
-    approvals_qs = AdministrativeApproval.objects.filter(admin_role=admin_ac.user_type, is_approved=False)
+    approvals_qs = AdministrativeApproval.objects.filter(admin_role=admin_ac.user_type, is_approved=approved, is_archived=archived)
     count = 0
     for app_req in approvals_qs:
         count += 1
@@ -41,9 +41,9 @@ def get_administrative_clearance_requests(admin_ac, limit=None):
     return [section]
 
 
-def get_dept_head_clearance_requests(admin_ac, limit=None):
+def get_dept_head_clearance_requests(admin_ac, limit=None, approved=False, archived=False):
     approvals = []
-    approvals_qs = DeptApproval.objects.filter(dept__head=admin_ac, is_approved=False)
+    approvals_qs = DeptApproval.objects.filter(dept__head=admin_ac, is_approved=approved, is_archived=archived)
     for dept in Department.objects.all():
         dept_approval_qs = approvals_qs.filter(dept=dept)
         seekable_approvals = []
@@ -64,9 +64,9 @@ def get_dept_head_clearance_requests(admin_ac, limit=None):
     return approvals
 
 
-def get_dept_clerk_clearance_requests(admin_ac, limit=None):
+def get_dept_clerk_clearance_requests(admin_ac, limit=None, approved=False, archived=False):
     approvals = []
-    approvals_qs = ClerkApproval.objects.filter(dept_approval__dept__clerk=admin_ac, is_approved=False)
+    approvals_qs = ClerkApproval.objects.filter(dept_approval__dept__clerk=admin_ac, is_approved=approved, is_archived=archived)
     for dept in Department.objects.all():
         clerk_approval_qs = approvals_qs.filter(dept_approval__dept=dept)
         if type(limit) == int:
@@ -83,9 +83,9 @@ def get_dept_clerk_clearance_requests(admin_ac, limit=None):
     return approvals
 
 
-def get_lab_incharge_clearance_requests(admin_ac, limit=None):
+def get_lab_incharge_clearance_requests(admin_ac, limit=None, approved=False, archived=False):
     approvals = []
-    approvals_qs = LabApproval.objects.filter(lab__incharge=admin_ac, is_approved=False)
+    approvals_qs = LabApproval.objects.filter(lab__incharge=admin_ac, is_approved=approved, is_archived=archived)
     for lab in Lab.objects.all():
         lab_approval_qs = approvals_qs.filter(lab=lab)
         if type(limit) == int:
