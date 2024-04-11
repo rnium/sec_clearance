@@ -150,7 +150,7 @@ class StudentAccount(BaseAccount):
         if self.user.last_name:
             return f"{self.user.first_name} {self.user.last_name}"
         else:
-            return self.first_name
+            return self.user.first_name
 
     @property
     def account_state(self):
