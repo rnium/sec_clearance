@@ -16,8 +16,6 @@ class StudentAccountSerializer(ModelSerializer):
 
 class PendingStudentSerializer(ModelSerializer):
     session = serializers.StringRelatedField()
-    approve_url = serializers.SerializerMethodField()
-    delete_url = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
     avatar_url = serializers.SerializerMethodField()
     
@@ -25,10 +23,6 @@ class PendingStudentSerializer(ModelSerializer):
         model = models.StudentAccount
         exclude = ['user', 'profile_picture']
         
-    def get_approve_url(self, obj):
-        return reverse('accounts:approve_studentac', args=(obj.registration,))
-    def get_delete_url(self, obj):
-        return reverse('accounts:delete_studentac', args=(obj.registration,))
     def get_name(self, obj):
         return obj.full_name
     def get_avatar_url(self, obj):

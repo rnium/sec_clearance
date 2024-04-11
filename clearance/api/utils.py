@@ -38,6 +38,8 @@ def get_administrative_clearance_requests(admin_ac, limit=None, approved=False, 
         'title': admin_ac.get_user_type_display(),
         'approvals': approvals
     }
+    if len(approvals) == 0:
+        return []
     return [section]
 
 

@@ -38,8 +38,14 @@ class PendingStudents(ListAPIView):
 
 
 @api_view(['POST'])
-def approve_student_ac(request, registration):
-    student_ac = get_object_or_404(StudentAccount, pk=registration)
+def approve_student_ac(request):
+    try:
+        reg = request.data['registration']
+    except KeyError:
+        return Response(data={'details': 'Registration empty'}, status=status.HTTP_400_BAD_REQUEST)
+    student_ac = get_object_or_404(StudentAccount, pk=reg)
+    if student_ac.is_approved:
+        return Response(data={'details': 'Account already approved'}, status=status.HTTP_400_BAD_REQUEST)
     student_ac.is_approved = True
     student_ac.save()
     return Response(data={'info': 'Account Approved'})
