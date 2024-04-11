@@ -86,10 +86,10 @@ class Clearance(models.Model):
         self.save(*args, **kwargs)
         
 
-
 class BaseApproval(models.Model):
     clearance = models.ForeignKey(Clearance, on_delete=models.CASCADE)
     is_approved = models.BooleanField(default=False)
+    is_archived = models.BooleanField(default=False)
     approved_by = models.ForeignKey('accounts.AdminAccount', null=True, blank=True, on_delete=models.SET_NULL)
     approved_at = models.DateTimeField(null=True, blank=True)
     
