@@ -87,6 +87,7 @@ def get_amdin_roles(admin_ac):
         roles.append(
             {
                 'type': 'administrative',
+                'code': 'admin',
                 'title': admin_ac.get_user_type_display(),
             }
         )
