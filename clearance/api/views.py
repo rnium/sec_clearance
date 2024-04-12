@@ -88,10 +88,22 @@ def archive_clearance_entity(request, modelname, pk):
         return Response({'details': 'Unknown action'}, status=status.HTTP_406_NOT_ACCEPTABLE)
     clearance_req = get_object_or_404(the_model, pk=pk)
     if clearance_req.is_archived:
-        return Response({'info': 'clearance already archived'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'details': 'clearance already archived'}, status=status.HTTP_400_BAD_REQUEST)
     clearance_req.is_archived = True
     clearance_req.save()
     return Response({'info': 'Clearance Request Archived'})
+
+@api_view()
+def unarchive_clearance_entity(request, modelname, pk):
+    the_model = get_model_by_name(modelname)
+    if the_model is None:
+        return Response({'details': 'Unknown action'}, status=status.HTTP_406_NOT_ACCEPTABLE)
+    clearance_req = get_object_or_404(the_model, pk=pk)
+    if not clearance_req.is_archived:
+        return Response({'details': 'clearance is not archived'}, status=status.HTTP_400_BAD_REQUEST)
+    clearance_req.is_archived = False
+    clearance_req.save()
+    return Response({'info': 'Clearance Request Unarchived'})
 
 
 @api_view()

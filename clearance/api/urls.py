@@ -7,4 +7,5 @@ urlpatterns = [
     path('section-clearances/', views.section_clearance, name='section_clearances'),
     path('approve/<str:modelname>/<int:pk>/', views.approve_clearance_entity, name='approve_clearance_entity'),
     path('archive/<str:modelname>/<int:pk>/', views.archive_clearance_entity, name='archive_clearance_entity'),
+    path('unarchive/<str:modelname>/<int:pk>/', views.unarchive_clearance_entity, name='unarchive_clearance_entity'),
 ]

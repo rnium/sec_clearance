@@ -19,10 +19,11 @@ class PendingSerializerBase(ModelSerializer):
     registration = serializers.SerializerMethodField()
     approval_url = serializers.SerializerMethodField()
     archive_url = serializers.SerializerMethodField()
+    unarchive_url = serializers.SerializerMethodField()
     avatar_url = serializers.SerializerMethodField()
     class Meta:
         model = None
-        exclude = ['clearance', 'is_approved', 'approved_by', 'approved_at']
+        exclude = ['clearance', 'is_approved', 'approved_by']
 
     def get_applied_at(self, obj):
         return obj.clearance.added_at
@@ -38,6 +39,8 @@ class PendingSerializerBase(ModelSerializer):
         return reverse('clearance:approve_clearance_entity', args=(obj._meta.model_name, obj.id))
     def get_archive_url(self, obj):
         return reverse('clearance:archive_clearance_entity', args=(obj._meta.model_name, obj.id))
+    def get_unarchive_url(self, obj):
+        return reverse('clearance:unarchive_clearance_entity', args=(obj._meta.model_name, obj.id))
     def get_avatar_url(self, obj):
         return obj.clearance.student.avatar_url
 
