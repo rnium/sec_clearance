@@ -81,4 +81,39 @@ def get_userinfo_data(user):
     return data
 
     
-       
+def get_amdin_roles(admin_ac):
+    roles = []
+    if admin_ac.user_type in [utype[0] for utype in admin_ac._meta.get_field('user_type').choices[:3]]:
+        roles.append(
+            {
+                'type': 'administrative',
+                'title': admin_ac.get_user_type_display(),
+            }
+        )
+    for dept in admin_ac.head_of_the_departments:
+        roles.append(
+            {
+                'type': 'dept_head',
+                'code': dept.codename,
+                'title': dept.name,
+            }
+        )
+    for dept in admin_ac.dept_clerks:
+        roles.append(
+            {
+                'type': 'dept_clerk',
+                'code': dept.codename,
+                'title': dept.name,
+            }
+        )
+    for lab in admin_ac.labs_incharge:
+        roles.append(
+            {
+                'type': 'lab_incharge',
+                'code': lab.codename,
+                'title': str(lab),
+            }
+        )
+    
+    return roles
+            

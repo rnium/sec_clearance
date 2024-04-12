@@ -94,43 +94,7 @@ class AdminAccount(BaseAccount):
     def dept_clerks(self):
         clerks = Department.objects.filter(clerk=self)
         return clerks
-    
-    @property
-    def roles_dict(self):
-        roles = []
-        if self.user_type in [utype[0] for utype in account_types[:3]]:
-            roles.append(
-                {
-                    'type': 'administrative',
-                    'title': self.get_user_type_display(),
-                }
-            )
-        for dept in self.head_of_the_departments:
-            roles.append(
-                {
-                    'type': 'dept_head',
-                    'title': dept.name,
-                }
-            )
-        for dept in self.dept_clerks:
-            roles.append(
-                {
-                    'type': 'dept_clerk',
-                    'title': dept.name,
-                }
-            )
-        for lab in self.labs_incharge:
-            roles.append(
-                {
-                    'type': 'lab_incharge',
-                    'title': str(lab),
-                }
-            )
         
-        return roles
-            
-        
-
 
 class StudentAccount(BaseAccount):
     registration = models.IntegerField(primary_key=True)
