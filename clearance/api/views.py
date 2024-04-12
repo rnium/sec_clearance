@@ -6,12 +6,37 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from accounts.utils import get_userinfo_data
 from accounts.models import StudentAccount, AdminAccount
+# from clearance.models import AdministrativeApproval, DeptApproval, ClerkApproval, LabApproval
 from clearance.api.utils import (create_clearance_entities, get_administrative_clearance_requests, 
                                  get_dept_head_clearance_requests, get_dept_clerk_clearance_requests, 
                                  get_lab_incharge_clearance_requests)
 from clearance.apps import get_model_by_name
+from clearance.api.serializer import (AdministrativeApprovalSerializer, DeptApprovalSerializer, 
+                                      ClerkApprovalSerializer, LabApprovalSerializer)
+from clearance.api.pagination import ClearancePagination
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
+
+serializer_mapping = {
+    'administrative': AdministrativeApprovalSerializer,
+    'dept_head': DeptApprovalSerializer,
+    'dept_clerk': ClerkApprovalSerializer,
+    'lab_incharge': LabApprovalSerializer,
+}
+
+model_mapping = {
+    'administrative': 'administrativeapproval',
+    'dept_head': 'deptapproval',
+    'dept_clerk': 'clerkapproval',
+    'lab_incharge': 'labapproval',
+}
+
+section_getter_mapping = {
+    'administrative': get_administrative_clearance_requests,
+    'dept_head': get_dept_head_clearance_requests,
+    'dept_clerk': get_dept_clerk_clearance_requests,
+    'lab_incharge': get_lab_incharge_clearance_requests,
+}
 
 @api_view()
 def get_userinfo(request):
@@ -67,3 +92,31 @@ def archive_clearance_entity(request, modelname, pk):
     clearance_req.is_archived = True
     clearance_req.save()
     return Response({'info': 'Clearance Request Archived'})
+
+
+@api_view()
+def section_clearance(request):
+    admin_ac = AdminAccount.objects.filter(user__username='rony').first()
+    role_type = request.GET.get('type')
+    approved = bool(request.GET.get('approved', False))
+    archived = bool(request.GET.get('archived', False))
+    code = request.GET.get('code', None)
+    try:
+        Serializer_class = serializer_mapping[role_type]
+        # The_model = get_model_by_name(model_mapping[role_type])
+        
+        section_getter = section_getter_mapping[role_type]
+    except Exception as e:
+        print(e)
+        return Response({'details': 'Unknown query'}, status=status.HTTP_400_BAD_REQUEST)
+    paginator = ClearancePagination()
+    sections = section_getter(admin_ac, limit=None, approved=approved, archived=archived, code=code, serialized=False)
+    clearance_objects = []
+    # print(type(sections[0]['approvals']))
+    if len(sections):
+        clearance_objects = sections[0]['approvals']
+    paginated_queryset = paginator.paginate_queryset(clearance_objects, request)
+
+    serializer = Serializer_class(paginated_queryset, many=True)
+    response = paginator.get_paginated_response(serializer.data)
+    return response

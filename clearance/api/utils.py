@@ -20,7 +20,7 @@ def create_clearance_entities(student):
         clerk_approval, created = ClerkApproval.objects.get_or_create(clearance=clearance, dept_approval=dept_approval)
 
 
-def get_administrative_clearance_requests(admin_ac, limit=None, approved=False, archived=False):
+def get_administrative_clearance_requests(admin_ac, limit=None, approved=False, archived=False, code=None, serialized=True):
     approvals = []
     if (admin_ac.user_type not in [utype[0] for utype in AdministrativeApproval._meta.get_field('admin_role').choices]):
         return approvals
@@ -29,8 +29,11 @@ def get_administrative_clearance_requests(admin_ac, limit=None, approved=False, 
     for app_req in approvals_qs:
         count += 1
         if app_req.approval_seekable:
-            serializer = AdministrativeApprovalSerializer(app_req)
-            approvals.append(serializer.data)
+            if serialized:
+                serializer = AdministrativeApprovalSerializer(app_req)
+                approvals.append(serializer.data)
+            else:
+                approvals.append(app_req)
         if type(limit) == int and count >= limit:
             break
     section = {
@@ -43,10 +46,14 @@ def get_administrative_clearance_requests(admin_ac, limit=None, approved=False, 
     return [section]
 
 
-def get_dept_head_clearance_requests(admin_ac, limit=None, approved=False, archived=False):
+def get_dept_head_clearance_requests(admin_ac, limit=None, approved=False, archived=False, code=None, serialized=True):
     approvals = []
     approvals_qs = DeptApproval.objects.filter(dept__head=admin_ac, is_approved=approved, is_archived=archived)
-    for dept in Department.objects.all():
+    if code:
+        departments = Department.objects.filter(codename=code)
+    else:
+        departments = Department.objects.all()
+    for dept in departments:
         dept_approval_qs = approvals_qs.filter(dept=dept)
         seekable_approvals = []
         for approval in dept_approval_qs:
@@ -55,50 +62,66 @@ def get_dept_head_clearance_requests(admin_ac, limit=None, approved=False, archi
         if type(limit) == int:
             seekable_approvals = seekable_approvals[:limit]
         if len(seekable_approvals):
-            serializer = DeptApprovalSerializer(seekable_approvals, many=True)
+            if serialized:
+                serializer = DeptApprovalSerializer(seekable_approvals, many=True)
+                seekable_approvals = serializer.data
             approvals.append(
                 {
                     'type': 'dept_head',
                     'title': dept.name,
-                    'approvals': serializer.data
+                    'approvals': seekable_approvals
                 }
             )
     return approvals
 
 
-def get_dept_clerk_clearance_requests(admin_ac, limit=None, approved=False, archived=False):
+def get_dept_clerk_clearance_requests(admin_ac, limit=None, approved=False, archived=False, code=None, serialized=True):
     approvals = []
     approvals_qs = ClerkApproval.objects.filter(dept_approval__dept__clerk=admin_ac, is_approved=approved, is_archived=archived)
-    for dept in Department.objects.all():
+    if code:
+        departments = Department.objects.filter(codename=code)
+    else:
+        departments = Department.objects.all()
+    for dept in departments:
         clerk_approval_qs = approvals_qs.filter(dept_approval__dept=dept)
         if type(limit) == int:
             clerk_approval_qs = clerk_approval_qs[:limit]
         if clerk_approval_qs.count():
-            serializer = ClerkApprovalSerializer(clerk_approval_qs, many=True)
+            clerk_approvals = clerk_approval_qs
+            if serialized:
+                serializer = ClerkApprovalSerializer(clerk_approval_qs, many=True)
+                clerk_approvals = serializer.data
             approvals.append(
                 {
-                    'type': 'dept_clerk',
+                    'type': 'dept_head',
                     'title': dept.name,
-                    'approvals': serializer.data
+                    'approvals': clerk_approvals
                 }
             )
     return approvals
 
 
-def get_lab_incharge_clearance_requests(admin_ac, limit=None, approved=False, archived=False):
+def get_lab_incharge_clearance_requests(admin_ac, limit=None, approved=False, archived=False, code=None, serialized=True):
     approvals = []
     approvals_qs = LabApproval.objects.filter(lab__incharge=admin_ac, is_approved=approved, is_archived=archived)
-    for lab in Lab.objects.all():
+    if code:
+        all_labs = Lab.objects.filter(codename=code)
+    else:
+        all_labs = Lab.objects.all()
+    for lab in all_labs:
         lab_approval_qs = approvals_qs.filter(lab=lab)
         if type(limit) == int:
             lab_approval_qs = lab_approval_qs[:limit]
         if lab_approval_qs.count():
-            serializer = LabApprovalSerializer(lab_approval_qs, many=True)
+            lab_approvals = lab_approval_qs
+            if serialized:
+                serializer = LabApprovalSerializer(lab_approval_qs, many=True)
+                lab_approvals = serializer.data
             approvals.append(
                 {
                     'type': 'dept_lab',
                     'title': str(lab),
-                    'approvals': serializer.data
+                    'approvals': lab_approvals
                 }
             )
     return approvals
