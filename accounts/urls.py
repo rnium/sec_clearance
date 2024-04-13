@@ -13,5 +13,6 @@ urlpatterns = [
     path('progressive-studentinfo/', views.progressive_studentinfo, name='progressive_studentinfo'),
     path('admin-roles/', views.admin_roles, name='admin_roles'),
     path('members/', views.members, name='members'),
+    path('members/sendinvite/', views.send_invitation, name='send_invitation'),
 
 ]

@@ -6,13 +6,13 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from accounts.utils import get_userinfo_data
 from accounts.models import StudentAccount, AdminAccount
-# from clearance.models import AdministrativeApproval, DeptApproval, ClerkApproval, LabApproval
+from clearance.models import Department
 from clearance.api.utils import (create_clearance_entities, get_administrative_clearance_requests, 
                                  get_dept_head_clearance_requests, get_dept_clerk_clearance_requests, 
                                  get_lab_incharge_clearance_requests)
 from clearance.apps import get_model_by_name
 from clearance.api.serializer import (AdministrativeApprovalSerializer, DeptApprovalSerializer, 
-                                      ClerkApprovalSerializer, LabApprovalSerializer)
+                                      ClerkApprovalSerializer, LabApprovalSerializer, DepartmentSeializer)
 from clearance.api.pagination import ClearancePagination
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
@@ -37,6 +37,10 @@ section_getter_mapping = {
     'dept_clerk': get_dept_clerk_clearance_requests,
     'lab_incharge': get_lab_incharge_clearance_requests,
 }
+
+class DeparmentList(ListAPIView):
+    queryset = Department.objects.all()
+    serializer_class = DepartmentSeializer
 
 @api_view()
 def get_userinfo(request):

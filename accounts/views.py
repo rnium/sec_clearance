@@ -180,3 +180,8 @@ def admin_roles(request):
 def members(request):
     data = get_members_data()
     return Response(data)
+
+@api_view(['POST'])
+def send_invitation(request):
+    print(request.data)
+    return Response({'info': 'Invitation Email Sent'})
