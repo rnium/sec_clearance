@@ -11,6 +11,8 @@ db.sqlite3
 db.sqlite3-journal
 create_samples.py
 delete_samples.py
+create_admins.py
+delete_admins.py
 media
 
 # If your build process includes running collectstatic, then you probably don't need or want to include staticfiles/

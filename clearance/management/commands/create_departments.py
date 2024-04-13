@@ -12,11 +12,11 @@ departments = {
         },
         'labs': [
             {
-                'codename': 'circuit',
+                'codename': 'ckt_lab',
                 'name': 'Electrical Circuit',
             },
             {
-                'codename': 'electronics',
+                'codename': 'electronics_lab',
                 'name': 'Electronics Lab',
             },
             {
@@ -24,7 +24,7 @@ departments = {
                 'name': 'DLD Lab',
             },
             {
-                'codename': 'machine',
+                'codename': 'machine_lab',
                 'name': 'Electrical Machine',
             },
             {
@@ -32,7 +32,7 @@ departments = {
                 'name': 'High Voltage Lab',
             },
             {
-                'codename': 'atts_lab',
+                'codename': 'atts_lab_eee',
                 'name': 'ATTS Lab',
             },
         ]
@@ -88,7 +88,7 @@ departments = {
                 'name': 'Environment Engineering Lab',
             },
             {
-                'codename': 'geotechnical_engr_lab',
+                'codename': 'geo_engr_lab',
                 'name': 'Geotechnical And Engineering Materials Lab',
             },
             {
@@ -117,20 +117,20 @@ departments = {
             },
         ]
     },
-    'accessory': {
+    'accessory_dept': {
         'meta': {
-            'codename': 'accessory_dept',
+            'codename': 'ad',
             'name': 'Accessory Department',
             'display_name': 'Accessory Department',
             'dept_type': 'accessory'
         },
         'labs': [
             {
-                'codename': 'physics_lab',
+                'codename': 'phy_lab',
                 'name': 'Physics Lab',
             },
             {
-                'codename': 'chemistry_lab',
+                'codename': 'chem_lab',
                 'name': 'Chemistry Lab',
             },
         ]

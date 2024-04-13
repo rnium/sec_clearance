@@ -2,11 +2,13 @@ from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
 from accounts import models
 from django.urls import reverse
+from clearance.utils import get_admin_roles
 
 class AdminAccountSerializer(ModelSerializer):
     name = serializers.SerializerMethodField()
     user_type = serializers.SerializerMethodField()
     avatar_url = serializers.SerializerMethodField()
+    roles = serializers.SerializerMethodField()
     # user_type = serializers.SerializerMethodField()
     class Meta:
         model = models.AdminAccount
@@ -20,6 +22,12 @@ class AdminAccountSerializer(ModelSerializer):
     
     def get_avatar_url(self, obj):
         return obj.avatar_url
+    
+    def get_roles(self, obj):
+        the_roles = get_admin_roles(obj)
+        for r in the_roles:
+            r['code'] = ' '.join([fragment.upper() for fragment in r['code'].split('_')])
+        return the_roles
 
 class StudentAccountSerializer(ModelSerializer):
     session = serializers.StringRelatedField()

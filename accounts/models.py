@@ -5,6 +5,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.templatetags.static import static
 from clearance.models import Department, Session
+from django.utils import timezone
 
 
 account_types = (
@@ -52,11 +53,16 @@ class AdminAccount(BaseAccount):
     is_super_admin = models.BooleanField(default=False)
     dept = models.ForeignKey(Department, null=True, blank=True, on_delete=models.CASCADE)
     user_type = models.CharField(max_length=10, default='general', choices=account_types)
+    last_seen = models.DateTimeField(null=True, blank=True)
     invited_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name="inviting_user")
     
         
     def __str__(self):
         return self.user.username
+    
+    def lastseen_now(self):
+        self.last_seen = timezone.now()
+        self.save()
     
     @property
     def user_first_name(self):

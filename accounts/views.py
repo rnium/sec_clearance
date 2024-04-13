@@ -15,7 +15,8 @@ from accounts.models import StudentAccount
 from clearance.models import Session, Department
 from django.contrib.auth.models import User
 from django.db.models import Q
-from accounts.utils import compress_image, get_userinfo_data, get_amdin_roles, get_members_data
+from clearance.utils import get_admin_roles
+from accounts.utils import compress_image, get_userinfo_data, get_members_data
 from accounts.models import AdminAccount
 
 
@@ -172,7 +173,7 @@ def progressive_studentinfo(request):
 @api_view()
 def admin_roles(request):
     admin_ac = AdminAccount.objects.filter(user__username='rony').first()
-    return Response(data={'info': get_amdin_roles(admin_ac)})
+    return Response(data={'info': get_admin_roles(admin_ac)})
 
 
 @api_view()
