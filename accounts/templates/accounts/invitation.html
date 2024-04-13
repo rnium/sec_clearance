@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html lang="en">
+<body>
+    {% autoescape off %}
+    <p>Hello Sir, you've been invited to signup for SEC Clearance Portal. Please click the link below to complete registration</p>
+    <p><a href="{{signup_url}}">{{signup_url}}</a></p>
+    <p>Please note: this link will expire in: {{invitation.expiration|date:"r"}}</p>
+    {% endautoescape %}
+</body>
+</html>

@@ -1,12 +1,50 @@
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
+from django.urls import reverse
+from django.template.loader import render_to_string
+from urllib.parse import urlencode
 from accounts.models import AdminAccount
 from accounts.serializer import AdminAccountSerializer
 from clearance.models import Department
 from pathlib import Path
 from PIL import Image
 from io import BytesIO
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
+from django.conf import settings
+from django.core.exceptions import ValidationError
+
+
+sendgrid_api_key = settings.SENDGRID_API_KEY_1
+sendgrid_from_user = settings.SENDGRID_FROM_EMAIL
+
+
+def send_html_email(receiver, subject, body):
+    message = Mail(
+        from_email=(sendgrid_from_user, "SEC Clearance Portal"),
+        to_emails=receiver,
+        subject=subject,
+        html_content=body)
+    
+    sg = SendGridAPIClient(sendgrid_api_key)
+    response = sg.send(message)
+    status = response.status_code
+    if status >= 400:
+        raise ValidationError("API Error")
+    
+
+def send_signup_email(request, invitation):
+    email_subject = "Signup Invitation"
+    receiver = invitation.user_email
+    app_admin_signup = request.build_absolute_uri(reverse("account:signupadmin"))
+    url_params = {"token":invitation.id}
+    signup_url = f"{app_admin_signup}?{urlencode(url_params)}"
+    email_body = render_to_string('account/invitation.html', context={
+        "signup_url": signup_url,
+        "invitation": invitation
+    })
+    send_html_email(receiver, email_subject, email_body)
 
 
 def validate_image_extension(value):

@@ -16,9 +16,14 @@ from clearance.models import Session, Department
 from django.contrib.auth.models import User
 from django.db.models import Q
 from clearance.utils import get_admin_roles
-from accounts.utils import compress_image, get_userinfo_data, get_members_data
-from accounts.models import AdminAccount
+from accounts.utils import compress_image, get_userinfo_data, get_members_data, send_html_email
+from accounts.models import AdminAccount, InviteToken
+from django.utils import timezone
+from django.http import HttpResponse
+from datetime import timedelta
 
+def signup_admin_get(request):
+    return HttpResponse("hi")
 
 @api_view(['POST'])
 def api_login(request):
@@ -181,7 +186,31 @@ def members(request):
     data = get_members_data()
     return Response(data)
 
+
 @api_view(['POST'])
 def send_invitation(request):
-    print(request.data)
+    try:
+        to_user_email = request.data['email']
+        dept_id = request.data['dept']
+    except KeyError:
+        return Response(data={'details': "Data Missing"}, status=status.HTTP_400_BAD_REQUEST)
+    if dept_id == -1:
+        dept_id = None
+    # checking if user exists with this email
+    users = User.objects.filter(email=to_user_email)
+    if users.count():
+        return Response(data={'details': "User with this email already exists!"}, status=status.HTTP_400_BAD_REQUEST)
+    
+    expiration = timezone.now() + timedelta(days=7)
+    invite_token = InviteToken(
+        from_user = request.user,
+        user_email = to_user_email,
+        to_user_dept_id = dept_id,
+        expiration = expiration,
+    )
+    invite_token.save()
+    try:
+        utils.send_signup_email(request, invite_token)
+    except Exception as e:
+        return Response(data={'details': str(e)}, status=status.HTTP_502_BAD_GATEWAY)
     return Response({'info': 'Invitation Email Sent'})
