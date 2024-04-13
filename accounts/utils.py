@@ -138,7 +138,7 @@ def get_members_data():
     data.append(section)
     for dept in Department.objects.all():
         dept_acs = ac_qs.filter(dept=dept)
-        section = {'title': dept.name, 'accounts': []}
+        section = {'title': dept.display_name, 'accounts': []}
         if dept_acs.count():
             serializer = AdminAccountSerializer(dept_acs, many=True)
             section['accounts'].extend(serializer.data)

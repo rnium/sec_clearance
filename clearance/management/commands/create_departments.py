@@ -13,7 +13,7 @@ departments = {
         'labs': [
             {
                 'codename': 'ckt_lab',
-                'name': 'Electrical Circuit',
+                'name': 'Electrical Circuit Lab',
             },
             {
                 'codename': 'electronics_lab',
@@ -58,11 +58,11 @@ departments = {
                 'name': 'DLD Lab',
             },
             {
-                'codename': 'microprocessor_lab',
+                'codename': 'mp_lab',
                 'name': 'Microprocessor Lab',
             },
             {
-                'codename': 'networking_lab',
+                'codename': 'net_lab',
                 'name': 'Networking Lab',
             },
             {
@@ -88,7 +88,7 @@ departments = {
                 'name': 'Environment Engineering Lab',
             },
             {
-                'codename': 'geo_engr_lab',
+                'codename': 'geo_eng_lab',
                 'name': 'Geotechnical And Engineering Materials Lab',
             },
             {

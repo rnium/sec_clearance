@@ -6,6 +6,7 @@ from clearance.utils import get_admin_roles
 
 class AdminAccountSerializer(ModelSerializer):
     name = serializers.SerializerMethodField()
+    email = serializers.SerializerMethodField()
     user_type = serializers.SerializerMethodField()
     avatar_url = serializers.SerializerMethodField()
     roles = serializers.SerializerMethodField()
@@ -16,6 +17,9 @@ class AdminAccountSerializer(ModelSerializer):
     
     def get_name(self, obj):
         return obj.full_name
+    
+    def get_email(self, obj):
+        return obj.user.email
     
     def get_user_type(self, obj):
         return obj.get_user_type_display()
