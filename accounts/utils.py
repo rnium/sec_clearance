@@ -1,6 +1,9 @@
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
+from accounts.models import AdminAccount
+from accounts.serializer import AdminAccountSerializer
+from clearance.models import Department
 from pathlib import Path
 from PIL import Image
 from io import BytesIO
@@ -117,4 +120,33 @@ def get_amdin_roles(admin_ac):
         )
     
     return roles
-            
+
+
+def get_members_data():
+    data = []
+    ac_qs = AdminAccount.objects.all()
+    section = {'title': 'Administrator', 'accounts': []}
+    admin_acs = [
+        *list(ac_qs.filter(user_type='principal')),
+        *list(ac_qs.filter(user_type='academic')),
+        *list(ac_qs.filter(user_type='cashier'))
+    ]
+    for admin_ac in admin_acs:
+        if admin_ac:
+            serializer = AdminAccountSerializer(admin_ac)
+            section['accounts'].append(serializer.data)
+    data.append(section)
+    for dept in Department.objects.all():
+        dept_acs = ac_qs.filter(dept=dept)
+        section = {'title': dept.name, 'accounts': []}
+        if dept_acs.count():
+            serializer = AdminAccountSerializer(dept_acs, many=True)
+            section['accounts'].extend(serializer.data)
+        data.append(section)
+    undesignated_admins = ac_qs.filter(dept=None, user_type='general')
+    section = {'title': 'Undesignated Users', 'accounts': []}
+    if undesignated_admins.count():
+        serializer = AdminAccountSerializer(undesignated_admins, many=True)
+        section['accounts'].extend(serializer.data)
+    data.append(section)
+    return data
