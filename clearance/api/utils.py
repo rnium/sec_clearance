@@ -1,4 +1,6 @@
-from clearance.api.serializer import AdministrativeApprovalSerializer, DeptApprovalSerializer, ClerkApprovalSerializer, LabApprovalSerializer
+from clearance.api.serializer import (AdministrativeApprovalSerializer, DeptApprovalSerializer, 
+                                      ClerkApprovalSerializer, LabApprovalSerializer,
+                                      SessionSeializer)
 from clearance.models import (Department, Lab, Clearance, 
                               AdministrativeApproval, DeptApproval, LabApproval, ClerkApproval)
 from accounts.models import administrative_account_types
@@ -210,3 +212,10 @@ def unassign_member(target_user, role, code):
         lab.save()
     else:
         raise ValidationError('No actions to be performed!')
+    
+def get_dept_sessions():
+    data = {}
+    for dept in Department.objects.filter(dept_type='academic'):
+        serializer = SessionSeializer(dept.session_set.all(), many=True)
+        data[dept.codename] = serializer.data
+    return data

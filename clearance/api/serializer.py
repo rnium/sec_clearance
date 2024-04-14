@@ -1,6 +1,7 @@
 from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
-from clearance.models import Department, Clearance, AdministrativeApproval, DeptApproval, ClerkApproval, LabApproval
+from clearance.models import (Department, Session, Clearance, AdministrativeApproval, 
+                              DeptApproval, ClerkApproval, LabApproval)
 from accounts.serializer import StudentAccountSerializer
 from django.urls import reverse
 
@@ -9,6 +10,16 @@ class DepartmentSeializer(ModelSerializer):
     class Meta:
         model = Department
         exclude = ['head', 'clerk', 'added']
+
+
+class SessionSeializer(ModelSerializer):
+    session_code = serializers.SerializerMethodField()
+    class Meta:
+        model = Session
+        fields = ['id', 'session_code']
+    def get_session_code(self, obj):
+        return obj.session_code
+
 
 class PendingClearanceSerializer(ModelSerializer):
     student = StudentAccountSerializer()

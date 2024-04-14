@@ -171,6 +171,7 @@ def assign_member(request):
         return Response({'details': 'No action to perform'}, status=status.HTTP_400_BAD_REQUEST)
     return Response({'info': 'Member Assigned'})
 
+
 @api_view(['POST'])
 def unassign_member(request):
     try:
@@ -185,3 +186,8 @@ def unassign_member(request):
     except Exception as e:
         return Response({'details': f"Error: {e}"}, status=status.HTTP_400_BAD_REQUEST)
     return Response({'info': 'Member Removed'})
+
+
+@api_view()
+def dept_sessions(request):
+    return Response(utils.get_dept_sessions())
