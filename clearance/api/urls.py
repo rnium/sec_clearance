@@ -2,7 +2,7 @@ from django.urls import path
 from clearance.api import views
 urlpatterns = [
     path('departments/', views.DeparmentList.as_view(), name='departments'),
-    path('departments/entities/', views.dept_entities, name='dept_entities'),
+    path('departments/sections/', views.dept_sections, name='dept_sections'),
     path('userinfo/', views.get_userinfo, name='userinfo'),
     path('apply/', views.apply_for_clearance, name='apply_for_clearance'),
     path('dashboard-clearances/', views.dashboard_clearance_requests, name='dashboard_clearance_requests'),

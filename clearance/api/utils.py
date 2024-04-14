@@ -165,7 +165,7 @@ def get_administration_dept_data():
         data['entities'].append(get_entity_data('Cashier', 'administrative', 'cashier'))
     return data
 
-def get_dept_entities():
+def get_dept_sections():
     departments = []
     departments.append(get_administration_dept_data())
     dept_qs = Department.objects.all()

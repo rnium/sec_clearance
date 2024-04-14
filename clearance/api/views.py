@@ -9,7 +9,7 @@ from accounts.models import StudentAccount, AdminAccount
 from clearance.models import Department
 from clearance.api.utils import (create_clearance_entities, get_administrative_clearance_requests, 
                                  get_dept_head_clearance_requests, get_dept_clerk_clearance_requests, 
-                                 get_lab_incharge_clearance_requests, get_dept_entities)
+                                 get_lab_incharge_clearance_requests, get_dept_sections)
 from clearance.apps import get_model_by_name
 from clearance.api.serializer import (AdministrativeApprovalSerializer, DeptApprovalSerializer, 
                                       ClerkApprovalSerializer, LabApprovalSerializer, DepartmentSeializer)
@@ -138,5 +138,5 @@ def section_clearance(request):
     return response
 
 @api_view()
-def dept_entities(request):
-    return Response(get_dept_entities())
+def dept_sections(request):
+    return Response(get_dept_sections())
