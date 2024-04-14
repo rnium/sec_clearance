@@ -16,7 +16,8 @@ from clearance.models import Session, Department
 from django.contrib.auth.models import User
 from django.db.models import Q
 from clearance.utils import get_admin_roles
-from accounts.utils import compress_image, get_userinfo_data, get_members_data, send_html_email
+from accounts.utils import compress_image, get_userinfo_data, get_members_data
+from accounts.mail_utils import send_signup_email
 from accounts.models import AdminAccount, InviteToken
 from django.utils import timezone
 from django.http import HttpResponse
@@ -189,6 +190,7 @@ def members(request):
 
 @api_view(['POST'])
 def send_invitation(request):
+    from_user = User.objects.get(username='rony')
     try:
         to_user_email = request.data['email']
         dept_id = request.data['dept']
@@ -203,14 +205,14 @@ def send_invitation(request):
     
     expiration = timezone.now() + timedelta(days=7)
     invite_token = InviteToken(
-        from_user = request.user,
+        from_user = from_user,
         user_email = to_user_email,
         to_user_dept_id = dept_id,
         expiration = expiration,
     )
     invite_token.save()
-    try:
-        utils.send_signup_email(request, invite_token)
-    except Exception as e:
-        return Response(data={'details': str(e)}, status=status.HTTP_502_BAD_GATEWAY)
-    return Response({'info': 'Invitation Email Sent'})
+    success = send_signup_email(request, invite_token)
+    if not success:
+        invite_token.delete()
+        return Response({'details': 'Cannot Send Email'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+    return Response({'info': 'Invitation Sent'})
