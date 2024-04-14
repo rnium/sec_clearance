@@ -33,6 +33,25 @@ class AdminAccountSerializer(ModelSerializer):
             r['code'] = ' '.join([fragment.upper() for fragment in r['code'].split('_')])
         return the_roles
 
+
+class AdminAccountBasicSerializer(ModelSerializer):
+    name = serializers.SerializerMethodField()
+    email = serializers.SerializerMethodField()
+    avatar_url = serializers.SerializerMethodField()
+    class Meta:
+        model = models.AdminAccount
+        exclude = ['user', 'is_super_admin', 'invited_by', 'dept', 'profile_picture']
+    
+    def get_name(self, obj):
+        return obj.full_name
+    
+    def get_email(self, obj):
+        return obj.user.email
+    
+    def get_avatar_url(self, obj):
+        return obj.avatar_url
+
+
 class StudentAccountSerializer(ModelSerializer):
     session = serializers.StringRelatedField()
     name = serializers.SerializerMethodField()

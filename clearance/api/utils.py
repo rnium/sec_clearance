@@ -1,6 +1,9 @@
 from clearance.api.serializer import AdministrativeApprovalSerializer, DeptApprovalSerializer, ClerkApprovalSerializer, LabApprovalSerializer
 from clearance.models import (Department, Lab, Clearance, 
                               AdministrativeApproval, DeptApproval, LabApproval, ClerkApproval)
+from accounts.models import administrative_account_types
+from accounts.models import AdminAccount
+from accounts.serializer import AdminAccountBasicSerializer
 
 def create_clearance_entities(student):
     clearance, created = Clearance.objects.get_or_create(student=student)
@@ -125,3 +128,57 @@ def get_lab_incharge_clearance_requests(admin_ac, limit=None, approved=False, ar
                 }
             )
     return approvals
+
+
+def get_entity_data(title, entity_type, code, admin_ac=None):
+    data = {
+        'title': title,
+        'type': entity_type,
+        'code': code,
+        'incharge-user': None
+    }
+    if admin_ac:
+        serializer = AdminAccountBasicSerializer(admin_ac)
+        data['incharge-user'] = serializer.data
+    return data
+        
+
+def get_administration_dept_data():
+    data = {
+        'title': "Administration",
+        'entities': []
+    }
+    principal = AdminAccount.objects.filter(user_type='principal').first()
+    academic = AdminAccount.objects.filter(user_type='academic').first()
+    cashier = AdminAccount.objects.filter(user_type='cashier').first()
+    if principal:
+        data['entities'].append(get_entity_data(principal.get_user_type_display(), 'administrative', 'principal', principal))
+    else:
+        data['entities'].append(get_entity_data('Principal', 'administrative', 'principal'))
+    if academic:
+        data['entities'].append(get_entity_data(academic.get_user_type_display(), 'administrative', 'academic', academic))
+    else:
+        data['entities'].append(get_entity_data('SEC Academic', 'administrative', 'academic'))
+    if cashier:
+        data['entities'].append(get_entity_data(cashier.get_user_type_display(), 'administrative', 'cashier', cashier))
+    else:
+        data['entities'].append(get_entity_data('Cashier', 'administrative', 'cashier'))
+    return data
+
+def get_dept_entities():
+    departments = []
+    departments.append(get_administration_dept_data())
+    dept_qs = Department.objects.all()
+    for dept in dept_qs:
+        data = {
+            'title': dept.display_name,
+            'entities': []
+        }
+        data['entities'].append(get_entity_data(f'Head', 'dept_head', dept.codename, dept.head))
+        if dept.dept_type == 'administrative':
+            data['entities'].append(get_entity_data(f'Clerk', 'dept_clerk', dept.codename, dept.clerk))
+        elif dept.dept_type in ['academic', 'accessory']:
+            for lab in dept.lab_set.all():
+                data['entities'].append(get_entity_data(lab.name, 'lab_incharge', lab.codename, lab.incharge))
+        departments.append(data)
+    return departments

@@ -15,6 +15,8 @@ account_types = (
     ('general', 'General Admin User'),
 )
 
+administrative_account_types = [[utype][0] for utype in account_types]
+
 class InviteToken(models.Model):
     def get_uuid():
         return uuid.uuid4().hex
