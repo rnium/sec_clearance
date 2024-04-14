@@ -10,6 +10,7 @@ from clearance.models import Department, Lab
 from clearance.api.utils import (create_clearance_entities, get_administrative_clearance_requests, 
                                  get_dept_head_clearance_requests, get_dept_clerk_clearance_requests, 
                                  get_lab_incharge_clearance_requests, get_dept_sections)
+from clearance.api import utils
 from clearance.apps import get_model_by_name
 from clearance.api.serializer import (AdministrativeApprovalSerializer, DeptApprovalSerializer, 
                                       ClerkApprovalSerializer, LabApprovalSerializer, DepartmentSeializer)
@@ -169,3 +170,18 @@ def assign_member(request):
     else:
         return Response({'details': 'No action to perform'}, status=status.HTTP_400_BAD_REQUEST)
     return Response({'info': 'Member Assigned'})
+
+@api_view(['POST'])
+def unassign_member(request):
+    try:
+        role = request.data['role']
+        code = request.data['code']
+        user_id = request.data['user_id']
+    except Exception as e:
+        return Response({'details': 'Data missing'}, status=status.HTTP_400_BAD_REQUEST)
+    target_user = get_object_or_404(AdminAccount, pk=user_id)
+    try:
+        utils.unassign_member(target_user, role, code)
+    except Exception as e:
+        return Response({'details': f"Error: {e}"}, status=status.HTTP_400_BAD_REQUEST)
+    return Response({'info': 'Member Removed'})

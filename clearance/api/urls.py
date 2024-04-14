@@ -11,4 +11,5 @@ urlpatterns = [
     path('archive/<str:modelname>/<int:pk>/', views.archive_clearance_entity, name='archive_clearance_entity'),
     path('unarchive/<str:modelname>/<int:pk>/', views.unarchive_clearance_entity, name='unarchive_clearance_entity'),
     path('assignmember/', views.assign_member, name='assign_member'),
+    path('unassign-member/', views.unassign_member, name='unassign_member'),
 ]

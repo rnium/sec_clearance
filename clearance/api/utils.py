@@ -4,6 +4,8 @@ from clearance.models import (Department, Lab, Clearance,
 from accounts.models import administrative_account_types
 from accounts.models import AdminAccount
 from accounts.serializer import AdminAccountBasicSerializer
+from django.shortcuts import get_object_or_404
+from django.core.exceptions import ValidationError
 
 def create_clearance_entities(student):
     clearance, created = Clearance.objects.get_or_create(student=student)
@@ -182,3 +184,29 @@ def get_dept_sections():
                 data['entities'].append(get_entity_data(lab.name, 'lab_incharge', lab.codename, lab.incharge))
         departments.append(data)
     return departments
+
+def unassign_member(target_user, role, code):
+    if role == 'administrative':
+        if target_user.user_type != code:
+            raise ValidationError('User was not assigned')
+        target_user.user_type = 'general'
+        target_user.save()
+    elif role in ['dept_head', 'dept_clerk']:
+        dept = get_object_or_404(Department, codename=code)
+        if role == 'dept_head':
+            if target_user != dept.head:
+                raise ValidationError('User is not the department head')
+            dept.head = None
+        elif role == 'dept_clerk' and dept.dept_type == 'administrative':
+            if target_user != dept.clerk:
+                raise ValidationError('User is not the department clerk')
+            dept.clerk = None
+        dept.save()
+    elif role == 'lab_incharge':
+        lab = get_object_or_404(Lab, codename=code)
+        if target_user != lab.incharge:
+                raise ValidationError('User is not in charge of the lab')
+        lab.incharge = None
+        lab.save()
+    else:
+        raise ValidationError('No actions to be performed!')
