@@ -9,7 +9,7 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth import update_session_auth_hash
 from django.urls import reverse
 from django.shortcuts import get_object_or_404
-from accounts.serializer import (StudentAccountSerializer, 
+from accounts.serializer import (StudentAccountSerializer, AdminAccountBasicSerializer, 
                                  PendingStudentSerializer, ProgressiveStudentInfoSerializer)
 from accounts.models import StudentAccount
 from clearance.models import Session, Department
@@ -21,6 +21,7 @@ from accounts.mail_utils import send_signup_email
 from accounts.models import AdminAccount, InviteToken
 from django.utils import timezone
 from django.http import HttpResponse
+from django.db.models import Q
 from datetime import timedelta
 
 def signup_admin_get(request):
@@ -216,3 +217,17 @@ def send_invitation(request):
         invite_token.delete()
         return Response({'details': 'Cannot Send Email'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
     return Response({'info': 'Invitation Sent'})
+
+@api_view()
+def search_member(request):
+    query = request.GET.get('query', None)
+    if query is None:
+        return Response({'details': 'Empty query!'}, status=status.HTTP_400_BAD_REQUEST)
+    members = AdminAccount.objects.filter(
+        Q(user__first_name__startswith=query) |
+        Q(user__last_name__startswith=query) |
+        Q(user__email__startswith=query)
+    )
+    serializer = AdminAccountBasicSerializer(members, many=True)
+    return Response(serializer.data)
+    

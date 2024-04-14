@@ -15,5 +15,6 @@ urlpatterns = [
     path('admin-roles/', views.admin_roles, name='admin_roles'),
     path('members/', views.members, name='members'),
     path('members/sendinvite/', views.send_invitation, name='send_invitation'),
+    path('members/search/', views.search_member, name='search_member'),
 
 ]

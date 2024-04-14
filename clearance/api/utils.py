@@ -135,11 +135,11 @@ def get_entity_data(title, entity_type, code, admin_ac=None):
         'title': title,
         'type': entity_type,
         'code': code,
-        'incharge-user': None
+        'incharge_user': None
     }
     if admin_ac:
         serializer = AdminAccountBasicSerializer(admin_ac)
-        data['incharge-user'] = serializer.data
+        data['incharge_user'] = serializer.data
     return data
         
 
