@@ -6,7 +6,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from accounts.utils import get_userinfo_data
 from accounts.models import StudentAccount, AdminAccount
-from clearance.models import Department
+from clearance.models import Department, Lab
 from clearance.api.utils import (create_clearance_entities, get_administrative_clearance_requests, 
                                  get_dept_head_clearance_requests, get_dept_clerk_clearance_requests, 
                                  get_lab_incharge_clearance_requests, get_dept_sections)
@@ -140,3 +140,32 @@ def section_clearance(request):
 @api_view()
 def dept_sections(request):
     return Response(get_dept_sections())
+
+@api_view(['POST'])
+def assign_member(request):
+    try:
+        role = request.data['role']
+        code = request.data['code']
+        user_id = request.data['user_id']
+    except Exception as e:
+        return Response({'details': 'Data missing'}, status=status.HTTP_400_BAD_REQUEST)
+    target_user = get_object_or_404(AdminAccount, pk=user_id)
+    if role == 'administrative':
+        admins_qs = AdminAccount.objects.filter(user_type=code)
+        admins_qs.update(user_type='general')
+        target_user.user_type = code
+        target_user.save()
+    elif role in ['dept_head', 'dept_clerk']:
+        dept = get_object_or_404(Department, codename=code)
+        if role == 'dept_head':
+            dept.head = target_user
+        elif role == 'dept_clerk' and dept.dept_type == 'administrative':
+            dept.clerk = target_user
+        dept.save()
+    elif role == 'lab_incharge':
+        lab = get_object_or_404(Lab, codename=code)
+        lab.incharge = target_user
+        lab.save()
+    else:
+        return Response({'details': 'No action to perform'}, status=status.HTTP_400_BAD_REQUEST)
+    return Response({'info': 'Member Assigned'})

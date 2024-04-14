@@ -228,6 +228,6 @@ def search_member(request):
         Q(user__last_name__startswith=query) |
         Q(user__email__startswith=query)
     )
-    serializer = AdminAccountBasicSerializer(members, many=True)
+    serializer = AdminAccountBasicSerializer(members[:3], many=True)
     return Response(serializer.data)
     
