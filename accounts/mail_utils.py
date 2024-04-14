@@ -7,7 +7,7 @@ from django.conf import settings
 from sib_api_v3_sdk import SendSmtpEmail, SendSmtpEmailSender, SendSmtpEmailTo
 
 
-brevo_from_user = settings.BROVO_FROM_EMAIL
+brevo_from_user = settings.BREVO_FROM_EMAIL
 brevo_api_key = settings.BREVO_API_KEY_1
 
 configuration = sib_api_v3_sdk.Configuration()

@@ -8,7 +8,7 @@ environ.Env.read_env()
 
 SECRET_KEY = env('SECRET_KEY')
 BREVO_API_KEY_1 = env('BREVO_API_KEY_1')
-BROVO_FROM_EMAIL = env('BROVO_FROM_EMAIL')
+BREVO_FROM_EMAIL = env('BREVO_FROM_EMAIL')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
