@@ -32,6 +32,8 @@ def get_administrative_clearance_requests(admin_ac, limit=None, approved=False, 
     if (admin_ac.user_type not in [utype[0] for utype in AdministrativeApproval._meta.get_field('admin_role').choices]):
         return approvals
     approvals_qs = AdministrativeApproval.objects.filter(admin_role=admin_ac.user_type, is_approved=approved, is_archived=archived)
+    if approved:
+        approvals_qs = approvals_qs.order_by('-approved_at')
     count = 0
     for app_req in approvals_qs:
         count += 1
@@ -62,6 +64,8 @@ def get_dept_head_clearance_requests(admin_ac, limit=None, approved=False, archi
         departments = Department.objects.all()
     for dept in departments:
         dept_approval_qs = approvals_qs.filter(dept=dept)
+        if approved:
+            dept_approval_qs = dept_approval_qs.order_by('-approved_at')
         seekable_approvals = []
         for approval in dept_approval_qs:
             if approval.approval_seekable:
@@ -91,6 +95,8 @@ def get_dept_clerk_clearance_requests(admin_ac, limit=None, approved=False, arch
         departments = Department.objects.all()
     for dept in departments:
         clerk_approval_qs = approvals_qs.filter(dept_approval__dept=dept)
+        if approved:
+            clerk_approval_qs = clerk_approval_qs.order_by('-approved_at')
         if type(limit) == int:
             clerk_approval_qs = clerk_approval_qs[:limit]
         if clerk_approval_qs.count():
@@ -117,6 +123,8 @@ def get_lab_incharge_clearance_requests(admin_ac, limit=None, approved=False, ar
         all_labs = Lab.objects.all()
     for lab in all_labs:
         lab_approval_qs = approvals_qs.filter(lab=lab)
+        if approved:
+            lab_approval_qs = lab_approval_qs.order_by('-approved_at')
         if type(limit) == int:
             lab_approval_qs = lab_approval_qs[:limit]
         if lab_approval_qs.count():

@@ -116,8 +116,8 @@ def unarchive_clearance_entity(request, modelname, pk):
 def section_clearance(request):
     admin_ac = AdminAccount.objects.filter(user__username='rony').first()
     role_type = request.GET.get('type')
-    approved = bool(request.GET.get('approved', False))
-    archived = bool(request.GET.get('archived', False))
+    approved = request.GET.get('approved', 'false') == 'true'
+    archived = request.GET.get('archived', 'false') == 'true'
     code = request.GET.get('code', None)
     try:
         Serializer_class = serializer_mapping[role_type]
