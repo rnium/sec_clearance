@@ -5,6 +5,7 @@ urlpatterns = [
     path('departments/sections/', views.dept_sections, name='dept_sections'),
     path('departments/sessions/', views.dept_sessions, name='dept_sessions'),
     path('sessions/students/', views.session_students, name='session_students'),
+    path('sessions/add/', views.add_session, name='add_session'),
     path('userinfo/', views.get_userinfo, name='userinfo'),
     path('apply/', views.apply_for_clearance, name='apply_for_clearance'),
     path('dashboard-clearances/', views.dashboard_clearance_requests, name='dashboard_clearance_requests'),

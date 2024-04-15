@@ -200,3 +200,11 @@ def session_students(request):
     students_qs = session.studentaccount_set.all()
     serializer = StudentProfileSerializer(students_qs, many=True)
     return Response(serializer.data)
+
+@api_view(['POST'])
+def add_session(request):
+    try:
+        utils.create_session(request.data)
+    except Exception as e:
+        return Response({'details': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    return Response({'info': 'Session Created'})

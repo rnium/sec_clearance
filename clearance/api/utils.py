@@ -1,7 +1,7 @@
 from clearance.api.serializer import (AdministrativeApprovalSerializer, DeptApprovalSerializer, 
                                       ClerkApprovalSerializer, LabApprovalSerializer,
                                       SessionSeializer)
-from clearance.models import (Department, Lab, Clearance, 
+from clearance.models import (Department, Lab, Session, Clearance, 
                               AdministrativeApproval, DeptApproval, LabApproval, ClerkApproval)
 from accounts.models import administrative_account_types
 from accounts.models import AdminAccount
@@ -219,3 +219,17 @@ def get_dept_sessions():
         serializer = SessionSeializer(dept.session_set.all(), many=True)
         data[dept.codename] = serializer.data
     return data
+
+def create_session(data):
+    try:
+        dept_code = data['dept']
+        from_y = data['from_year']
+        to_y = data['to_year']
+        batch_no = data['batch_no']
+    except KeyError:
+        raise ValidationError("Required data missing")
+    if from_y > to_y:
+        raise ValidationError("'From year' must be less than 'To year'")
+    dept = get_object_or_404(Department, codename=dept_code, dept_type='academic')
+    session = Session.objects.create(dept=dept, from_year=from_y, to_year=to_y, batch_no=batch_no)
+    return session
