@@ -241,3 +241,25 @@ def create_session(data):
     dept = get_object_or_404(Department, codename=dept_code, dept_type='academic')
     session = Session.objects.create(dept=dept, from_year=from_y, to_year=to_y, batch_no=batch_no)
     return session
+
+def get_approval_title(obj, approval_type):
+    if approval_type == 'administrative':
+        return obj.get_admin_role_display()
+    elif approval_type == 'dept_head':
+        return f"Head of {obj.dept.display_name}"
+    elif approval_type == 'dept_clerk':
+        return f"Clerk of {obj.dept_approval.dept.display_name}"
+    elif approval_type == 'lab_incharge':
+        return obj.lab.name
+
+def post_or_get_remarks_data(model, pk, approval_type, new_remarks=None):
+    app_req = get_object_or_404(model, pk=pk)
+    if new_remarks:
+        app_req.remarks = new_remarks
+        app_req.save()
+    return {
+        'registration': app_req.clearance.student.registration,
+        'title': get_approval_title(app_req, approval_type),
+        'remarks_text': app_req.remarks,
+    } 
+    

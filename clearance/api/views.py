@@ -26,7 +26,7 @@ serializer_mapping = {
     'lab_incharge': LabApprovalSerializer,
 }
 
-model_mapping = {
+modelname_mapping = {
     'administrative': 'administrativeapproval',
     'dept_head': 'deptapproval',
     'dept_clerk': 'clerkapproval',
@@ -120,9 +120,7 @@ def section_clearance(request):
     archived = request.GET.get('archived', 'false') == 'true'
     code = request.GET.get('code', None)
     try:
-        Serializer_class = serializer_mapping[role_type]
-        # The_model = get_model_by_name(model_mapping[role_type])
-        
+        Serializer_class = serializer_mapping[role_type]        
         section_getter = section_getter_mapping[role_type]
     except Exception as e:
         print(e)
@@ -208,3 +206,23 @@ def add_session(request):
     except Exception as e:
         return Response({'details': str(e)}, status=status.HTTP_400_BAD_REQUEST)
     return Response({'info': 'Session Created'})
+
+@api_view(['GET', 'POST'])
+def remarks(request):
+    if request.method == 'GET':
+        query_dict = request.GET
+    elif request.method == 'POST':
+        query_dict = request.data
+    try:
+        approval_type = query_dict['type']
+        approval_id = query_dict['id']
+        model = get_model_by_name(modelname_mapping[approval_type])
+        data = utils.post_or_get_remarks_data(
+            model, 
+            approval_id,
+            approval_type,
+            query_dict.get('remarks_text')
+        )
+    except Exception as e:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+    return Response(data)

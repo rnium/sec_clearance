@@ -92,6 +92,7 @@ class BaseApproval(models.Model):
     is_archived = models.BooleanField(default=False)
     approved_by = models.ForeignKey('accounts.AdminAccount', null=True, blank=True, on_delete=models.SET_NULL)
     approved_at = models.DateTimeField(null=True, blank=True)
+    remarks = models.TextField(null=True, blank=True)
     
     class Meta:
         abstract = True
@@ -108,7 +109,7 @@ class AdministrativeApproval(BaseApproval):
         ('cashier', 'Cashier'),
     )
     admin_role = models.CharField(choices=administrative_roles, max_length=50)
-    remarks = models.TextField(null=True, blank=True)
+    
     class Meta:
         ordering = ['clearance__added_at']
         constraints = [
@@ -135,7 +136,7 @@ class AdministrativeApproval(BaseApproval):
 
 class DeptApproval(BaseApproval):
     dept = models.ForeignKey(Department, on_delete=models.CASCADE)
-    remarks = models.TextField(null=True, blank=True)
+    
     
     class Meta:
         ordering = ['clearance__added_at']
@@ -158,7 +159,7 @@ class DeptApproval(BaseApproval):
 class ClerkApproval(BaseApproval):
     dept_approval = models.ForeignKey(DeptApproval, on_delete=models.CASCADE)
     owed = models.IntegerField(default=0)
-    remarks = models.TextField(null=True, blank=True)
+    
     
     class Meta:
         ordering = ['clearance__added_at']
@@ -174,7 +175,7 @@ class LabApproval(BaseApproval):
     lab = models.ForeignKey(Lab, on_delete=models.CASCADE)
     dept_approval = models.ForeignKey(DeptApproval, on_delete=models.CASCADE)
     owed = models.IntegerField(default=0)
-    remarks = models.TextField(null=True, blank=True)
+    
     
     class Meta:
         ordering = ['clearance__added_at']
