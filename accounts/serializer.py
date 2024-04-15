@@ -63,6 +63,27 @@ class StudentAccountSerializer(ModelSerializer):
         return obj.full_name
 
 
+class StudentProfileSerializer(ModelSerializer):
+    session = serializers.StringRelatedField()
+    name = serializers.SerializerMethodField()
+    progress = serializers.SerializerMethodField()
+    avatar_url = serializers.SerializerMethodField()
+    class Meta:
+        model = models.StudentAccount
+        exclude = ['user', 'profile_picture']
+        
+    def get_name(self, obj):
+        return obj.full_name
+        
+    def get_progress(self, obj):
+        if hasattr(obj, 'clearance'):
+            return obj.clearance.progress
+        return 0
+
+    def get_avatar_url(self, obj):
+        return obj.avatar_url
+
+
 class PendingStudentSerializer(ModelSerializer):
     session = serializers.StringRelatedField()
     name = serializers.SerializerMethodField()

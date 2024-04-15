@@ -6,7 +6,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from accounts.utils import get_userinfo_data
 from accounts.models import StudentAccount, AdminAccount
-from clearance.models import Department, Lab
+from accounts.serializer import StudentProfileSerializer
+from clearance.models import Department, Lab, Session
 from clearance.api.utils import (create_clearance_entities, get_administrative_clearance_requests, 
                                  get_dept_head_clearance_requests, get_dept_clerk_clearance_requests, 
                                  get_lab_incharge_clearance_requests, get_dept_sections)
@@ -191,3 +192,11 @@ def unassign_member(request):
 @api_view()
 def dept_sessions(request):
     return Response(utils.get_dept_sessions())
+
+@api_view()
+def session_students(request):
+    session_id = request.GET.get('sessionid')
+    session = get_object_or_404(Session, pk=session_id)
+    students_qs = session.studentaccount_set.all()
+    serializer = StudentProfileSerializer(students_qs, many=True)
+    return Response(serializer.data)
