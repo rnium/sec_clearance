@@ -106,7 +106,7 @@ def get_dept_clerk_clearance_requests(admin_ac, limit=None, approved=False, arch
                 clerk_approvals = serializer.data
             approvals.append(
                 {
-                    'type': 'dept_head',
+                    'type': 'dept_clerk',
                     'title': dept.name,
                     'approvals': clerk_approvals
                 }
@@ -134,7 +134,7 @@ def get_lab_incharge_clearance_requests(admin_ac, limit=None, approved=False, ar
                 lab_approvals = serializer.data
             approvals.append(
                 {
-                    'type': 'dept_lab',
+                    'type': 'lab_incharge',
                     'title': str(lab),
                     'approvals': lab_approvals
                 }
