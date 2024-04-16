@@ -28,6 +28,55 @@ from datetime import timedelta
 def signup_admin_get(request):
     return HttpResponse("hi")
 
+@api_view()
+def validate_token(request):
+    tokenid = request.data.get('tokenid')
+    token = InviteToken.objects.filter(pk=tokenid).first()
+    if not token or not token.is_valid():
+        return Response({'details':'Invalid Token'}, status=status.HTTP_400_BAD_REQUEST)
+    return Response({'info':'Valid Token'})
+ 
+@api_view(['POST'])
+def admin_signup(request):
+    tokenid = request.data.get('tokenid')
+    token = InviteToken.objects.filter(pk=tokenid).first()
+    if not token or not token.is_valid():
+        return Response({'details':'Invalid Token'}, status=status.HTTP_400_BAD_REQUEST)
+    email = token.user_email
+    user_queryset = User.objects.filter(Q(email=email) | Q(username=email))
+    if len(user_queryset) > 0:
+        return Response({'details':'Email already used'}, status=status.HTTP_400_BAD_REQUEST)
+    try:
+        compressed_dp = compress_image(request.data.get('profilePhoto'))
+    except Exception as e:
+        return Response({'details':f'Cannot process image. Error: {e}'}, status=status.HTTP_400_BAD_REQUEST)
+    # login(request, user=user)
+    user = User(
+        username = email,
+        email = email,
+        first_name = request.data.get('first_name'),
+        last_name = request.data.get('last_name'),
+    )
+    try:
+        user.set_password(request.data.get('password'))
+        user.save()
+    except Exception as e:
+        return Response({'details':f'Cannot create user. Error: {e}'}, status=status.HTTP_400_BAD_REQUEST)
+    account_kwargs = {}
+    account_kwargs['user'] = user
+    account_kwargs['dept'] = Department.objects.filter(id=token.to_user_dept_id).first()
+    account_kwargs['invited_by'] = token.from_user
+    account_kwargs['profile_picture'] = compressed_dp
+    try:
+        admin_ac = AdminAccount(**account_kwargs)
+        admin_ac.save()
+    except Exception as e:
+        user.delete()
+        return Response({'details':f'Cannot create account. Error: {e}'}, status=status.HTTP_400_BAD_REQUEST)
+    return Response(data={'info': 'Account Created Successfully'})
+
+
+
 @api_view(['POST'])
 def api_login(request):
     user = authenticate(

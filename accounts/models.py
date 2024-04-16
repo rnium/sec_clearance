@@ -32,6 +32,9 @@ class InviteToken(models.Model):
     user_email = models.EmailField()
     actype = models.CharField(max_length=10, null=True, blank=True)
     expiration = models.DateTimeField()
+    
+    def is_valid(self):
+        return self.expiration <= timezone.now()
 
 
 class BaseAccount(models.Model):
