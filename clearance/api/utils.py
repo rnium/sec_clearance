@@ -255,6 +255,8 @@ def get_approval_title(obj, approval_type):
 def post_or_get_remarks_data(model, pk, approval_type, new_remarks=None):
     app_req = get_object_or_404(model, pk=pk)
     if new_remarks:
+        if app_req.is_approved:
+            raise ValidationError("Cannot post in an apprroved clearance request")
         app_req.remarks = new_remarks
         app_req.save()
     return {
