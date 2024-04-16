@@ -223,7 +223,7 @@ def student_signup(request):
 
 @api_view(['POST'])
 def student_profile_update(request):
-    student = StudentAccount.objects.get(registration=2018338502)
+    student = request.user.studentaccount
     email = request.data.get('email')
     if email:
         user_queryset = User.objects.filter(Q(email=email) | Q(username=email)).exclude(email=student.user.email)
@@ -271,7 +271,7 @@ def student_profile_update(request):
 
 @api_view()
 def progressive_studentinfo(request):
-    student = StudentAccount.objects.get(registration=2018338502)
+    student = request.user.studentaccount
     serializer = ProgressiveStudentInfoSerializer(student)
     return Response(data={'info': serializer.data})
 
