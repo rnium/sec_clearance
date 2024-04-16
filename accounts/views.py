@@ -25,8 +25,6 @@ from django.http import HttpResponse
 from django.db.models import Q
 from datetime import timedelta
 
-def signup_admin_get(request):
-    return HttpResponse("hi")
 
 @api_view()
 def validate_token(request):

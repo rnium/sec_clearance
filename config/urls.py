@@ -11,6 +11,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('clearance/', include('clearance.urls')),
     path('account/', include('accounts.urls')),
+    re_path(rf'member-signup/', TemplateView.as_view(template_name='main_site/index.html'), name='signupadmin')
 ]
 
 if settings.DEBUG:

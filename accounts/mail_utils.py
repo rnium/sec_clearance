@@ -33,8 +33,8 @@ def send_html_email(receiver_email, subject, body):
 def send_signup_email(request, invitation):
     email_subject = "Signup Invitation"
     receiver = invitation.user_email
-    app_admin_signup = request.build_absolute_uri(reverse("accounts:signupadmin"))
-    url_params = {"token":invitation.id}
+    app_admin_signup = request.build_absolute_uri(reverse("signupadmin"))
+    url_params = {"tokenid":invitation.id}
     signup_url = f"{app_admin_signup}?{urlencode(url_params)}"
     email_body = render_to_string('accounts/invitation.html', context={
         "signup_url": signup_url,

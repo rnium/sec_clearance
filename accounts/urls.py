@@ -6,7 +6,6 @@ app_name = 'accounts'
 urlpatterns = [
     path('validate-token/', views.validate_token, name='validate_token'),
     path('validate-token/', views.validate_token, name='validate_token'),
-    path('signupadmin/', views.signup_admin_get, name='signupadmin'),
     path('api/login/', views.api_login, name='api_login'),
     path('api/logout/', views.api_logout, name='api_logout'),
     path('api/admin/signup/', views.admin_signup, name='admin_signup'),
