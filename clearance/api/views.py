@@ -150,7 +150,10 @@ def assign_member(request):
     except Exception as e:
         return Response({'details': 'Data missing'}, status=status.HTTP_400_BAD_REQUEST)
     target_user = get_object_or_404(AdminAccount, pk=user_id)
+    
     if role == 'administrative':
+        if request.user.adminaccount == target_user:
+            return Response({'details': 'Unable to perform this action'}, status=status.HTTP_400_BAD_REQUEST)
         admins_qs = AdminAccount.objects.filter(user_type=code)
         admins_qs.update(user_type='general')
         target_user.user_type = code
