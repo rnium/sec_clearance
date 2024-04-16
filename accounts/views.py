@@ -30,7 +30,7 @@ def signup_admin_get(request):
 
 @api_view()
 def validate_token(request):
-    tokenid = request.data.get('tokenid')
+    tokenid = request.GET.get('tokenid')
     token = InviteToken.objects.filter(pk=tokenid).first()
     if not token or not token.is_valid():
         return Response({'details':'Invalid Token'}, status=status.HTTP_400_BAD_REQUEST)

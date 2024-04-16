@@ -34,7 +34,7 @@ class InviteToken(models.Model):
     expiration = models.DateTimeField()
     
     def is_valid(self):
-        return self.expiration <= timezone.now()
+        return self.expiration >= timezone.now()
 
 
 class BaseAccount(models.Model):
