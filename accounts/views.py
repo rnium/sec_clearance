@@ -4,7 +4,7 @@ from rest_framework.generics import ListAPIView, RetrieveAPIView, DestroyAPIView
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth import update_session_auth_hash
 from django.urls import reverse
@@ -90,6 +90,11 @@ def api_login(request):
     else:
         return Response({'details': 'Invalid Credentials'}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
+
+@api_view(['POST'])
+def api_logout(request):
+    logout(request)
+    return Response({'info': 'Logged Out'})
 
 class PendingStudents(ListAPIView):
     serializer_class = PendingStudentSerializer
