@@ -73,6 +73,7 @@ def admin_signup(request):
     except Exception as e:
         user.delete()
         return Response({'details':f'Cannot create account. Error: {e}'}, status=status.HTTP_400_BAD_REQUEST)
+    token.delete()
     return Response(data={'info': 'Account Created Successfully'})
 
 
