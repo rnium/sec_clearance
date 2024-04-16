@@ -103,7 +103,7 @@ class PendingStudents(ListAPIView):
 
 @api_view(['POST'])
 def admin_profile_update(request):
-    admin_ac = AdminAccount.objects.filter(user__username='rony').first()
+    admin_ac = request.user.adminaccount
     email = request.data.get('email')
     if email:
         user_queryset = User.objects.filter(Q(email=email) | Q(username=email)).exclude(email=admin_ac.user.email)
@@ -281,7 +281,7 @@ def progressive_studentinfo(request):
 
 @api_view()
 def admin_roles(request):
-    admin_ac = AdminAccount.objects.filter(user__username='rony').first()
+    admin_ac = request.user.adminaccount
     return Response(data={'info': get_admin_roles(admin_ac)})
 
 
@@ -293,7 +293,7 @@ def members(request):
 
 @api_view(['POST'])
 def send_invitation(request):
-    from_user = User.objects.get(username='rony')
+    from_user = request.user
     try:
         to_user_email = request.data['email']
         dept_id = request.data['dept']

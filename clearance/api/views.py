@@ -63,7 +63,7 @@ def apply_for_clearance(request):
 
 @api_view()
 def dashboard_clearance_requests(request):
-    admin_ac = AdminAccount.objects.filter(user__username='rony').first()
+    admin_ac = request.user.adminaccount
     sections = []
     sections.extend(get_administrative_clearance_requests(admin_ac, 5))
     sections.extend(get_dept_head_clearance_requests(admin_ac, 5))
@@ -74,7 +74,7 @@ def dashboard_clearance_requests(request):
 
 @api_view()
 def approve_clearance_entity(request, modelname, pk):
-    admin_ac = AdminAccount.objects.filter(user__username='rony').first()
+    admin_ac = request.user.adminaccount
     the_model = get_model_by_name(modelname)
     if the_model is None:
         return Response({'details': 'Unknown action'}, status=status.HTTP_406_NOT_ACCEPTABLE)
@@ -114,7 +114,7 @@ def unarchive_clearance_entity(request, modelname, pk):
 
 @api_view()
 def section_clearance(request):
-    admin_ac = AdminAccount.objects.filter(user__username='rony').first()
+    admin_ac = request.user.adminaccount
     role_type = request.GET.get('type')
     approved = request.GET.get('approved', 'false') == 'true'
     archived = request.GET.get('archived', 'false') == 'true'
