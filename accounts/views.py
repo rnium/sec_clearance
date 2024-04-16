@@ -17,6 +17,7 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from clearance.utils import get_admin_roles
 from accounts.utils import compress_image, get_userinfo_data, get_members_data
+from accounts import utils
 from accounts.mail_utils import send_signup_email
 from accounts.models import AdminAccount, InviteToken
 from django.utils import timezone
@@ -43,6 +44,52 @@ def api_login(request):
 class PendingStudents(ListAPIView):
     serializer_class = PendingStudentSerializer
     queryset = StudentAccount.objects.filter(is_approved=False).order_by('user__date_joined')
+
+
+@api_view(['POST'])
+def admin_profile_update(request):
+    admin_ac = AdminAccount.objects.filter(user__username='rony').first()
+    email = request.data.get('email')
+    if email:
+        user_queryset = User.objects.filter(Q(email=email) | Q(username=email)).exclude(email=admin_ac.user.email)
+        if len(user_queryset) > 0:
+            return Response({'details':'Email already used'}, status=status.HTTP_400_BAD_REQUEST)
+    display_pic = request.data.get('profilePhoto')
+    if display_pic:
+        try:
+            display_pic = compress_image(display_pic)
+        except Exception as e:
+            return Response({'details':f'Cannot process image. Error: {e}'}, status=status.HTTP_400_BAD_REQUEST)
+    user = admin_ac.user
+    if email:
+        user.username = email
+        user.email = email
+    if first_name:=request.data.get('first_name'):
+        if (len(first_name)):
+            user.first_name = first_name
+    if last_name:=request.data.get('last_name'):
+        if (len(last_name)):
+            user.last_name = last_name
+    if password:=request.data.get('password'):
+        user.password = make_password(password)
+        update_session_auth_hash(request, user) 
+    try:
+        user.save()
+    except Exception as e:
+        return Response({'details':f'Cannot update user info. Error: {e}'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if display_pic:
+        if admin_ac.profile_picture is not None:
+            admin_ac.profile_picture.delete(save=True)
+        admin_ac.profile_picture = display_pic
+    admin_ac.save()
+    # try:
+    #     student.save()
+    # except Exception as e:
+    #     return Response({'details':f'Cannot update account. Error: {e}'}, status=status.HTTP_400_BAD_REQUEST)
+    data = utils.get_userinfo_data(user)
+    return Response(data)
+
 
 
 @api_view(['POST'])
