@@ -121,7 +121,7 @@ departments = {
         'meta': {
             'codename': 'non-tech',
             'name': 'Non-Tech Department',
-            'display_name': 'Non-Tech Departmentt',
+            'display_name': 'Non-Tech Department',
             'dept_type': 'accessory',
         },
         'labs': [

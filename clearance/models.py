@@ -18,8 +18,12 @@ class Department(models.Model):
     clerk_title = models.CharField(max_length=100, default="Staff")
     added = models.DateTimeField(auto_now_add=True)
     
+    class Meta:
+        ordering = ['-id']
+    
     def __str__(self):
         return self.name
+    
     
 class Lab(models.Model):
     dept = models.ForeignKey(Department, on_delete=models.CASCADE)
