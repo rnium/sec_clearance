@@ -117,12 +117,12 @@ departments = {
             },
         ]
     },
-    'accessory_dept': {
+    'non-tech': {
         'meta': {
-            'codename': 'ad',
-            'name': 'Accessory Department',
-            'display_name': 'Accessory Department',
-            'dept_type': 'accessory'
+            'codename': 'non-tech',
+            'name': 'Non-Tech Department',
+            'display_name': 'Non-Tech Departmentt',
+            'dept_type': 'accessory',
         },
         'labs': [
             {
@@ -140,7 +140,8 @@ departments = {
             'codename': 'security_dept',
             'name': 'Security Department',
             'display_name': 'Security Department',
-            'dept_type': 'administrative'
+            'dept_type': 'administrative',
+            'head_title': 'In Charge',
         },
         'labs': []
     },
@@ -149,7 +150,8 @@ departments = {
             'codename': 'library',
             'name': 'Library',
             'display_name': 'Library',
-            'dept_type': 'administrative'
+            'dept_type': 'administrative',
+            'head_title': 'In Charge',
         },
         'labs': []
     },
@@ -158,7 +160,8 @@ departments = {
             'codename': 'general_section',
             'name': 'General Section',
             'display_name': 'General Section',
-            'dept_type': 'administrative'
+            'dept_type': 'administrative',
+            'head_title': 'In Charge',
         },
         'labs': []
     },
@@ -167,7 +170,8 @@ departments = {
             'codename': 'cash_section',
             'name': 'Cash Section',
             'display_name': 'Cash Section',
-            'dept_type': 'administrative'
+            'dept_type': 'administrative',
+            'head_title': 'In Charge',
         },
         'labs': []
     },
@@ -176,25 +180,38 @@ departments = {
             'codename': 'general_store',
             'name': 'General Store',
             'display_name': 'General Store',
-            'dept_type': 'administrative'
+            'dept_type': 'administrative',
+            'head_title': 'In Charge',
         },
         'labs': []
     },
-    'girls_hostel_supervisor_office': {
+    'office_of_the_hall_provost_bangamata ': {
         'meta': {
-            'codename': 'girls_hostel_supervisor_office',
-            'name': 'Girls Hostel Supervisor Office',
-            'display_name': 'Girls Hostel Supervisor Office',
-            'dept_type': 'administrative'
+            'codename': 'office_of_the_hall_provost_bangamata',
+            'name': 'Office of The Hall Provost (Bangamata Hall)',
+            'display_name': 'Office of The Hall Provost (Bangamata Hall)',
+            'dept_type': 'administrative',
+            'head_title': 'Provost',
         },
         'labs': []
     },
-    'boys_hostel_supervisor_office': {
+    'office_of_the_hall_provost_bangabandhu': {
         'meta': {
-            'codename': 'boys_hostel_supervisor_office',
-            'name': 'Boys Hostel Supervisor Office',
-            'display_name': 'Boys Hostel Supervisor Office',
-            'dept_type': 'administrative'
+            'codename': 'office_of_the_hall_provost_bangabandhu',
+            'name': 'Office of The Hall Provost (Bangabandhu Hall)',
+            'display_name': 'Office of The Hall Provost (Bangabandhu Hall)',
+            'dept_type': 'administrative',
+            'head_title': 'Provost',
+        },
+        'labs': []
+    },
+    'office_of_the_hall_provost_muktijuddha': {
+        'meta': {
+            'codename': 'office_of_the_hall_provost_muktijuddha',
+            'name': 'Office of The Hall Provost (Muktijuddha Hall)',
+            'display_name': 'Office of The Hall Provost (Muktijuddha Hall)',
+            'dept_type': 'administrative',
+            'head_title': 'Provost',
         },
         'labs': []
     },
@@ -203,7 +220,8 @@ departments = {
             'codename': 'central_computer_center',
             'name': 'Central Computer Center',
             'display_name': 'Central Computer Center',
-            'dept_type': 'administrative'
+            'dept_type': 'administrative',
+            'head_title': 'In Charge',
         },
         'labs': []
     },

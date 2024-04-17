@@ -14,6 +14,8 @@ class Department(models.Model):
     dept_type = models.CharField(choices=dept_types, max_length=50)
     head = models.ForeignKey('accounts.AdminAccount', null=True, blank=True, on_delete=models.SET_NULL)
     clerk = models.ForeignKey('accounts.AdminAccount', null=True, blank=True, on_delete=models.SET_NULL, related_name='clerk')
+    head_title = models.CharField(max_length=100, default="Head")
+    clerk_title = models.CharField(max_length=100, default="Staff")
     added = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
@@ -93,6 +95,7 @@ class BaseApproval(models.Model):
     approved_by = models.ForeignKey('accounts.AdminAccount', null=True, blank=True, on_delete=models.SET_NULL)
     approved_at = models.DateTimeField(null=True, blank=True)
     remarks = models.TextField(null=True, blank=True)
+    remarks_added_at = models.DateTimeField(null=True, blank=True)
     
     class Meta:
         abstract = True
@@ -105,8 +108,8 @@ class BaseApproval(models.Model):
 class AdministrativeApproval(BaseApproval):
     administrative_roles = (
         ('principal', 'Principal'),
-        ('academic', 'SEC Academic'),
-        ('cashier', 'Cashier'),
+        ('academic', 'Academic Section'),
+        ('cashier', 'Cash Section'),
     )
     admin_role = models.CharField(choices=administrative_roles, max_length=50)
     

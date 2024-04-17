@@ -8,6 +8,7 @@ from accounts.models import AdminAccount
 from accounts.serializer import AdminAccountBasicSerializer
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ValidationError
+from django.utils import timezone
 
 def create_clearance_entities(student):
     clearance, created = Clearance.objects.get_or_create(student=student)
@@ -186,9 +187,9 @@ def get_dept_sections():
             'title': dept.display_name,
             'entities': []
         }
-        data['entities'].append(get_entity_data(f'Head', 'dept_head', dept.codename, dept.head))
+        data['entities'].append(get_entity_data(dept.head_title, 'dept_head', dept.codename, dept.head))
         if dept.dept_type == 'administrative':
-            data['entities'].append(get_entity_data(f'Clerk', 'dept_clerk', dept.codename, dept.clerk))
+            data['entities'].append(get_entity_data(dept.clerk_title, 'dept_clerk', dept.codename, dept.clerk))
         elif dept.dept_type in ['academic', 'accessory']:
             for lab in dept.lab_set.all():
                 data['entities'].append(get_entity_data(lab.name, 'lab_incharge', lab.codename, lab.incharge))
@@ -258,10 +259,34 @@ def post_or_get_remarks_data(model, pk, approval_type, new_remarks=None):
         if app_req.is_approved:
             raise ValidationError("Cannot post in an apprroved clearance request")
         app_req.remarks = new_remarks
+        app_req.remarks_added_at = timezone.now()
         app_req.save()
     return {
         'registration': app_req.clearance.student.registration,
         'title': get_approval_title(app_req, approval_type),
         'remarks_text': app_req.remarks,
     } 
+    
+def get_appr_remarks_data(title, appr):
+    return {
+        'title': title,
+        'remarks': appr.remarks
+    }
 
+def get_clearance_remarks(clearance):
+    remakrs = []
+    if not clearance:
+        return remakrs
+    admin_app = clearance.administrativeapproval_set.filter(remarks__isnull=False).order_by('remarks_added_at')
+    dept_head_app = clearance.deptapproval_set.filter(remarks__isnull=False).order_by('remarks_added_at')
+    dept_clerk_app = clearance.clerkapproval_set.filter(remarks__isnull=False).order_by('remarks_added_at')
+    lab_incharge_app = clearance.labapproval_set.filter(remarks__isnull=False).order_by('remarks_added_at')
+    for app in admin_app:
+        remakrs.append(get_appr_remarks_data(app.get_admin_role_display(), app))
+    for app in dept_head_app:
+        remakrs.append(get_appr_remarks_data(f"{app.dept.head_title} of {app.dept.display_name}", app))
+    for app in dept_clerk_app:
+        remakrs.append(get_appr_remarks_data(f"{app.dept_approval.dept.clerk_title} of {app.dept.display_name}", app))
+    for app in lab_incharge_app:
+        remakrs.append(get_appr_remarks_data(app.lab.name, app))
+    return remakrs

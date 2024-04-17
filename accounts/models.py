@@ -10,8 +10,8 @@ from django.utils import timezone
 
 account_types = (
     ('principal', 'Principal'),
-    ('academic', 'SEC Academic'),
-    ('cashier', 'Cashier'),
+    ('academic', 'Academic Section'),
+    ('cashier', 'Cash Section'),
     ('general', 'General Admin User'),
 )
 

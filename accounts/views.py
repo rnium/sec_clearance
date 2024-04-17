@@ -176,8 +176,11 @@ def delete_student_ac(request):
 def student_signup(request):
     email = request.data['email']
     user_queryset = User.objects.filter(Q(email=email) | Q(username=email))
-    if len(user_queryset) > 0:
+    student_ac_qs = StudentAccount.objects.filter(registration=request.data.get('registration_no'))
+    if user_queryset.count():
         return Response({'details':'Email already used'}, status=status.HTTP_400_BAD_REQUEST)
+    if student_ac_qs.count():
+        return Response({'details':'Student Already Signed Up'}, status=status.HTTP_400_BAD_REQUEST)
     try:
         dept_codename = request.data['department'].strip().lower()
         dept = Department.objects.get(codename=dept_codename)

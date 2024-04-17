@@ -240,3 +240,9 @@ def student_clearanceinfo(request):
         serializer = ClearanceBasicSerializer(student.clearance)
         return Response(serializer.data)
     return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view()
+def student_remarks_info(request):
+    student = StudentAccount.objects.get(registration=2018338514)
+    return Response(utils.get_clearance_remarks(getattr(student, 'clearance')))
