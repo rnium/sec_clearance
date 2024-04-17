@@ -56,7 +56,7 @@ class BaseAccount(models.Model):
 class AdminAccount(BaseAccount):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     is_super_admin = models.BooleanField(default=False)
-    dept = models.ForeignKey(Department, null=True, blank=True, on_delete=models.CASCADE)
+    dept = models.ForeignKey(Department, null=True, blank=True, on_delete=models.SET_NULL)
     user_type = models.CharField(max_length=10, default='general', choices=account_types)
     last_seen = models.DateTimeField(null=True, blank=True)
     invited_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name="inviting_user")
