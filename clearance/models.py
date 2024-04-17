@@ -146,8 +146,8 @@ class DeptApproval(BaseApproval):
         
     @property
     def approval_seekable(self):
-        pending_labs = self.clearance.labapproval_set.filter(is_approved=False)
-        pending_clerks = self.clearance.clerkapproval_set.filter(is_approved=False)
+        pending_labs = self.clearance.labapproval_set.filter(is_approved=False, lab__dept=self.dept)
+        pending_clerks = self.clearance.clerkapproval_set.filter(is_approved=False, dept_approval__dept=self.dept)
         if pending_labs.count() or pending_clerks.count():
             return False
         return True
