@@ -271,7 +271,8 @@ def student_profile_update(request):
 
 @api_view()
 def progressive_studentinfo(request):
-    student = request.user.studentaccount
+    student = StudentAccount.objects.get(registration=2018338514)
+    # student = request.user.studentaccount
     serializer = ProgressiveStudentInfoSerializer(student)
     return Response(data={'info': serializer.data})
 

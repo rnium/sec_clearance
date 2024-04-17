@@ -13,7 +13,7 @@ from clearance.api.utils import (create_clearance_entities, get_administrative_c
                                  get_lab_incharge_clearance_requests, get_dept_sections)
 from clearance.api import utils
 from clearance.apps import get_model_by_name
-from clearance.api.serializer import (AdministrativeApprovalSerializer, DeptApprovalSerializer, 
+from clearance.api.serializer import (AdministrativeApprovalSerializer, DeptApprovalSerializer, ClearanceBasicSerializer,
                                       ClerkApprovalSerializer, LabApprovalSerializer, DepartmentSeializer)
 from clearance.api.pagination import ClearancePagination
 from django.shortcuts import get_object_or_404
@@ -202,6 +202,7 @@ def session_students(request):
     serializer = StudentProfileSerializer(students_qs, many=True)
     return Response(serializer.data)
 
+
 @api_view(['POST'])
 def add_session(request):
     try:
@@ -209,6 +210,7 @@ def add_session(request):
     except Exception as e:
         return Response({'details': str(e)}, status=status.HTTP_400_BAD_REQUEST)
     return Response({'info': 'Session Created'})
+
 
 @api_view(['GET', 'POST'])
 def remarks(request):
@@ -229,3 +231,12 @@ def remarks(request):
     except Exception as e:
         return Response(status=status.HTTP_400_BAD_REQUEST)
     return Response(data)
+
+
+@api_view()
+def student_clearanceinfo(request):
+    student = StudentAccount.objects.get(registration=2018338514)
+    if hasattr(student, 'clearance'):
+        serializer = ClearanceBasicSerializer(student.clearance)
+        return Response(serializer.data)
+    return Response(status=status.HTTP_400_BAD_REQUEST)

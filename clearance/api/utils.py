@@ -264,4 +264,4 @@ def post_or_get_remarks_data(model, pk, approval_type, new_remarks=None):
         'title': get_approval_title(app_req, approval_type),
         'remarks_text': app_req.remarks,
     } 
-    
+

@@ -21,6 +21,86 @@ class SessionSeializer(ModelSerializer):
         return obj.session_code
 
 
+class ClearanceBasicSerializer(ModelSerializer):
+    student = StudentAccountSerializer()
+    adminstrative = serializers.SerializerMethodField()
+    department = serializers.SerializerMethodField()
+    # dept_clerk = serializers.SerializerMethodField()
+    # lab_incharge = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Clearance
+        fields = "__all__"
+        
+    def get_adminstrative(self, obj):
+        s = AdministrativeApprovalBasicSerializer(obj.administrativeapproval_set.all(), many=True)
+        return s.data
+        
+    def get_department(self, obj):
+        s = DeptApprovalBasicSerializer(obj.deptapproval_set.all(), many=True)
+        return s.data
+        
+    # def get_dept_clerk(self, obj):
+    #     s = ClerkApprovalBasicSerializer(obj.clerkapproval_set.all(), many=True)
+    #     return s.data
+        
+    # def get_lab_incharge(self, obj):
+    #     s = LabApprovalBasicSerializer(obj.labapproval_set.all(), many=True)
+    #     return s.data
+
+
+class ClearanceBasicApprovalSerializerBase(ModelSerializer):
+    title = serializers.SerializerMethodField()
+    is_seekable = serializers.SerializerMethodField()
+    class Meta:
+        model = None
+        exclude = ['clearance']
+
+
+class AdministrativeApprovalBasicSerializer(ClearanceBasicApprovalSerializerBase):
+    class Meta(ClearanceBasicApprovalSerializerBase.Meta):
+        model = AdministrativeApproval
+    def get_title(self, obj):
+        return obj.get_admin_role_display()
+    def get_is_seekable(self, obj):
+        return obj.approval_seekable
+
+
+class DeptApprovalBasicSerializer(ClearanceBasicApprovalSerializerBase):
+    clerk_approval = serializers.SerializerMethodField()
+    lab_approval = serializers.SerializerMethodField()
+    class Meta(ClearanceBasicApprovalSerializerBase.Meta):
+        model = DeptApproval
+    def get_title(self, obj):
+        return f"Head of {obj.dept.display_name}"
+    def get_is_seekable(self, obj):
+        return obj.approval_seekable
+    def get_clerk_approval(self, obj):
+        s = ClerkApprovalBasicSerializer(obj.clerkapproval_set.all(), many=True)
+        return s.data
+    def get_lab_approval(self, obj):
+        s = LabApprovalBasicSerializer(LabApproval.objects.filter(clearance=obj.clearance, lab__dept=obj.dept), many=True)
+        return s.data
+
+
+class ClerkApprovalBasicSerializer(ClearanceBasicApprovalSerializerBase):
+    class Meta(ClearanceBasicApprovalSerializerBase.Meta):
+        model = ClerkApproval
+    def get_title(self, obj):
+        return f"Clerk of {obj.dept_approval.dept.display_name}"
+    def get_is_seekable(self, obj):
+        return True
+
+
+class LabApprovalBasicSerializer(ClearanceBasicApprovalSerializerBase):
+    class Meta(ClearanceBasicApprovalSerializerBase.Meta):
+        model = LabApproval
+    def get_title(self, obj):
+        return f"In charge of {obj.lab.name}"
+    def get_is_seekable(self, obj):
+        return True
+
+
 class PendingClearanceSerializer(ModelSerializer):
     student = StudentAccountSerializer()
     class Meta:
