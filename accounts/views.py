@@ -3,6 +3,10 @@ from rest_framework import status
 from rest_framework.generics import ListAPIView, RetrieveAPIView, DestroyAPIView, CreateAPIView
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view, permission_classes
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.contrib.auth.tokens import default_token_generator
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import make_password
@@ -18,7 +22,7 @@ from django.db.models import Q
 from clearance.utils import get_admin_roles
 from accounts.utils import compress_image, get_userinfo_data, get_members_data
 from accounts import utils
-from accounts.mail_utils import send_signup_email
+from accounts.mail_utils import send_signup_email, send_html_email
 from accounts.models import AdminAccount, InviteToken
 from django.utils import timezone
 from django.http import HttpResponse
@@ -196,7 +200,6 @@ def student_signup(request):
         compressed_dp = compress_image(request.data.get('profilePhoto'))
     except Exception as e:
         return Response({'details':f'Cannot process image. Error: {e}'}, status=status.HTTP_400_BAD_REQUEST)
-    # login(request, user=user)
     user = User(
         username = email,
         email = email,
@@ -334,4 +337,51 @@ def search_member(request):
     )
     serializer = AdminAccountBasicSerializer(members[:3], many=True)
     return Response(serializer.data)
+
+
+# Account Recovery API's
+@api_view(["POST"])
+def send_recovery_email(request):
+    email_subject = "Password Recovery"
+    try:
+        email = request.data['email']
+    except Exception as e:
+        return Response(data={"error":"No email provided"}, status=status.HTTP_400_BAD_REQUEST)
+    user = User.objects.filter(email=email).first()
+    if user is None:
+        return Response(data={'details':'No user found with this email'}, status=status.HTTP_404_NOT_FOUND)
+
+    uid = urlsafe_base64_encode(force_bytes(user.id))
+    token = default_token_generator.make_token(user)
+    recovery_url = request.build_absolute_uri(reverse("accounts:reset_password_form", args=(uid, token)))
+    email_body = render_to_string('accounts/recovery_mail.html', context={
+        "user": user,
+        "recovery_url": recovery_url
+    })
+    try:
+        send_html_email(user.email, email_subject, email_body)
+    except Exception as e:
+        return Response(data={'details':'Cannot Send Email'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+    return Response(data={"info":"Recovery Email Sent, Please check Inbox/Spam folder"}, status=status.HTTP_200_OK)
     
+    
+@api_view(["POST"])
+def reset_password(request):
+    try:
+        uidb64 = request.data['uid'] 
+        token = request.data['token']
+        new_pass = request.data['password']
+    except Exception as e:
+        return Response(data={"details":"Required data missing"}, status=status.HTTP_400_BAD_REQUEST)
+    try :
+        user_id = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=user_id)
+    except Exception as e:
+        return Response(data={"details":"User not found"}, status=status.HTTP_404_NOT_FOUND)
+    if not default_token_generator.check_token(user, token):
+        return Response(data={"details":"Invalid or expired recovery link"}, status=status.HTTP_400_BAD_REQUEST)
+    
+    user.set_password(new_pass)
+    user.save()
+    logout(request)
+    return Response(data={"info":"Password Reset Successful"},status=status.HTTP_200_OK)

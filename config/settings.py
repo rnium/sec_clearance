@@ -125,6 +125,8 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+PASSWORD_RESET_TIMEOUT = 600
+
 try:
     from .local_settings import *
 except ImportError:
