@@ -80,7 +80,7 @@ def get_dept_head_clearance_requests(admin_ac, limit=None, approved=False, archi
             approvals.append(
                 {
                     'type': 'dept_head',
-                    'title': dept.name,
+                    'title': f"{dept.head_title} of {dept.name}",
                     'approvals': seekable_approvals
                 }
             )
@@ -108,7 +108,7 @@ def get_dept_clerk_clearance_requests(admin_ac, limit=None, approved=False, arch
             approvals.append(
                 {
                     'type': 'dept_clerk',
-                    'title': dept.name,
+                    'title': f"{dept.clerk_title} of {dept.name}",
                     'approvals': clerk_approvals
                 }
             )
@@ -247,9 +247,9 @@ def get_approval_title(obj, approval_type):
     if approval_type == 'administrative':
         return obj.get_admin_role_display()
     elif approval_type == 'dept_head':
-        return f"Head of {obj.dept.display_name}"
+        return f"{obj.dept.head_title} of {obj.dept.display_name}"
     elif approval_type == 'dept_clerk':
-        return f"Clerk of {obj.dept_approval.dept.display_name}"
+        return f"{obj.dept_approval.dept.clerk_title} of {obj.dept_approval.dept.display_name}"
     elif approval_type == 'lab_incharge':
         return obj.lab.name
 

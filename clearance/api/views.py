@@ -63,7 +63,8 @@ def apply_for_clearance(request):
 
 @api_view()
 def dashboard_clearance_requests(request):
-    admin_ac = request.user.adminaccount
+    # admin_ac = request.user.adminaccount
+    admin_ac = AdminAccount.objects.get(user__username="rony")
     sections = []
     sections.extend(get_administrative_clearance_requests(admin_ac, 5))
     sections.extend(get_dept_head_clearance_requests(admin_ac, 5))
