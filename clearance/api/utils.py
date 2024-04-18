@@ -181,7 +181,7 @@ def get_administration_dept_data():
 def get_dept_sections():
     departments = []
     departments.append(get_administration_dept_data())
-    dept_qs = Department.objects.all()
+    dept_qs = Department.objects.all().order_by('id')
     for dept in dept_qs:
         data = {
             'title': dept.display_name,

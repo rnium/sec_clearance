@@ -41,7 +41,7 @@ section_getter_mapping = {
 }
 
 class DeparmentList(ListAPIView):
-    queryset = Department.objects.all()
+    queryset = Department.objects.all().order_by('id')
     serializer_class = DepartmentSeializer
 
 @api_view()
