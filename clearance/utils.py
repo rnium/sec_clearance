@@ -28,7 +28,7 @@ def get_admin_roles(admin_ac):
             {
                 'type': 'dept_head',
                 'code': dept.codename,
-                'title': dept.name,
+                'title': f"{dept.head_title} of {dept.display_name}",
             }
         )
     for dept in admin_ac.dept_clerks:
@@ -36,7 +36,7 @@ def get_admin_roles(admin_ac):
             {
                 'type': 'dept_clerk',
                 'code': dept.codename,
-                'title': dept.name,
+                'title': f"{dept.clerk_title} of {dept.display_name}",
             }
         )
     for lab in admin_ac.labs_incharge:
