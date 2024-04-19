@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./clr_doc.css" />
+    <title>Document</title>
+  </head>
+
+  <body>
+    <div class="heading">
+      <img src="file:///{{ govt_logo }}" alt="" class="logo" />
+      <div class="info">
+        <div class="campus">Sylhet Engineering College</div>
+        <div class="title">Clearance Approval Report</div>
+      </div>
+    </div>
+    <div class="student-info">
+      <div class="info-table">
+        <table>
+          <tr>
+            <td class="label">Student Name</td>
+            <td>{{ student.full_name }}</td>
+          </tr>
+          <tr>
+            <td class="label">Registration No</td>
+            <td>{{ student.registration }}</td>
+          </tr>
+          <tr>
+            <td class="label">Department</td>
+            <td>{{ student.session.dept.name }}</td>
+          </tr>
+          <tr>
+            <td class="label">Session</td>
+            <td>{{ student.session.session_code }}</td>
+          </tr>
+          <tr>
+            <td class="label">Applied At</td>
+            <td>{{ clearance.added_at|date:'h:i:sA, j F Y' }}</td>
+          </tr>
+        </table>
+      </div>
+      <div class="photo">
+        <img src="file:///{{student_photo}}" alt="" />
+      </div>
+    </div>
+    <div class="requests">
+      <div class="title mb-2">Approval Details</div>
+      <table class="academic">
+        <tr>
+          <td>Department Name</td>
+          <td>Lab/Shop</td>
+          <td>Approved By</td>
+          <td>Head Approval</td>
+        </tr>
+        {% for dept in approvals.academic_depts %}
+          <div class="dept">
+            {% for lab_appr in dept.lab_approval %}
+              {% if forloop.counter == 1 %}
+                <tr>
+                  <td rowspan="{{ dept.lab_approval.count }}">{{ dept.dept_approval.dept.name }}</td>
+                  <td>{{ lab_appr.lab.name }}</td>
+                  <td>{{ lab_appr.approved_by.full_name }}</td>
+                  <td rowspan="{{ dept.lab_approval.count }}">{{ dept.dept_approval.dept.head.full_name }}</td>
+                </tr>
+              {% else %}
+                <tr>
+                  <td>{{ lab_appr.lab.name }}</td>
+                  <td>{{ lab_appr.approved_by.full_name }}</td>
+                </tr>
+              {% endif %}
+            {% endfor %}
+          </div>
+        {% endfor %}
+      </table>
+      <div class="title mt-2 mb-1">General Division</div>
+      <table class="general">
+        <tr>
+          <td>Department Name</td>
+          <td>Staff</td>
+          <td>In Charge</td>
+        </tr>
+        {% for dept in approvals.general_depts %}
+          <tr>
+            <td>{{dept.dept_approval.dept.name}}</td>
+            <td>{{dept.clerk_approval.approved_by.full_name}}</td>
+            <td>{{dept.dept_approval.approved_by.full_name}}</td>
+          </tr>
+        {% endfor %}
+      </table>
+    </div>
+    <div class="administration mt-2">
+      <div class="role">
+        <span class="label">Principal:</span>
+        <span class="value">{{approvals.principal.approved_by.full_name}}</span>
+      </div>
+      <div class="role">
+        <span class="label">Cashier:</span>
+        <span class="value">{{approvals.cashier.approved_by.full_name}}</span>
+      </div>
+      <div class="role">
+        <span class="label">Academic Section:</span>
+        <span class="value">{{approvals.academic.approved_by.full_name}}</span>
+      </div>
+    </div>
+    <div class="footer">
+      <div class="server">
+        <img src="file:///app/images/qr.png" alt="" />
+        <div class="info">
+          <div class="title">SEC Clearance Portal</div>
+          <div class="time">Server Time: 07:34:23PM, 24Apr 2024</div>
+        </div>
+      </div>
+      <div class="entity">
+        <img src="file:///{{principal_signature}}" alt="" />
+        <div class="designation">Principal</div>
+        <div class="campus">Sylhet Engineering College</div>
+      </div>
+    </div>
+  </body>
+</html>

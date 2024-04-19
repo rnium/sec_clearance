@@ -1,0 +1,211 @@
+@page {
+  margin: 1.5cm 2cm;
+  size: A4;
+}
+* {
+  margin: 0;
+  box-sizing: border-box;
+  font-family: roboto;
+}
+
+.heading {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+.heading .info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 300px;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+.heading .info .campus {
+  width: 300px;
+  text-align: center;
+  font-family: roboto-m;
+  font-size: 1.4rem;
+}
+.heading .info .title {
+  width: 300px;
+  text-align: center;
+  font-size: 1rem;
+}
+.heading img {
+  width: 60px;
+}
+
+.student-info {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: space-between;
+}
+.student-info img {
+  width: 120px;
+}
+.student-info table td {
+  font-size: 14px;
+}
+.student-info table td.label {
+  font-family: roboto-m;
+  padding-right: 2rem;
+}
+
+.requests {
+  margin-top: 1rem;
+}
+.requests .title {
+  text-align: center;
+}
+.requests table {
+  width: 100%;
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+.requests table tr {
+  border: 1px solid black;
+  width: 100%;
+}
+.requests table tr td {
+  text-align: center;
+  font-family: roboto-m;
+  font-size: 10px;
+  border: 1px solid black;
+}
+.requests table tr:first-child td {
+  background-color: #dcdcdc;
+}
+.requests table.academic tr td {
+  width: 25%;
+}
+.requests table.general tr td {
+  width: 33.333%;
+}
+
+.administration .role span {
+  font-size: 14px;
+}
+.administration .role .label {
+  font-family: roboto-b;
+}
+.administration .role .value {
+  font-family: roboto;
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+.footer .entity {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.footer .entity img {
+  width: 100px;
+}
+.footer .entity div {
+  width: 200px;
+  text-align: center;
+}
+.footer .server {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: 1;
+}
+.footer .server img {
+  width: 60px;
+}
+.footer .server .info {
+  width: 250px;
+  margin-left: 20px;
+}
+.footer .server .info div {
+  font-size: 10px;
+}
+
+.bgred {
+  background-color: red;
+}
+
+.bgblue {
+  background-color: blue;
+}
+
+.flex-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.mt-1 {
+  margin-top: 8px;
+}
+
+.mt-2 {
+  margin-top: 16px;
+}
+
+.mt-3 {
+  margin-top: 24px;
+}
+
+.mt-4 {
+  margin-top: 32px;
+}
+
+.mt-5 {
+  margin-top: 40px;
+}
+
+.mt-xl {
+  margin-top: 5rem;
+}
+
+.me-1 {
+  margin-right: 1rem;
+}
+
+.mb-1 {
+  margin-bottom: 8px;
+}
+
+.mb-2 {
+  margin-bottom: 16px;
+}
+
+.me-2 {
+  margin-right: 2rem;
+}
+
+.py-md {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.small {
+  font-size: 14px;
+}
+
+.page-break-after {
+  page-break-after: always;
+}/*# sourceMappingURL=clr_doc.css.map */

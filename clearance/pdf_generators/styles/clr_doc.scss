@@ -1,0 +1,244 @@
+@mixin flexer($direction) {
+    display: flex;
+    flex-direction: $direction;
+    justify-content: center;
+    align-items: center;
+}
+
+@page {
+    margin: 1.5cm 2cm;
+    size: A4;
+}
+
+* {
+    margin: 0;
+    box-sizing: border-box;
+    font-family: roboto;
+}
+
+
+
+
+.heading {
+    @include flexer(row);
+
+    .info {
+        @include flexer(column);
+        width: 300px;
+        justify-content: flex-start;
+        align-items: flex-start;
+
+        .campus {
+            width: 300px;
+            text-align: center;
+            font-family: roboto-m;
+            font-size: 1.4rem;
+        }
+
+        .title {
+            width: 300px;
+            text-align: center;
+            font-size: 1rem;
+        }
+    }
+
+    img {
+        width: 60px;
+    }
+}
+
+.student-info {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: space-between;
+
+    img {
+        width: 120px;
+    }
+
+    table {
+        td {
+            font-size: 14px;
+        }
+
+        td.label {
+            font-family: roboto-m;
+            padding-right: 2rem;
+        }
+    }
+}
+
+.requests {
+    margin-top: 1rem;
+
+    .title {
+        text-align: center;
+    }
+
+    table {
+        width: 100%;
+        border: 1px solid black;
+        border-collapse: collapse;
+
+        tr {
+            border: 1px solid black;
+            width: 100%;
+
+            td {
+                text-align: center;
+                font-family: roboto-m;
+                font-size: 10px;
+                border: 1px solid black;
+            }
+
+            &:first-child {
+                td {
+                    background-color: #dcdcdc;
+                }
+            }
+        }
+    }
+
+    table.academic {
+        tr {
+            td {
+                width: 25%;
+            }
+        }
+    }
+
+    table.general {
+        tr {
+            td {
+                width: 33.333%;
+            }
+        }
+    }
+}
+
+.administration {
+    .role {
+        span {
+            font-size: 14px;
+        }
+        .label {
+            font-family: roboto-b;
+        }
+        .value {
+            font-family: roboto;
+        }
+    }
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+
+    .entity {
+        @include flexer(column);
+
+        img {
+            width: 100px;
+        }
+        div {
+            width: 200px;
+            text-align: center
+        }
+    }
+
+    .server {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        flex-wrap: 1;
+        img {
+            width: 60px;
+        }
+    
+        .info {
+            width: 250px;
+            margin-left: 20px;
+            div {
+                font-size: 10px;
+            }
+        }
+    }
+}
+
+
+
+.bgred {
+    background-color: red;
+}
+
+.bgblue {
+    background-color: blue;
+}
+
+.flex-col {
+    @include flexer(column);
+}
+
+.flex-row {
+    @include flexer(row);
+}
+
+
+.mt-1 {
+    margin-top: 8px;
+}
+
+.mt-2 {
+    margin-top: 16px;
+}
+
+.mt-3 {
+    margin-top: 24px;
+}
+
+.mt-4 {
+    margin-top: 32px;
+}
+
+.mt-5 {
+    margin-top: 40px;
+}
+
+.mt-xl {
+    margin-top: 5rem;
+}
+
+.me-1 {
+    margin-right: 1rem;
+}
+
+.mb-1 {
+    margin-bottom: 8px;
+}
+
+.mb-2 {
+    margin-bottom: 16px;
+}
+
+.me-2 {
+    margin-right: 2rem;
+}
+
+.py-md {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+.small {
+    font-size: 14px;
+}
+
+.page-break-after {
+    page-break-after: always;
+}
