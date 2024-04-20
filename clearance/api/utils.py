@@ -286,7 +286,7 @@ def get_clearance_remarks(clearance):
     for app in dept_head_app:
         remakrs.append(get_appr_remarks_data(f"{app.dept.head_title} of {app.dept.display_name}", app))
     for app in dept_clerk_app:
-        remakrs.append(get_appr_remarks_data(f"{app.dept_approval.dept.clerk_title} of {app.dept.display_name}", app))
+        remakrs.append(get_appr_remarks_data(f"{app.dept_approval.dept.clerk_title} of {app.dept_approval.dept.display_name}", app))
     for app in lab_incharge_app:
         remakrs.append(get_appr_remarks_data(app.lab.name, app))
     return remakrs
