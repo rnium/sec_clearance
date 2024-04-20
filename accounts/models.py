@@ -109,9 +109,9 @@ class AdminAccount(BaseAccount):
 
 class StudentAccount(BaseAccount):
     registration = models.IntegerField(primary_key=True)
+    phone = models.CharField(null=True, blank=True, max_length=15)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     is_approved = models.BooleanField(default=False)
-    ip_address = models.GenericIPAddressField(null=True, blank=True)
     session = models.ForeignKey(Session, on_delete=models.CASCADE)
     
     class Meta:
@@ -133,7 +133,7 @@ class StudentAccount(BaseAccount):
             return 1
         elif not hasattr(self, 'clearance'):
             return 2
-        elif not self.clearance.is_approved:
+        elif not self.clearance.is_approved or self.clearance.progress < 100:
             return 3
         elif self.clearance.is_approved:
             return 4

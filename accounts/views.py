@@ -48,10 +48,12 @@ def admin_signup(request):
     user_queryset = User.objects.filter(Q(email=email) | Q(username=email))
     if len(user_queryset) > 0:
         return Response({'details':'Email already used'}, status=status.HTTP_400_BAD_REQUEST)
-    try:
-        compressed_dp = compress_image(request.data.get('profilePhoto'))
-    except Exception as e:
-        return Response({'details':f'Cannot process image. Error: {e}'}, status=status.HTTP_400_BAD_REQUEST)
+    photo = request.data.get('profilePhoto')
+    if photo:
+        try:
+            compressed_dp = compress_image()
+        except Exception as e:
+            return Response({'details':f'Cannot process image. Error: {e}'}, status=status.HTTP_400_BAD_REQUEST)
     # login(request, user=user)
     user = User(
         username = email,
@@ -225,8 +227,7 @@ def student_signup(request):
     account_kwargs['user'] = user
     account_kwargs['session'] = session
     account_kwargs['registration'] = request.data.get('registration_no')
-    account_kwargs['session'] = session
-    account_kwargs['ip_address'] = request.META.get('REMOTE_ADDR')
+    account_kwargs['phone'] = request.data.get('phone')
     account_kwargs['profile_picture'] = compressed_dp
     try:
         student_ac = StudentAccount(**account_kwargs)
