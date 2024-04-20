@@ -108,7 +108,7 @@ class AdminAccount(BaseAccount):
         
 
 class StudentAccount(BaseAccount):
-    registration = models.IntegerField(primary_key=True)
+    registration = models.IntegerField(primary_key=True, unique=True)
     phone = models.CharField(null=True, blank=True, max_length=15)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     is_approved = models.BooleanField(default=False)

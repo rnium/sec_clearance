@@ -37,7 +37,7 @@ class ClearanceBasicSerializer(ModelSerializer):
         return s.data
         
     def get_department(self, obj):
-        s = DeptApprovalBasicSerializer(obj.deptapproval_set.all(), many=True)
+        s = DeptApprovalBasicSerializer(obj.deptapproval_set.all().order_by('dept__id'), many=True)
         return s.data
         
     # def get_dept_clerk(self, obj):

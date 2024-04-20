@@ -3,40 +3,6 @@ from django.core.management.base import BaseCommand, CommandError
 from clearance.models import Department, Lab
 
 departments = {
-    'eee': {
-        'meta': {
-            'codename': 'eee',
-            'name': 'Electrical and Electronic Engineering',
-            'display_name': 'Department of EEE',
-            'dept_type': 'academic'
-        },
-        'labs': [
-            {
-                'codename': 'ckt_lab',
-                'name': 'Electrical Circuit Lab',
-            },
-            {
-                'codename': 'electronics_lab',
-                'name': 'Electronics Lab',
-            },
-            {
-                'codename': 'dld_lab',
-                'name': 'DLD Lab',
-            },
-            {
-                'codename': 'machine_lab',
-                'name': 'Electrical Machine',
-            },
-            {
-                'codename': 'hv_lab',
-                'name': 'High Voltage Lab',
-            },
-            {
-                'codename': 'atts_lab_eee',
-                'name': 'ATTS Lab',
-            },
-        ]
-    },
     'cse': {
         'meta': {
             'codename': 'cse',
@@ -117,6 +83,40 @@ departments = {
             },
         ]
     },
+    'eee': {
+        'meta': {
+            'codename': 'eee',
+            'name': 'Electrical and Electronic Engineering',
+            'display_name': 'Department of EEE',
+            'dept_type': 'academic'
+        },
+        'labs': [
+            {
+                'codename': 'ckt_lab',
+                'name': 'Electrical Circuit Lab',
+            },
+            {
+                'codename': 'electronics_lab',
+                'name': 'Electronics Lab',
+            },
+            {
+                'codename': 'dld_lab',
+                'name': 'DLD Lab',
+            },
+            {
+                'codename': 'machine_lab',
+                'name': 'Electrical Machine',
+            },
+            {
+                'codename': 'hv_lab',
+                'name': 'High Voltage Lab',
+            },
+            {
+                'codename': 'atts_lab_eee',
+                'name': 'ATTS Lab',
+            },
+        ]
+    },
     'non-tech': {
         'meta': {
             'codename': 'non-tech',
@@ -189,7 +189,7 @@ departments = {
         'meta': {
             'codename': 'office_of_the_hall_provost_bangamata',
             'name': 'Office of The Hall Provost (Bangamata Hall)',
-            'display_name': 'Office of The Hall Provost (Bangamata Hall)',
+            'display_name': 'Bangamata Hall',
             'dept_type': 'administrative',
             'head_title': 'Provost',
         },
@@ -199,7 +199,7 @@ departments = {
         'meta': {
             'codename': 'office_of_the_hall_provost_bangabandhu',
             'name': 'Office of The Hall Provost (Bangabandhu Hall)',
-            'display_name': 'Office of The Hall Provost (Bangabandhu Hall)',
+            'display_name': 'Bangabandhu Hall',
             'dept_type': 'administrative',
             'head_title': 'Provost',
         },
@@ -209,7 +209,7 @@ departments = {
         'meta': {
             'codename': 'office_of_the_hall_provost_muktijuddha',
             'name': 'Office of The Hall Provost (Muktijuddha Hall)',
-            'display_name': 'Office of The Hall Provost (Muktijuddha Hall)',
+            'display_name': 'Muktijuddha Hall',
             'dept_type': 'administrative',
             'head_title': 'Provost',
         },

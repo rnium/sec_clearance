@@ -53,7 +53,7 @@ def get_userinfo(request):
 
 @api_view()
 def apply_for_clearance(request):
-    student = StudentAccount.objects.get(registration=2018338502)
+    student = request.user.studentaccount
     if not student.is_approved:
         return Response(data={'details': 'Account not approved'}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
     if hasattr(student, 'clearance'):
@@ -237,7 +237,7 @@ def remarks(request):
 
 @api_view()
 def student_clearanceinfo(request):
-    student = StudentAccount.objects.get(registration=2018338514)
+    student = request.user.studentaccount
     if hasattr(student, 'clearance'):
         serializer = ClearanceBasicSerializer(student.clearance)
         return Response(serializer.data)
@@ -267,5 +267,5 @@ def clearanceinfo_as_admin(request):
 
 @api_view()
 def student_remarks_info(request):
-    student = StudentAccount.objects.get(registration=2018338514)
+    student = request.user.studentaccount
     return Response(utils.get_clearance_remarks(getattr(student, 'clearance')))
