@@ -93,7 +93,7 @@ class AdminAccount(BaseAccount):
         
     @property
     def head_of_the_departments(self):
-        depts = self.department_set.all()
+        depts = self.department_set.all().order_by('id')
         return depts
             
     @property

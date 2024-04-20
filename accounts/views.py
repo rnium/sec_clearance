@@ -286,7 +286,8 @@ def progressive_studentinfo(request):
 
 @api_view()
 def admin_roles(request):
-    admin_ac = request.user.adminaccount
+    # admin_ac = request.user.adminaccount
+    admin_ac = AdminAccount.objects.get(user__username="rony")
     return Response(data={'info': get_admin_roles(admin_ac)})
 
 
