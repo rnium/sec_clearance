@@ -224,7 +224,7 @@ def unassign_member(target_user, role, code):
     
 def get_dept_sessions():
     data = {}
-    for dept in Department.objects.filter(dept_type='academic'):
+    for dept in Department.objects.filter(dept_type='academic').order_by('id'):
         serializer = SessionSeializer(dept.session_set.all(), many=True)
         data[dept.codename] = serializer.data
     return data
