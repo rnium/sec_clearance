@@ -288,8 +288,7 @@ def student_profile_update(request):
 
 @api_view()
 def progressive_studentinfo(request):
-    student = StudentAccount.objects.get(registration=2018338514)
-    # student = request.user.studentaccount
+    student = request.user.studentaccount
     serializer = ProgressiveStudentInfoSerializer(student)
     return Response(data={'info': serializer.data})
 
@@ -297,8 +296,7 @@ def progressive_studentinfo(request):
 
 @api_view()
 def admin_roles(request):
-    # admin_ac = request.user.adminaccount
-    admin_ac = AdminAccount.objects.get(user__username="rony")
+    admin_ac = request.user.adminaccount
     return Response(data={'info': get_admin_roles(admin_ac)})
 
 

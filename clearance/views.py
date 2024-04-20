@@ -7,7 +7,7 @@ from django.core.files.base import ContentFile
 from .utils import b64decode
 
 def download_clearance_report(request):
-    clearance = StudentAccount.objects.filter(registration=2018338514).first().clearance
+    clearance = request.user.studentaccount
     if not clearance.is_all_approved:
         return HttpResponse('Clearance is not approved yet!')
     report_pdf = render_report(request, clearance)
