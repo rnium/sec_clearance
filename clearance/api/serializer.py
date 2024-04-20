@@ -53,9 +53,13 @@ class ClearanceBasicApprovalSerializerBase(ModelSerializer):
     title = serializers.SerializerMethodField()
     role = serializers.SerializerMethodField()
     is_seekable = serializers.SerializerMethodField()
+    approved_by = serializers.SerializerMethodField()
     class Meta:
         model = None
         exclude = ['clearance']
+    def get_approved_by(self, obj):
+        if obj.approved_by:
+            return obj.approved_by.full_name
 
 
 class AdministrativeApprovalBasicSerializer(ClearanceBasicApprovalSerializerBase):
@@ -72,9 +76,12 @@ class AdministrativeApprovalBasicSerializer(ClearanceBasicApprovalSerializerBase
 class DeptApprovalBasicSerializer(ClearanceBasicApprovalSerializerBase):
     clerk_approval = serializers.SerializerMethodField()
     lab_approval = serializers.SerializerMethodField()
+    section_title = serializers.SerializerMethodField()
     class Meta(ClearanceBasicApprovalSerializerBase.Meta):
         model = DeptApproval
     def get_title(self, obj):
+        return f"{obj.dept.head_title} of {obj.dept.display_name}"
+    def get_section_title(self, obj):
         return obj.dept.display_name
     def get_role(self, obj):
         return 'dept_head'
@@ -92,7 +99,7 @@ class ClerkApprovalBasicSerializer(ClearanceBasicApprovalSerializerBase):
     class Meta(ClearanceBasicApprovalSerializerBase.Meta):
         model = ClerkApproval
     def get_title(self, obj):
-        return f"Clerk of {obj.dept_approval.dept.display_name}"
+        return f"{obj.dept_approval.dept.clerk_title} of {obj.dept_approval.dept.display_name}"
     def get_role(self, obj):
         return 'dept_clerk'
     def get_is_seekable(self, obj):
