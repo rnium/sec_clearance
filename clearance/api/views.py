@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from accounts.utils import get_userinfo_data
 from accounts.models import StudentAccount, AdminAccount
 from accounts.serializer import StudentProfileSerializer
-from clearance.models import Department, Lab, Session
+from clearance.models import Department, Lab, Session, Clearance
 from clearance.api.utils import (create_clearance_entities, get_administrative_clearance_requests, 
                                  get_dept_head_clearance_requests, get_dept_clerk_clearance_requests, 
                                  get_lab_incharge_clearance_requests, get_dept_sections)
@@ -246,19 +246,23 @@ def student_clearanceinfo(request):
 @api_view()
 def clearanceinfo_as_admin(request):
     query_dict = request.GET
-    try:
-        approval_type = query_dict['type']
-        approval_id = query_dict['id']
-        The_model = get_model_by_name(modelname_mapping[approval_type])
-    except Exception as e:
-        return Response(status=status.HTTP_400_BAD_REQUEST)
-    approval = get_object_or_404(The_model, pk=approval_id)
-    if approval_type == 'administrative':
-        serializer = ClearanceBasicSerializer(approval.clearance)
-    elif approval_type == 'dept_head':
-        serializer = DeptApprovalBasicSerializer(approval)
+    if reg:=query_dict.get('registration'):
+        clearance = get_object_or_404(Clearance, student__registration=reg)
+        serializer = ClearanceBasicSerializer(clearance)
     else:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        try:
+            approval_type = query_dict['type']
+            approval_id = query_dict['id']
+            The_model = get_model_by_name(modelname_mapping[approval_type])
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        approval = get_object_or_404(The_model, pk=approval_id)
+        if approval_type == 'administrative':
+            serializer = ClearanceBasicSerializer(approval.clearance)
+        elif approval_type == 'dept_head':
+            serializer = DeptApprovalBasicSerializer(approval)
+        else:
+            return Response(status=status.HTTP_404_NOT_FOUND)
     return Response(serializer.data)
 
 @api_view()
