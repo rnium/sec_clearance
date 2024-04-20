@@ -164,6 +164,16 @@ def approve_student_ac(request):
 
 
 @api_view(['POST'])
+def approve_all_student_ac(request):
+    student_acs = StudentAccount.objects.filter(is_approved=False)
+    count = student_acs.count()
+    for ac in student_acs:
+        ac.is_approved = True
+        ac.save()
+    return Response(data={'info': f'{count} Student Account Approved'})
+
+
+@api_view(['POST'])
 def delete_student_ac(request):
     try:
         reg = request.data['registration']
@@ -171,7 +181,7 @@ def delete_student_ac(request):
         return Response(data={'details': 'Registration empty'}, status=status.HTTP_400_BAD_REQUEST)
     student_ac = get_object_or_404(StudentAccount, pk=reg)
     if hasattr(student_ac, 'clearance'):
-        return Response(data={'details': 'Cannot Delete Now'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(data={'details': 'Cannot Delete Now, Student applied for clearance'}, status=status.HTTP_400_BAD_REQUEST)
     student_ac.delete()
     return Response(data={'info': 'Account Deleted'})
 

@@ -16,6 +16,7 @@ urlpatterns = [
     path('api/admin/signup/', views.admin_signup, name='admin_signup'),
     path('pendingstudents/', views.PendingStudents.as_view(), name='pending_students'),
     path('studentac/approve/', views.approve_student_ac, name='approve_studentac'),
+    path('studentac/approveall/', views.approve_all_student_ac, name='approve_all_student_ac'),
     path('studentac/delete/', views.delete_student_ac, name='delete_studentac'),
     path('student/signup/', views.student_signup, name='student_signup'),
     path('student/updateprofile/', views.student_profile_update, name='student_profile_update'),
