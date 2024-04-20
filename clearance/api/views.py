@@ -14,7 +14,8 @@ from clearance.api.utils import (create_clearance_entities, get_administrative_c
 from clearance.api import utils
 from clearance.apps import get_model_by_name
 from clearance.api.serializer import (AdministrativeApprovalSerializer, DeptApprovalSerializer, ClearanceBasicSerializer,
-                                      ClerkApprovalSerializer, LabApprovalSerializer, DepartmentSeializer)
+                                      DeptApprovalBasicSerializer, ClerkApprovalSerializer, LabApprovalSerializer,
+                                      DepartmentSeializer)
 from clearance.api.pagination import ClearancePagination
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
@@ -242,6 +243,23 @@ def student_clearanceinfo(request):
         return Response(serializer.data)
     return Response(status=status.HTTP_400_BAD_REQUEST)
 
+@api_view()
+def clearanceinfo_as_admin(request):
+    query_dict = request.GET
+    try:
+        approval_type = query_dict['type']
+        approval_id = query_dict['id']
+        The_model = get_model_by_name(modelname_mapping[approval_type])
+    except Exception as e:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+    approval = get_object_or_404(The_model, pk=approval_id)
+    if approval_type == 'administrative':
+        serializer = ClearanceBasicSerializer(approval.clearance)
+    elif approval_type == 'dept_head':
+        serializer = DeptApprovalBasicSerializer(approval)
+    else:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    return Response(serializer.data)
 
 @api_view()
 def student_remarks_info(request):
