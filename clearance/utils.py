@@ -1,3 +1,7 @@
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_str, force_bytes
+
+
 def get_ordinal_suffix(value):
     try:
         value = int(value)
@@ -49,3 +53,10 @@ def get_admin_roles(admin_ac):
         )
     
     return roles
+
+
+def b64encode(data):
+    return urlsafe_base64_encode(force_bytes(data))
+
+def b64decode(data):
+    return force_str(urlsafe_base64_decode(data))
