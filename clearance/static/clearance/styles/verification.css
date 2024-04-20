@@ -1,0 +1,76 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
+* {
+  margin: 0;
+  font-family: "Roboto", sans-serif;
+}
+
+body header {
+  margin-top: 5vh;
+}
+body header .logo-con img {
+  width: 200px;
+}
+body main .container {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+body main .container .icon {
+  margin-bottom: 1rem;
+}
+body main .container .icon i {
+  font-size: 7rem;
+}
+body main .container .icon .status {
+  margin-top: 0.5rem;
+  font-size: 1.5rem;
+  text-transform: uppercase;
+}
+body main .container .icon.success i {
+  color: rgb(5, 189, 127);
+}
+body main .container .icon.error i {
+  color: rgb(254, 0, 42);
+}
+body main .container .icon.error .status {
+  color: rgb(189, 71, 71);
+}
+body main .container .info {
+  text-align: center;
+  margin-bottom: 5px;
+  font-size: 1.5rem;
+}
+
+body.success {
+  background-color: rgba(143, 254, 178, 0.3);
+}
+
+body.error {
+  background-color: rgba(204, 115, 171, 0.2);
+}
+
+@media screen and (max-width: 600px) {
+  .icon i {
+    font-size: 4rem !important;
+  }
+  .status {
+    font-size: 1rem !important;
+  }
+  .info {
+    font-size: 1rem !important;
+  }
+}
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.flex-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}/*# sourceMappingURL=style.css.map */

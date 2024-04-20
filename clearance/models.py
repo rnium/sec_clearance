@@ -90,7 +90,18 @@ class Clearance(models.Model):
         if percent_progress == 100:
             self.is_approved = True
         self.save(*args, **kwargs)
-        
+    
+    @property
+    def is_all_approved(self):
+        admin_app_qs = self.administrativeapproval_set.all()
+        dept_app_qs = self.deptapproval_set.all()
+        clerk_app_qs = self.clerkapproval_set.all()
+        lab_app_qs = self.labapproval_set.all()
+        all_approvals = [*list(admin_app_qs), *list(dept_app_qs), *list(clerk_app_qs), *list(lab_app_qs)]
+        for appr in all_approvals:
+            if not appr.is_approved:
+                return False
+        return True
 
 class BaseApproval(models.Model):
     clearance = models.ForeignKey(Clearance, on_delete=models.CASCADE)

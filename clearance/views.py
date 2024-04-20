@@ -8,6 +8,8 @@ from .utils import b64decode
 
 def download_clearance_report(request):
     clearance = StudentAccount.objects.filter(registration=2018338514).first().clearance
+    if not clearance.is_all_approved:
+        return HttpResponse('Clearance is not approved yet!')
     report_pdf = render_report(request, clearance)
     filename = f"{clearance.student.registration} Report.pdf"
     return FileResponse(ContentFile(report_pdf), filename=filename)
@@ -16,8 +18,9 @@ def download_clearance_report(request):
 def verify_clearance(request, b64_code):
     try:
         reg, clr_pk = b64decode(b64_code).split('-')
-        clearance = Clearance.objects.get(student__registation=reg, pk=clr_pk)
     except Exception as e:
-        return HttpResponse('Invalid Clearance')
-    
-    return HttpResponse(clearance)
+        return render(request, 'clearance/verify_clearance.html', context={'message': 'Invalid Link'})
+    clearance = Clearance.objects.filter(student__registration=reg, pk=clr_pk).first()
+    if clearance and not clearance.is_all_approved:
+        return render(request, 'clearance/verify_clearance.html', context={'message': 'Clearance is not approved yet!'})
+    return render(request, 'clearance/verify_clearance.html', context={'clearance': clearance})
