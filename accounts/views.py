@@ -49,6 +49,7 @@ def admin_signup(request):
     if len(user_queryset) > 0:
         return Response({'details':'Email already used'}, status=status.HTTP_400_BAD_REQUEST)
     photo = request.data.get('profilePhoto')
+    compressed_dp = None
     if photo:
         try:
             compressed_dp = compress_image()
