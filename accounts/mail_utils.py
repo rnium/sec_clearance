@@ -50,6 +50,8 @@ def send_signup_email(request, invitation):
 def send_student_ac_confirmation_email(student):
     email_subject = "Account Verification Confirmation"
     receiver = student.user.email
+    if receiver is None:
+        return False
     email_body = render_to_string('accounts/student_ac_confirmation.html', context={
         "student": student,
     })
