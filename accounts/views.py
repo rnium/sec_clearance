@@ -52,7 +52,7 @@ def admin_signup(request):
     compressed_dp = None
     if photo:
         try:
-            compressed_dp = compress_image()
+            compressed_dp = compress_image(photo)
         except Exception as e:
             return Response({'details':f'Cannot process image. Error: {e}'}, status=status.HTTP_400_BAD_REQUEST)
     # login(request, user=user)
