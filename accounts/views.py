@@ -103,7 +103,11 @@ def api_logout(request):
 
 class PendingStudents(ListAPIView):
     serializer_class = PendingStudentSerializer
-    queryset = StudentAccount.objects.filter(is_approved=False).order_by('user__date_joined')
+    def get_queryset(self):
+        dept = self.request.GET.get('dept')
+        return StudentAccount.objects.filter(is_approved=False, session__dept__codename=dept).order_by('user__date_joined')
+    
+    
 
 
 @api_view(['POST'])
@@ -170,7 +174,10 @@ def approve_student_ac(request):
 
 @api_view(['POST'])
 def approve_all_student_ac(request):
-    student_acs = StudentAccount.objects.filter(is_approved=False)
+    dept = request.data.get('dept')
+    if dept is None:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+    student_acs = StudentAccount.objects.filter(is_approved=False, session__dept__codename=dept)
     count = 0
     for ac in student_acs:
         if send_student_ac_confirmation_email(ac):
@@ -301,7 +308,8 @@ def progressive_studentinfo(request):
 
 @api_view()
 def admin_roles(request):
-    admin_ac = request.user.adminaccount
+    # admin_ac = request.user.adminaccount
+    admin_ac = AdminAccount.objects.get(user__username='rony')
     return Response(data={'info': get_admin_roles(admin_ac)})
 
 

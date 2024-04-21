@@ -64,18 +64,19 @@ def apply_for_clearance(request):
 
 @api_view()
 def dashboard_clearance_requests(request):
-    admin_ac = request.user.adminaccount
+    admin_ac = AdminAccount.objects.get(user__username='rony')
+    dept = request.GET.get('dept')
     sections = []
-    sections.extend(get_administrative_clearance_requests(admin_ac, 5))
-    sections.extend(get_dept_head_clearance_requests(admin_ac, 5))
-    sections.extend(get_dept_clerk_clearance_requests(admin_ac, 5))
-    sections.extend(get_lab_incharge_clearance_requests(admin_ac, 5))
+    sections.extend(get_administrative_clearance_requests(admin_ac, 5, dept=dept))
+    sections.extend(get_dept_head_clearance_requests(admin_ac, 5, dept=dept))
+    sections.extend(get_dept_clerk_clearance_requests(admin_ac, 5, dept=dept))
+    sections.extend(get_lab_incharge_clearance_requests(admin_ac, 5, dept=dept))
     return Response(data=sections)
 
 
 @api_view()
 def approve_clearance_entity(request, modelname, pk):
-    admin_ac = request.user.adminaccount
+    admin_ac = AdminAccount.objects.get(user__username='rony')
     the_model = get_model_by_name(modelname)
     if the_model is None:
         return Response({'details': 'Unknown action'}, status=status.HTTP_406_NOT_ACCEPTABLE)
@@ -115,8 +116,10 @@ def unarchive_clearance_entity(request, modelname, pk):
 
 @api_view()
 def section_clearance(request):
-    admin_ac = request.user.adminaccount
+    # admin_ac = request.user.adminaccount
+    admin_ac = AdminAccount.objects.get(user__username='rony')
     role_type = request.GET.get('type')
+    dept = request.GET.get('dept')
     approved = request.GET.get('approved', 'false') == 'true'
     archived = request.GET.get('archived', 'false') == 'true'
     code = request.GET.get('code', None)
@@ -127,7 +130,7 @@ def section_clearance(request):
         print(e)
         return Response({'details': 'Unknown query'}, status=status.HTTP_400_BAD_REQUEST)
     paginator = ClearancePagination()
-    sections = section_getter(admin_ac, limit=None, approved=approved, archived=archived, code=code, serialized=False)
+    sections = section_getter(admin_ac, limit=None, approved=approved, archived=archived, code=code, serialized=False, dept=dept)
     clearance_objects = []
     # print(type(sections[0]['approvals']))
     if len(sections):

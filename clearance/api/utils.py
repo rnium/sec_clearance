@@ -28,11 +28,16 @@ def create_clearance_entities(student):
         clerk_approval, created = ClerkApproval.objects.get_or_create(clearance=clearance, dept_approval=dept_approval)
 
 
-def get_administrative_clearance_requests(admin_ac, limit=None, approved=False, archived=False, code=None, serialized=True):
+def get_administrative_clearance_requests(admin_ac, limit=None, approved=False, archived=False, code=None, serialized=True, dept='cse'):
     approvals = []
     if (admin_ac.user_type not in [utype[0] for utype in AdministrativeApproval._meta.get_field('admin_role').choices]):
         return approvals
-    approvals_qs = AdministrativeApproval.objects.filter(admin_role=admin_ac.user_type, is_approved=approved, is_archived=archived)
+    approvals_qs = AdministrativeApproval.objects.filter(
+        admin_role=admin_ac.user_type, 
+        clearance__student__session__dept__codename=dept, 
+        is_approved=approved, 
+        is_archived=archived
+    )
     if approved:
         approvals_qs = approvals_qs.order_by('-approved_at')
     count = 0
@@ -56,9 +61,14 @@ def get_administrative_clearance_requests(admin_ac, limit=None, approved=False, 
     return [section]
 
 
-def get_dept_head_clearance_requests(admin_ac, limit=None, approved=False, archived=False, code=None, serialized=True):
+def get_dept_head_clearance_requests(admin_ac, limit=None, approved=False, archived=False, code=None, serialized=True, dept='cse'):
     approvals = []
-    approvals_qs = DeptApproval.objects.filter(dept__head=admin_ac, is_approved=approved, is_archived=archived)
+    approvals_qs = DeptApproval.objects.filter(
+        dept__head=admin_ac, 
+        clearance__student__session__dept__codename=dept, 
+        is_approved=approved, 
+        is_archived=archived
+    )
     if code:
         departments = Department.objects.filter(codename=code)
     else:
@@ -87,9 +97,14 @@ def get_dept_head_clearance_requests(admin_ac, limit=None, approved=False, archi
     return approvals
 
 
-def get_dept_clerk_clearance_requests(admin_ac, limit=None, approved=False, archived=False, code=None, serialized=True):
+def get_dept_clerk_clearance_requests(admin_ac, limit=None, approved=False, archived=False, code=None, serialized=True, dept='cse'):
     approvals = []
-    approvals_qs = ClerkApproval.objects.filter(dept_approval__dept__clerk=admin_ac, is_approved=approved, is_archived=archived)
+    approvals_qs = ClerkApproval.objects.filter(
+        dept_approval__dept__clerk=admin_ac, 
+        clearance__student__session__dept__codename=dept, 
+        is_approved=approved, 
+        is_archived=archived
+    )
     if code:
         departments = Department.objects.filter(codename=code)
     else:
@@ -115,9 +130,14 @@ def get_dept_clerk_clearance_requests(admin_ac, limit=None, approved=False, arch
     return approvals
 
 
-def get_lab_incharge_clearance_requests(admin_ac, limit=None, approved=False, archived=False, code=None, serialized=True):
+def get_lab_incharge_clearance_requests(admin_ac, limit=None, approved=False, archived=False, code=None, serialized=True, dept='cse'):
     approvals = []
-    approvals_qs = LabApproval.objects.filter(lab__incharge=admin_ac, is_approved=approved, is_archived=archived)
+    approvals_qs = LabApproval.objects.filter(
+        lab__incharge=admin_ac, 
+        clearance__student__session__dept__codename=dept, 
+        is_approved=approved, 
+        is_archived=archived
+    )
     if code:
         all_labs = Lab.objects.filter(codename=code)
     else:
