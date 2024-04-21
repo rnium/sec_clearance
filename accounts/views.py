@@ -22,7 +22,7 @@ from django.db.models import Q
 from clearance.utils import get_admin_roles
 from accounts.utils import compress_image, get_userinfo_data, get_members_data
 from accounts import utils
-from accounts.mail_utils import send_signup_email, send_html_email
+from accounts.mail_utils import send_signup_email, send_html_email, send_student_ac_confirmation_email
 from accounts.models import AdminAccount, InviteToken
 from django.utils import timezone
 from django.http import HttpResponse
@@ -160,6 +160,8 @@ def approve_student_ac(request):
     student_ac = get_object_or_404(StudentAccount, pk=reg)
     if student_ac.is_approved:
         return Response(data={'details': 'Account already approved'}, status=status.HTTP_400_BAD_REQUEST)
+    if not send_student_ac_confirmation_email(student_ac):
+        return Response(data={'details': 'Cannot send verification mail, aborted'}, status=status.HTTP_400_BAD_REQUEST)
     student_ac.is_approved = True
     student_ac.save()
     return Response(data={'info': 'Account Approved'})
@@ -168,10 +170,12 @@ def approve_student_ac(request):
 @api_view(['POST'])
 def approve_all_student_ac(request):
     student_acs = StudentAccount.objects.filter(is_approved=False)
-    count = student_acs.count()
+    count = 0
     for ac in student_acs:
-        ac.is_approved = True
-        ac.save()
+        if send_student_ac_confirmation_email(ac):
+            ac.is_approved = True
+            ac.save()
+            count += 1
     return Response(data={'info': f'{count} Student Account Approved'})
 
 

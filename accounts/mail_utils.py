@@ -44,4 +44,17 @@ def send_signup_email(request, invitation):
         send_html_email(receiver, email_subject, email_body)
     except Exception as e:
         return False
+    return True    
+
+
+def send_student_ac_confirmation_email(student):
+    email_subject = "Account Verification Confirmation"
+    receiver = student.user.email
+    email_body = render_to_string('accounts/student_ac_confirmation.html', context={
+        "student": student,
+    })
+    try:
+        send_html_email(receiver, email_subject, email_body)
+    except Exception as e:
+        return False
     return True
