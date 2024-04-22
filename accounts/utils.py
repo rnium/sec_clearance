@@ -129,25 +129,31 @@ def get_amdin_roles(admin_ac):
 def get_members_data():
     data = []
     ac_qs = AdminAccount.objects.all()
-    section = {'title': 'Administrator', 'accounts': []}
+    section = {'title': 'Administration', 'accounts': []}
     admin_acs = [
         *list(ac_qs.filter(user_type='principal')),
         *list(ac_qs.filter(user_type='academic')),
-        *list(ac_qs.filter(user_type='cashier'))
     ]
     for admin_ac in admin_acs:
         if admin_ac:
             serializer = AdminAccountSerializer(admin_ac)
             section['accounts'].append(serializer.data)
     data.append(section)
-    for dept in Department.objects.all():
-        dept_acs = ac_qs.filter(dept=dept)
+    for dept in Department.objects.all().order_by('id'):
+        dept_acs = sorted(list(ac_qs.filter(dept=dept)), key=lambda ac: ac.department_set.all().count(), reverse=True)
         section = {'title': dept.display_name, 'accounts': []}
-        if dept_acs.count():
+        if len(dept_acs):
             serializer = AdminAccountSerializer(dept_acs, many=True)
             section['accounts'].extend(serializer.data)
         data.append(section)
     undesignated_admins = ac_qs.filter(dept=None, user_type='general')
+    section = {'title': 'Cash Section', 'accounts': []}
+    admin_acs = ac_qs.filter(user_type='cashier')
+    for admin_ac in admin_acs:
+        if admin_ac:
+            serializer = AdminAccountSerializer(admin_ac)
+            section['accounts'].append(serializer.data)
+    data.append(section)
     section = {'title': 'Undesignated Users', 'accounts': []}
     if undesignated_admins.count():
         serializer = AdminAccountSerializer(undesignated_admins, many=True)

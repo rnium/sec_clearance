@@ -183,7 +183,6 @@ def get_administration_dept_data():
     }
     principal = AdminAccount.objects.filter(user_type='principal').first()
     academic = AdminAccount.objects.filter(user_type='academic').first()
-    cashier = AdminAccount.objects.filter(user_type='cashier').first()
     if principal:
         data['entities'].append(get_entity_data(principal.get_user_type_display(), 'administrative', 'principal', principal))
     else:
@@ -192,6 +191,15 @@ def get_administration_dept_data():
         data['entities'].append(get_entity_data(academic.get_user_type_display(), 'administrative', 'academic', academic))
     else:
         data['entities'].append(get_entity_data('SEC Academic', 'administrative', 'academic'))
+    return data
+
+
+def get_cash_section_dept_data():
+    data = {
+        'title': "Cash Section",
+        'entities': []
+    }
+    cashier = AdminAccount.objects.filter(user_type='cashier').first()
     if cashier:
         data['entities'].append(get_entity_data(cashier.get_user_type_display(), 'administrative', 'cashier', cashier))
     else:
@@ -214,6 +222,7 @@ def get_dept_sections():
             for lab in dept.lab_set.all():
                 data['entities'].append(get_entity_data(lab.name, 'lab_incharge', lab.codename, lab.incharge))
         departments.append(data)
+    departments.append(get_cash_section_dept_data())
     return departments
 
 def unassign_member(target_user, role, code):
