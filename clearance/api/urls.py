@@ -19,5 +19,5 @@ urlpatterns = [
     path('clearanceinfo/', views.student_clearanceinfo, name='student_clearanceinfo'),
     path('clearanceinfo/adminview/', views.clearanceinfo_as_admin, name='clearanceinfo_as_admin'),
     path('remarksinfo/', views.student_remarks_info, name='student_remarks_info'),
-    path('adminstats/', views.admin_stats, name='admin_stats'),
+    path('dashboard/adminstats/', views.admin_dashboard_stats, name='admin_dashboard_stats'),
 ]

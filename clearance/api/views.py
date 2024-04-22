@@ -273,6 +273,6 @@ def student_remarks_info(request):
 
 
 @api_view()
-def admin_stats(request):
+def admin_dashboard_stats(request):
     admin_ac = request.user.adminaccount
-    return Response(utils.get_admin_stats_data(admin_ac))
+    return Response(utils.get_admin_dashboard_stats_data(admin_ac))

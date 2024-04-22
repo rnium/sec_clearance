@@ -4,7 +4,7 @@ from clearance.api.serializer import (AdministrativeApprovalSerializer, DeptAppr
 from clearance.models import (Department, Lab, Session, Clearance, 
                               AdministrativeApproval, DeptApproval, LabApproval, ClerkApproval)
 from accounts.models import administrative_account_types
-from accounts.models import AdminAccount
+from accounts.models import AdminAccount, StudentAccount
 from accounts.serializer import AdminAccountBasicSerializer
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ValidationError
@@ -336,12 +336,15 @@ def get_clearance_req_count(admin_ac, dept, approved=False, archived=False, code
 
 
 def get_dept_stats_for_admin(admin_ac, dept):
-    return {
+    data = {
         'pending': get_clearance_req_count(admin_ac, dept=dept),
         'archived': get_clearance_req_count(admin_ac, dept=dept, archived=True),
     }
+    if admin_ac.user_type == 'academic':
+        data['pending_students'] = StudentAccount.objects.filter(is_approved=False, session__dept__codename=dept).count()
+    return data
 
-def get_admin_stats_data(admin_ac):
+def get_admin_dashboard_stats_data(admin_ac):
     departments = ['cse', 'ce', 'eee']
     data = {}
     for dept in departments:
