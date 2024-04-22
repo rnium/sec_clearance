@@ -38,6 +38,7 @@ class AdminAccountBasicSerializer(ModelSerializer):
     name = serializers.SerializerMethodField()
     email = serializers.SerializerMethodField()
     avatar_url = serializers.SerializerMethodField()
+    department = serializers.SerializerMethodField()
     class Meta:
         model = models.AdminAccount
         exclude = ['user', 'is_super_admin', 'invited_by', 'dept', 'profile_picture']
@@ -47,6 +48,11 @@ class AdminAccountBasicSerializer(ModelSerializer):
     
     def get_email(self, obj):
         return obj.user.email
+    
+    def get_department(self, obj):
+        if dept:=obj.user.adminaccount.dept:
+            return dept.display_name
+        return "<Undesignated>"
     
     def get_avatar_url(self, obj):
         return obj.avatar_url
