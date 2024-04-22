@@ -145,8 +145,11 @@ class AdministrativeApproval(BaseApproval):
         pending_labs = self.clearance.labapproval_set.filter(is_approved=False)
         if pending_depts.count() or pending_labs.count() or pending_clerks.count():
             return False
-        if self.admin_role in ['principal', 'cashier']:
+        if self.admin_role == 'cashier':
             return True
+        if self.admin_role == 'principal':
+            other_admin_approvals = self.clearance.administrativeapproval_set.filter(is_approved=False, admin_role='cashier')
+            return not bool(other_admin_approvals.count())
         else:
             other_admin_approvals = self.clearance.administrativeapproval_set.filter(is_approved=False).exclude(admin_role='academic')
             return not bool(other_admin_approvals.count())

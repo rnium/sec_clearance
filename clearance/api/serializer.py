@@ -80,7 +80,7 @@ class DeptApprovalBasicSerializer(ClearanceBasicApprovalSerializerBase):
     class Meta(ClearanceBasicApprovalSerializerBase.Meta):
         model = DeptApproval
     def get_title(self, obj):
-        return f"{obj.dept.head_title} of {obj.dept.display_name}"
+        return f"{obj.dept.head_title}, {obj.dept.display_name}"
     def get_section_title(self, obj):
         return obj.dept.display_name
     def get_role(self, obj):
@@ -99,7 +99,7 @@ class ClerkApprovalBasicSerializer(ClearanceBasicApprovalSerializerBase):
     class Meta(ClearanceBasicApprovalSerializerBase.Meta):
         model = ClerkApproval
     def get_title(self, obj):
-        return f"{obj.dept_approval.dept.clerk_title} of {obj.dept_approval.dept.display_name}"
+        return f"{obj.dept_approval.dept.clerk_title}, {obj.dept_approval.dept.display_name}"
     def get_role(self, obj):
         return 'dept_clerk'
     def get_is_seekable(self, obj):

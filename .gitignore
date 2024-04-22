@@ -13,6 +13,8 @@ create_samples.py
 delete_samples.py
 create_admins.py
 delete_admins.py
+delete_admins.py
+sample_approve.py
 media
 frontend
 
