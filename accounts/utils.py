@@ -139,7 +139,7 @@ def get_members_data():
             serializer = AdminAccountSerializer(admin_ac)
             section['accounts'].append(serializer.data)
     data.append(section)
-    for dept in Department.objects.all().order_by('id'):
+    for dept in Department.objects.all():
         dept_acs = sorted(list(ac_qs.filter(dept=dept)), key=lambda ac: ac.department_set.all().count(), reverse=True)
         section = {'title': dept.display_name, 'accounts': []}
         if len(dept_acs):
