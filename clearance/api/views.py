@@ -270,3 +270,9 @@ def clearanceinfo_as_admin(request):
 def student_remarks_info(request):
     student = request.user.studentaccount
     return Response(utils.get_clearance_remarks(getattr(student, 'clearance')))
+
+
+@api_view()
+def admin_stats(request):
+    admin_ac = request.user.adminaccount
+    return Response(utils.get_admin_stats_data(admin_ac))

@@ -295,12 +295,14 @@ def post_or_get_remarks_data(model, pk, approval_type, new_remarks=None):
         'title': get_approval_title(app_req, approval_type),
         'remarks_text': app_req.remarks,
     } 
-    
+
+   
 def get_appr_remarks_data(title, appr):
     return {
         'title': title,
         'remarks': appr.remarks
     }
+
 
 def get_clearance_remarks(clearance):
     remakrs = []
@@ -319,3 +321,29 @@ def get_clearance_remarks(clearance):
     for app in lab_incharge_app:
         remakrs.append(get_appr_remarks_data(app.lab.name, app))
     return remakrs
+
+
+def get_clearance_req_count(admin_ac, dept, approved=False, archived=False, code=None):
+    count = 0
+    sections = []
+    sections.extend(get_administrative_clearance_requests(admin_ac, dept=dept, approved=approved, archived=archived, code=code))
+    sections.extend(get_dept_head_clearance_requests(admin_ac, dept=dept, approved=approved, archived=archived, code=code))
+    sections.extend(get_dept_clerk_clearance_requests(admin_ac, dept=dept, approved=approved, archived=archived, code=code))
+    sections.extend(get_lab_incharge_clearance_requests(admin_ac, dept=dept, approved=approved, archived=archived, code=code))
+    for section in sections:
+        count += len(section['approvals'])
+    return count
+
+
+def get_dept_stats_for_admin(admin_ac, dept):
+    return {
+        'pending': get_clearance_req_count(admin_ac, dept=dept),
+        'archived': get_clearance_req_count(admin_ac, dept=dept, archived=True),
+    }
+
+def get_admin_stats_data(admin_ac):
+    departments = ['cse', 'ce', 'eee']
+    data = {}
+    for dept in departments:
+        data[dept] = get_dept_stats_for_admin(admin_ac, dept)
+    return data
