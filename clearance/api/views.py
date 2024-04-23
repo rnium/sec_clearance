@@ -277,3 +277,9 @@ def admin_dashboard_stats(request):
     # admin_ac = adminaccount.objects.get(user__username='rony')
     admin_ac = AdminAccount.objects.get(user__username='rony')
     return Response(utils.get_admin_dashboard_stats_data(admin_ac))
+
+
+class HallList(ListAPIView):
+    serializer_class = DepartmentSeializer
+    def get_queryset(self):
+        return Department.objects.filter(dept_type='hall')

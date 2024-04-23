@@ -190,7 +190,7 @@ departments = {
             'codename': 'office_of_the_hall_provost_bangamata',
             'name': 'Office of The Hall Provost (Bangamata Hall)',
             'display_name': 'Bangamata Hall',
-            'dept_type': 'administrative',
+            'dept_type': 'hall',
             'head_title': 'Provost',
         },
         'labs': []
@@ -200,7 +200,7 @@ departments = {
             'codename': 'office_of_the_hall_provost_bangabandhu',
             'name': 'Office of The Hall Provost (Bangabandhu Hall)',
             'display_name': 'Bangabandhu Hall',
-            'dept_type': 'administrative',
+            'dept_type': 'hall',
             'head_title': 'Provost',
         },
         'labs': []
@@ -210,7 +210,7 @@ departments = {
             'codename': 'office_of_the_hall_provost_muktijuddha',
             'name': 'Office of The Hall Provost (Muktijuddha Hall)',
             'display_name': 'Muktijuddha Hall',
-            'dept_type': 'administrative',
+            'dept_type': 'hall',
             'head_title': 'Provost',
         },
         'labs': []

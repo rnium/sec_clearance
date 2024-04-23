@@ -235,10 +235,12 @@ def student_signup(request):
         user.save()
     except Exception as e:
         return Response({'details':f'Cannot create user. Error: {e}'}, status=status.HTTP_400_BAD_REQUEST)
+    hall = Department.objects.filter(dept_type='hall', pk=request.data.get('hall')).first()
     account_kwargs = {}
     account_kwargs['user'] = user
     account_kwargs['session'] = session
     account_kwargs['registration'] = request.data.get('registration_no')
+    account_kwargs['hall'] = hall
     account_kwargs['phone'] = request.data.get('phone')
     account_kwargs['profile_picture'] = compressed_dp
     try:
@@ -308,7 +310,8 @@ def progressive_studentinfo(request):
 
 @api_view()
 def admin_roles(request):
-    admin_ac = request.user.adminaccount
+    # admin_ac = request.user.adminaccount
+    admin_ac = AdminAccount.objects.get(user__username='rony')
     return Response(data={'info': get_admin_roles(admin_ac)})
 
 

@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.templatetags.static import static
 from clearance.models import Department, Session
 from django.utils import timezone
+from django.core.exceptions import ValidationError
 
 
 account_types = (
@@ -113,12 +114,19 @@ class StudentAccount(BaseAccount):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     is_approved = models.BooleanField(default=False)
     session = models.ForeignKey(Session, on_delete=models.CASCADE)
+    hall = models.ForeignKey(Department, null=True, blank=True, on_delete=models.SET_NULL)
     
     class Meta:
         ordering = ["registration"]
     
     def __str__(self):
         return str(self.registration)
+    
+    def clean(self):
+        if self.hall is not None:
+            if self.hall.dept_type != 'hall':
+                raise ValidationError("Department Type needs to be Hall")
+        super().clean()
         
     @property
     def full_name(self):

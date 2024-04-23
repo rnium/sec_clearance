@@ -2,6 +2,7 @@ from django.urls import path
 from clearance.api import views
 urlpatterns = [
     path('departments/', views.DeparmentList.as_view(), name='departments'),
+    path('halls/', views.HallList.as_view(), name='halls'),
     path('departments/sections/', views.dept_sections, name='dept_sections'),
     path('departments/sessions/', views.dept_sessions, name='dept_sessions'),
     path('sessions/students/', views.session_students, name='session_students'),

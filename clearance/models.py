@@ -6,6 +6,7 @@ class Department(models.Model):
     dept_types = (
         ('academic', 'Academic Dept'),
         ('accessory', 'Accessory Dept'),
+        ('hall', 'Residential Hall'),
         ('administrative', 'Administrative'),
     )
     codename = models.CharField(max_length=50, unique=True)
