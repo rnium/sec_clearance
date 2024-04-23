@@ -347,6 +347,29 @@ def send_invitation(request):
         return Response({'details': 'Cannot Send Email'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
     return Response({'info': 'Invitation Sent'})
 
+@api_view(['POST'])
+def change_dept(request):
+    admin_ac = get_object_or_404(AdminAccount, pk=request.data.get('user_id'))
+    dept_pk = request.data.get('dept')
+    if dept_pk and dept_pk >= 0:
+        dept = get_object_or_404(Department, pk=dept_pk)
+    else:
+        dept = None
+    admin_ac.dept = dept
+    admin_ac.save()
+    return Response({'info': f'Department Changed for {admin_ac.full_name}'})
+
+
+@api_view(['POST'])
+def delete_account(request):
+    admin_ac = get_object_or_404(AdminAccount, pk=request.data.get('user_id'))
+    if admin_ac == request.user.adminaccount:
+        return Response({'details': 'You cannot delete your own account'}, status=status.HTTP_400_BAD_REQUEST)
+    name = admin_ac.full_name
+    admin_ac.delete()
+    return Response({'info': f'Account of {name} has been deleted'})
+
+
 @api_view()
 def search_member(request):
     query = request.GET.get('query', None)
