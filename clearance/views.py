@@ -5,12 +5,22 @@ from clearance.models import Clearance
 from django.http.response import FileResponse, HttpResponse
 from django.core.files.base import ContentFile
 from .utils import b64decode
+from django.shortcuts import get_object_or_404
 
 def download_clearance_report(request):
     if not hasattr(request.user, 'studentaccount'):
         return HttpResponse('Not a Student Account')
     clearance = getattr(request.user.studentaccount, 'clearance')
     if clearance is None or not clearance.is_all_approved:
+        return HttpResponse('Clearance is not approved yet!')
+    report_pdf = render_report(request, clearance)
+    filename = f"{clearance.student.registration} Report.pdf"
+    return FileResponse(ContentFile(report_pdf), filename=filename)
+
+
+def download_clearance_report_admin(request, reg):
+    clearance = get_object_or_404(Clearance, student__registration=reg)
+    if not clearance.is_all_approved:
         return HttpResponse('Clearance is not approved yet!')
     report_pdf = render_report(request, clearance)
     filename = f"{clearance.student.registration} Report.pdf"

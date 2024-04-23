@@ -25,6 +25,7 @@ class ClearanceBasicSerializer(ModelSerializer):
     student = StudentAccountSerializer()
     adminstrative = serializers.SerializerMethodField()
     department = serializers.SerializerMethodField()
+    report_url = serializers.SerializerMethodField()
     # dept_clerk = serializers.SerializerMethodField()
     # lab_incharge = serializers.SerializerMethodField()
     
@@ -39,6 +40,9 @@ class ClearanceBasicSerializer(ModelSerializer):
     def get_department(self, obj):
         s = DeptApprovalBasicSerializer(obj.deptapproval_set.all().order_by('dept__id'), many=True)
         return s.data
+        
+    def get_report_url(self, obj):
+        return reverse('clearance:download_report_admin', args=(obj.student.registration,))
         
     # def get_dept_clerk(self, obj):
     #     s = ClerkApprovalBasicSerializer(obj.clerkapproval_set.all(), many=True)
