@@ -165,7 +165,7 @@ def get_members_data():
 
 def adapt_hall_change_to_clearancce(clearance, prev_hall, new_hall):
     if prev_hall:
-        hall_dept_approval = DeptApproval.objects.get(clearance=clearance, dept=prev_hall)
+        hall_dept_approval = DeptApproval.objects.filter(clearance=clearance, dept=prev_hall)
         hall_dept_approval.delete()
     if new_hall:
         h_approval, created = DeptApproval.objects.get_or_create(clearance=clearance, dept=new_hall)
