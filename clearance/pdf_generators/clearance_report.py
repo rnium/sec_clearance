@@ -19,12 +19,19 @@ def get_clearance_approvals_data(clearance):
         'academic_depts': [],
         'general_depts': [],
     }
-    for dept in Department.objects.exclude(dept_type='administrative').order_by('id'):
+    for dept in Department.objects.exclude(dept_type__in=['administrative', 'hall']).order_by('id'):
         labs = LabApproval.objects.filter(clearance=clearance, lab__in=dept.lab_set.all()).order_by('id')
         approvals['academic_depts'].append(
             {
                 'dept_approval': DeptApproval.objects.get(dept=dept, clearance=clearance),
                 'lab_approval': labs,
+            }
+        )
+    for dept in Department.objects.filter(dept_type='hall', id=clearance.student.hall.id).order_by('id'):
+        approvals['general_depts'].append(
+            {
+                'dept_approval': DeptApproval.objects.get(dept=dept, clearance=clearance),
+                'clerk_approval': ClerkApproval.objects.get(clearance=clearance, dept_approval__dept=dept),
             }
         )
     for dept in Department.objects.filter(dept_type='administrative').order_by('id'):
