@@ -302,6 +302,14 @@ def student_profile_update(request):
     return Response(data={'info': serializer.data})
 
 
+@api_view(['POST'])
+def student_profile_update_by_admin(request):
+    try:
+        utils.update_student_profile_as_admin(request.data)
+    except Exception as e:
+        return Response({'details': f'Cannot Update Data, error: {str(e)}'}, status=status.HTTP_400_BAD_REQUEST)
+    return Response({'info': 'Updated'})
+
 @api_view()
 def progressive_studentinfo(request):
     # student = request.user.studentaccount

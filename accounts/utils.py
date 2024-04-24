@@ -1,14 +1,15 @@
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
-from accounts.models import AdminAccount
+from accounts.models import AdminAccount, StudentAccount
 from accounts.serializer import AdminAccountSerializer
-from clearance.models import Department
+from clearance.models import Department, DeptApproval, ClerkApproval
 from pathlib import Path
 from PIL import Image
 from io import BytesIO
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.shortcuts import get_object_or_404
 
 
 def validate_image_extension(value):
@@ -160,3 +161,36 @@ def get_members_data():
         section['accounts'].extend(serializer.data)
     data.append(section)
     return data
+
+
+def adapt_hall_change_to_clearancce(clearance, prev_hall, new_hall):
+    if prev_hall:
+        hall_dept_approval = DeptApproval.objects.get(clearance=clearance, dept=prev_hall)
+        hall_dept_approval.delete()
+    if new_hall:
+        h_approval, created = DeptApproval.objects.get_or_create(clearance=clearance, dept=new_hall)
+        clerk_approval, created = ClerkApproval.objects.get_or_create(clearance=clearance, dept_approval=h_approval)
+    clearance.update_stats()
+        
+
+def update_student_profile_as_admin(data):
+    student = get_object_or_404(StudentAccount, registration=data.get('registration'))
+    user = student.user
+    fname = data.get('first_name')
+    lname = data.get('last_name')
+    user_updatable = False
+    if fname and fname != user.first_name:
+        user.first_name = fname
+        user_updatable = True
+    if lname and lname != user.last_name:
+        user.last_name = lname
+        user_updatable = True
+    if user_updatable:
+        user.save()
+    new_hall = Department.objects.filter(dept_type='hall', pk=data.get('hall_id')).first()
+    if student.hall != new_hall:
+        prev_hall = student.hall
+        student.hall = new_hall
+        student.save()
+        if hasattr(student, 'clearance'):
+            adapt_hall_change_to_clearancce(student.clearance, prev_hall, new_hall)

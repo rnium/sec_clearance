@@ -20,6 +20,7 @@ urlpatterns = [
     path('studentac/delete/', views.delete_student_ac, name='delete_studentac'),
     path('student/signup/', views.student_signup, name='student_signup'),
     path('student/updateprofile/', views.student_profile_update, name='student_profile_update'),
+    path('student/byadmin/updateprofile/', views.student_profile_update_by_admin, name='student_profile_update_by_admin'),
     path('admin/updateprofile/', views.admin_profile_update, name='admin_profile_update'),
     path('progressive-studentinfo/', views.progressive_studentinfo, name='progressive_studentinfo'),
     path('admin-roles/', views.admin_roles, name='admin_roles'),
