@@ -71,7 +71,11 @@ class StudentAccountSerializer(ModelSerializer):
 
 class StudentProfileSerializer(ModelSerializer):
     session = serializers.StringRelatedField()
+    hall = serializers.StringRelatedField()
+    hall_id = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
+    first_name = serializers.SerializerMethodField()
+    last_name = serializers.SerializerMethodField()
     progress = serializers.SerializerMethodField()
     avatar_url = serializers.SerializerMethodField()
     class Meta:
@@ -88,6 +92,17 @@ class StudentProfileSerializer(ModelSerializer):
 
     def get_avatar_url(self, obj):
         return obj.avatar_url
+
+    def get_hall_id(self, obj):
+        if h:=obj.hall:
+            return h.id
+        return -1
+
+    def get_first_name(self, obj):
+        return obj.user.first_name
+
+    def get_last_name(self, obj):
+        return obj.user.last_name
 
 
 class PendingStudentSerializer(ModelSerializer):
