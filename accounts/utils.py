@@ -146,7 +146,6 @@ def get_members_data():
             serializer = AdminAccountSerializer(dept_acs, many=True)
             section['accounts'].extend(serializer.data)
         data.append(section)
-    undesignated_admins = ac_qs.filter(dept=None, user_type='general')
     section = {'title': 'Cash Section', 'accounts': []}
     admin_acs = ac_qs.filter(user_type='cashier')
     for admin_ac in admin_acs:
@@ -154,6 +153,7 @@ def get_members_data():
             serializer = AdminAccountSerializer(admin_ac)
             section['accounts'].append(serializer.data)
     data.append(section)
+    undesignated_admins = ac_qs.filter(dept=None, user_type='general')
     section = {'title': 'Undesignated Users', 'accounts': []}
     if undesignated_admins.count():
         serializer = AdminAccountSerializer(undesignated_admins, many=True)
