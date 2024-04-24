@@ -165,7 +165,7 @@ def assign_member(request):
         dept = get_object_or_404(Department, codename=code)
         if role == 'dept_head':
             dept.head = target_user
-        elif role == 'dept_clerk' and dept.dept_type == 'administrative':
+        elif role == 'dept_clerk' and dept.dept_type in ['administrative', 'hall']:
             dept.clerk = target_user
         dept.save()
     elif role == 'lab_incharge':
