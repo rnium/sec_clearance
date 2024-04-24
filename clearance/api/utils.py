@@ -241,7 +241,7 @@ def unassign_member(target_user, role, code):
             if target_user != dept.head:
                 raise ValidationError('User is not the department head')
             dept.head = None
-        elif role == 'dept_clerk' and dept.dept_type == 'administrative':
+        elif role == 'dept_clerk' and dept.dept_type in ['administrative', 'hall']:
             if target_user != dept.clerk:
                 raise ValidationError('User is not the department clerk')
             dept.clerk = None

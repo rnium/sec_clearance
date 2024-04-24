@@ -19,7 +19,7 @@ from accounts.models import StudentAccount
 from clearance.models import Session, Department
 from django.contrib.auth.models import User
 from django.db.models import Q
-from clearance.utils import get_admin_roles
+from clearance.utils import get_admin_roles, get_admin_ac, get_student_ac
 from accounts.utils import compress_image, get_userinfo_data, get_members_data
 from accounts import utils
 from accounts.mail_utils import send_signup_email, send_html_email, send_student_ac_confirmation_email
@@ -112,7 +112,7 @@ class PendingStudents(ListAPIView):
 
 @api_view(['POST'])
 def admin_profile_update(request):
-    admin_ac = request.user.adminaccount
+    admin_ac = get_admin_ac(request)
     email = request.data.get('email')
     if email:
         user_queryset = User.objects.filter(Q(email=email) | Q(username=email)).exclude(email=admin_ac.user.email)
@@ -146,11 +146,10 @@ def admin_profile_update(request):
         if admin_ac.profile_picture is not None:
             admin_ac.profile_picture.delete(save=True)
         admin_ac.profile_picture = display_pic
-    admin_ac.save()
-    # try:
-    #     student.save()
-    # except Exception as e:
-    #     return Response({'details':f'Cannot update account. Error: {e}'}, status=status.HTTP_400_BAD_REQUEST)
+    try:
+        admin_ac.save()
+    except Exception as e:
+        return Response({'details':f'Cannot update account. Error: {e}'}, status=status.HTTP_400_BAD_REQUEST)
     data = utils.get_userinfo_data(user)
     return Response(data)
 
@@ -194,8 +193,8 @@ def delete_student_ac(request):
     except KeyError:
         return Response(data={'details': 'Registration empty'}, status=status.HTTP_400_BAD_REQUEST)
     student_ac = get_object_or_404(StudentAccount, pk=reg)
-    if hasattr(student_ac, 'clearance'):
-        return Response(data={'details': 'Cannot Delete Now, Student applied for clearance'}, status=status.HTTP_400_BAD_REQUEST)
+    if hasattr(student_ac, 'clearance') and student_ac.clearance.progress == 100:
+        return Response(data={'details': 'Cannot Delete Now, Student received 100% clearance'}, status=status.HTTP_400_BAD_REQUEST)
     student_ac.delete()
     return Response(data={'info': 'Account Deleted'})
 
@@ -254,7 +253,7 @@ def student_signup(request):
 
 @api_view(['POST'])
 def student_profile_update(request):
-    student = request.user.studentaccount
+    student = get_student_ac(request)
     email = request.data.get('email')
     if email:
         user_queryset = User.objects.filter(Q(email=email) | Q(username=email)).exclude(email=student.user.email)
@@ -293,11 +292,10 @@ def student_profile_update(request):
         if student.profile_picture is not None:
             student.profile_picture.delete(save=True)
         student.profile_picture = display_pic
-    student.save()
-    # try:
-    #     student.save()
-    # except Exception as e:
-    #     return Response({'details':f'Cannot update account. Error: {e}'}, status=status.HTTP_400_BAD_REQUEST)
+    try:
+        student.save()
+    except Exception as e:
+        return Response({'details':f'Cannot update account. Error: {e}'}, status=status.HTTP_400_BAD_REQUEST)
     serializer = ProgressiveStudentInfoSerializer(student)
     return Response(data={'info': serializer.data})
 
@@ -312,8 +310,7 @@ def student_profile_update_by_admin(request):
 
 @api_view()
 def progressive_studentinfo(request):
-    # student = request.user.studentaccount
-    student = StudentAccount.objects.get(registration=2018338514)
+    student = get_student_ac(request)
     serializer = ProgressiveStudentInfoSerializer(student)
     return Response(data={'info': serializer.data})
 
@@ -321,8 +318,7 @@ def progressive_studentinfo(request):
 
 @api_view()
 def admin_roles(request):
-    # admin_ac = request.user.adminaccount
-    admin_ac = AdminAccount.objects.get(user__username='rony')
+    admin_ac = get_admin_ac(request)
     return Response(data={'info': get_admin_roles(admin_ac)})
 
 
@@ -334,7 +330,7 @@ def members(request):
 
 @api_view(['POST'])
 def send_invitation(request):
-    from_user = request.user
+    from_user = get_admin_ac(request).user
     try:
         to_user_email = request.data['email']
         dept_id = request.data['dept']

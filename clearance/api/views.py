@@ -17,6 +17,7 @@ from clearance.api.serializer import (AdministrativeApprovalSerializer, DeptAppr
                                       DeptApprovalBasicSerializer, ClerkApprovalSerializer, LabApprovalSerializer,
                                       DepartmentSeializer)
 from clearance.api.pagination import ClearancePagination
+from clearance.utils import get_admin_ac, get_student_ac
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 
@@ -53,7 +54,7 @@ def get_userinfo(request):
 
 @api_view()
 def apply_for_clearance(request):
-    student = request.user.studentaccount
+    student = get_student_ac(request)
     if not student.is_approved:
         return Response(data={'details': 'Account not approved'}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
     if hasattr(student, 'clearance'):
@@ -64,7 +65,7 @@ def apply_for_clearance(request):
 
 @api_view()
 def dashboard_clearance_requests(request):
-    admin_ac = AdminAccount.objects.get(user__username='rony')
+    admin_ac = get_admin_ac(request)
     dept = request.GET.get('dept')
     sections = []
     sections.extend(get_administrative_clearance_requests(admin_ac, 5, dept=dept))
@@ -76,7 +77,7 @@ def dashboard_clearance_requests(request):
 
 @api_view()
 def approve_clearance_entity(request, modelname, pk):
-    admin_ac = AdminAccount.objects.get(user__username='rony')
+    admin_ac = get_admin_ac(request)
     the_model = get_model_by_name(modelname)
     if the_model is None:
         return Response({'details': 'Unknown action'}, status=status.HTTP_406_NOT_ACCEPTABLE)
@@ -116,7 +117,7 @@ def unarchive_clearance_entity(request, modelname, pk):
 
 @api_view()
 def section_clearance(request):
-    admin_ac = AdminAccount.objects.get(user__username='rony')
+    admin_ac = get_admin_ac(request)
     role_type = request.GET.get('type')
     dept = request.GET.get('dept')
     approved = request.GET.get('approved', 'false') == 'true'
@@ -146,6 +147,7 @@ def dept_sections(request):
 
 @api_view(['POST'])
 def assign_member(request):
+    admin_ac = get_admin_ac(request)
     try:
         role = request.data['role']
         code = request.data['code']
@@ -155,7 +157,7 @@ def assign_member(request):
     target_user = get_object_or_404(AdminAccount, pk=user_id)
     
     if role == 'administrative':
-        if request.user.adminaccount == target_user:
+        if admin_ac == target_user:
             return Response({'details': 'Unable to perform this action'}, status=status.HTTP_400_BAD_REQUEST)
         admins_qs = AdminAccount.objects.filter(user_type=code)
         admins_qs.update(user_type='general')
@@ -254,8 +256,7 @@ def delete_remarks(request):
 
 @api_view()
 def student_clearanceinfo(request):
-    # student = request.user.studentaccount
-    student = StudentAccount.objects.get(registration=2018338514)
+    student = get_student_ac(request)
     if hasattr(student, 'clearance'):
         serializer = ClearanceBasicSerializer(student.clearance)
         return Response(serializer.data)
@@ -285,15 +286,13 @@ def clearanceinfo_as_admin(request):
 
 @api_view()
 def student_remarks_info(request):
-    # student = request.user.studentaccount
-    student = StudentAccount.objects.get(registration=2018338514)
+    student = get_student_ac(request)
     return Response(utils.get_clearance_remarks(getattr(student, 'clearance')))
 
 
 @api_view()
 def admin_dashboard_stats(request):
-    # admin_ac = adminaccount.objects.get(user__username='rony')
-    admin_ac = AdminAccount.objects.get(user__username='rony')
+    admin_ac = get_admin_ac(request)
     return Response(utils.get_admin_dashboard_stats_data(admin_ac))
 
 

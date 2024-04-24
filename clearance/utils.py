@@ -55,8 +55,17 @@ def get_admin_roles(admin_ac):
     return roles
 
 
+def get_admin_ac(request):
+    return request.user.adminaccount
+
+
+def get_student_ac(request):
+    return request.user.studentaccount
+
+
 def b64encode(data):
     return urlsafe_base64_encode(force_bytes(data))
+
 
 def b64decode(data):
     return force_str(urlsafe_base64_decode(data))
