@@ -26,6 +26,7 @@ from accounts.mail_utils import send_signup_email, send_html_email, send_student
 from accounts.models import AdminAccount, InviteToken
 from django.utils import timezone
 from django.http import HttpResponse
+from clearance.api.permission import IsAdmin, IsSecAcademic, IsSecAdministrative, IsSecAdministrativeIncludingCashier, IsStudent
 from django.db.models import Q
 from datetime import timedelta
 
@@ -103,6 +104,7 @@ def api_logout(request):
 
 class PendingStudents(ListAPIView):
     serializer_class = PendingStudentSerializer
+    permission_classes = [IsSecAcademic]
     def get_queryset(self):
         dept = self.request.GET.get('dept')
         return StudentAccount.objects.filter(is_approved=False, session__dept__codename=dept).order_by('user__date_joined')
@@ -111,6 +113,7 @@ class PendingStudents(ListAPIView):
 
 
 @api_view(['POST'])
+@permission_classes([IsAdmin])
 def admin_profile_update(request):
     admin_ac = get_admin_ac(request)
     email = request.data.get('email')
@@ -156,6 +159,7 @@ def admin_profile_update(request):
 
 
 @api_view(['POST'])
+@permission_classes([IsSecAcademic])
 def approve_student_ac(request):
     try:
         reg = request.data['registration']
@@ -172,6 +176,7 @@ def approve_student_ac(request):
 
 
 @api_view(['POST'])
+@permission_classes([IsSecAcademic])
 def approve_all_student_ac(request):
     dept = request.data.get('dept')
     if dept is None:
@@ -187,6 +192,7 @@ def approve_all_student_ac(request):
 
 
 @api_view(['POST'])
+@permission_classes([IsSecAdministrative])
 def delete_student_ac(request):
     try:
         reg = request.data['registration']
@@ -195,7 +201,7 @@ def delete_student_ac(request):
     student_ac = get_object_or_404(StudentAccount, pk=reg)
     if hasattr(student_ac, 'clearance') and student_ac.clearance.progress == 100:
         return Response(data={'details': 'Cannot Delete Now, Student received 100% clearance'}, status=status.HTTP_400_BAD_REQUEST)
-    student_ac.delete()
+    student_ac.user.delete()
     return Response(data={'info': 'Account Deleted'})
 
  
@@ -252,6 +258,7 @@ def student_signup(request):
 
 
 @api_view(['POST'])
+@permission_classes([IsStudent])
 def student_profile_update(request):
     student = get_student_ac(request)
     email = request.data.get('email')
@@ -284,9 +291,9 @@ def student_profile_update(request):
     except Exception as e:
         return Response({'details':f'Cannot update user info. Error: {e}'}, status=status.HTTP_400_BAD_REQUEST)
     hall_id = request.data.get('hall')
-    if hall_id and hasattr(student, 'clearance'):
-        return Response({'details':'You Cannot Change Hall Now, as you\'ve already applied for clearance. You may contact administrators to change hall.'}, status=status.HTTP_400_BAD_REQUEST)
-    else:
+    if hall_id is not None:
+        if hasattr(student, 'clearance'):
+            return Response({'details':'You Cannot Change Hall Now! Please contact administrators to change hall.'}, status=status.HTTP_400_BAD_REQUEST)
         student.hall = Department.objects.filter(dept_type='hall', pk=hall_id).first()
     if display_pic:
         if student.profile_picture is not None:
@@ -301,6 +308,7 @@ def student_profile_update(request):
 
 
 @api_view(['POST'])
+@permission_classes([IsSecAdministrativeIncludingCashier])
 def student_profile_update_by_admin(request):
     try:
         utils.update_student_profile_as_admin(request.data)
@@ -309,6 +317,7 @@ def student_profile_update_by_admin(request):
     return Response({'info': 'Updated'})
 
 @api_view()
+@permission_classes([IsStudent])
 def progressive_studentinfo(request):
     student = get_student_ac(request)
     serializer = ProgressiveStudentInfoSerializer(student)
@@ -317,18 +326,21 @@ def progressive_studentinfo(request):
 
 
 @api_view()
+@permission_classes([IsAdmin])
 def admin_roles(request):
     admin_ac = get_admin_ac(request)
     return Response(data={'info': get_admin_roles(admin_ac)})
 
 
 @api_view()
+@permission_classes([IsAdmin])
 def members(request):
     data = get_members_data()
     return Response(data)
 
 
 @api_view(['POST'])
+@permission_classes([IsSecAdministrative])
 def send_invitation(request):
     from_user = get_admin_ac(request).user
     try:
@@ -357,7 +369,9 @@ def send_invitation(request):
         return Response({'details': 'Cannot Send Email'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
     return Response({'info': 'Invitation Sent'})
 
+
 @api_view(['POST'])
+@permission_classes([IsSecAdministrative])
 def change_dept(request):
     admin_ac = get_object_or_404(AdminAccount, pk=request.data.get('user_id'))
     dept_pk = request.data.get('dept')
@@ -371,16 +385,18 @@ def change_dept(request):
 
 
 @api_view(['POST'])
+@permission_classes([IsSecAdministrative])
 def delete_account(request):
     admin_ac = get_object_or_404(AdminAccount, pk=request.data.get('user_id'))
     if admin_ac == request.user.adminaccount:
         return Response({'details': 'You cannot delete your own account'}, status=status.HTTP_400_BAD_REQUEST)
     name = admin_ac.full_name
-    admin_ac.delete()
+    admin_ac.user.delete()
     return Response({'info': f'Account of {name} has been deleted'})
 
 
 @api_view()
+@permission_classes([IsSecAdministrative])
 def search_member(request):
     query = request.GET.get('query', None)
     if query is None:

@@ -17,6 +17,7 @@ from clearance.api.serializer import (AdministrativeApprovalSerializer, DeptAppr
                                       DeptApprovalBasicSerializer, ClerkApprovalSerializer, LabApprovalSerializer,
                                       DepartmentSeializer)
 from clearance.api.pagination import ClearancePagination
+from clearance.api.permission import IsAdmin, IsSecAcademic, IsSecAdministrative, IsStudent
 from clearance.utils import get_admin_ac, get_student_ac
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
@@ -53,6 +54,7 @@ def get_userinfo(request):
 
 
 @api_view()
+@permission_classes([IsStudent])
 def apply_for_clearance(request):
     student = get_student_ac(request)
     if not student.is_approved:
@@ -64,6 +66,7 @@ def apply_for_clearance(request):
 
 
 @api_view()
+@permission_classes([IsAdmin])
 def dashboard_clearance_requests(request):
     admin_ac = get_admin_ac(request)
     dept = request.GET.get('dept')
@@ -76,6 +79,7 @@ def dashboard_clearance_requests(request):
 
 
 @api_view()
+@permission_classes([IsAdmin])
 def approve_clearance_entity(request, modelname, pk):
     admin_ac = get_admin_ac(request)
     the_model = get_model_by_name(modelname)
@@ -91,6 +95,7 @@ def approve_clearance_entity(request, modelname, pk):
     return Response({'info': 'Clearance Request Approved'})
 
 @api_view()
+@permission_classes([IsAdmin])
 def archive_clearance_entity(request, modelname, pk):
     the_model = get_model_by_name(modelname)
     if the_model is None:
@@ -103,6 +108,7 @@ def archive_clearance_entity(request, modelname, pk):
     return Response({'info': 'Clearance Request Archived'})
 
 @api_view()
+@permission_classes([IsAdmin])
 def unarchive_clearance_entity(request, modelname, pk):
     the_model = get_model_by_name(modelname)
     if the_model is None:
@@ -116,6 +122,7 @@ def unarchive_clearance_entity(request, modelname, pk):
 
 
 @api_view()
+@permission_classes([IsAdmin])
 def section_clearance(request):
     admin_ac = get_admin_ac(request)
     role_type = request.GET.get('type')
@@ -141,11 +148,15 @@ def section_clearance(request):
     response = paginator.get_paginated_response(serializer.data)
     return response
 
+
 @api_view()
+@permission_classes([IsAdmin])
 def dept_sections(request):
     return Response(get_dept_sections())
 
+
 @api_view(['POST'])
+@permission_classes([IsSecAcademic])
 def assign_member(request):
     admin_ac = get_admin_ac(request)
     try:
@@ -180,6 +191,7 @@ def assign_member(request):
 
 
 @api_view(['POST'])
+@permission_classes([IsSecAcademic])
 def unassign_member(request):
     try:
         role = request.data['role']
@@ -196,10 +208,12 @@ def unassign_member(request):
 
 
 @api_view()
+@permission_classes([IsAdmin])
 def dept_sessions(request):
     return Response(utils.get_dept_sessions())
 
 @api_view()
+@permission_classes([IsAdmin])
 def session_students(request):
     session_id = request.GET.get('sessionid')
     session = get_object_or_404(Session, pk=session_id)
@@ -209,6 +223,7 @@ def session_students(request):
 
 
 @api_view(['POST'])
+@permission_classes([IsSecAdministrative])
 def add_session(request):
     try:
         utils.create_session(request.data)
@@ -218,6 +233,7 @@ def add_session(request):
 
 
 @api_view(['GET', 'POST'])
+@permission_classes([IsAdmin])
 def remarks(request):
     if request.method == 'GET':
         query_dict = request.GET
@@ -239,6 +255,7 @@ def remarks(request):
 
 
 @api_view(['POST'])
+@permission_classes([IsAdmin])
 def delete_remarks(request):
     query_dict = request.data
     try:
@@ -255,6 +272,7 @@ def delete_remarks(request):
 
 
 @api_view()
+@permission_classes([IsStudent])
 def student_clearanceinfo(request):
     student = get_student_ac(request)
     if hasattr(student, 'clearance'):
@@ -262,7 +280,9 @@ def student_clearanceinfo(request):
         return Response(serializer.data)
     return Response(status=status.HTTP_400_BAD_REQUEST)
 
+
 @api_view()
+@permission_classes([IsAdmin])
 def clearanceinfo_as_admin(request):
     query_dict = request.GET
     if reg:=query_dict.get('registration'):
@@ -285,12 +305,14 @@ def clearanceinfo_as_admin(request):
     return Response(serializer.data)
 
 @api_view()
+@permission_classes([IsStudent])
 def student_remarks_info(request):
     student = get_student_ac(request)
     return Response(utils.get_clearance_remarks(getattr(student, 'clearance')))
 
 
 @api_view()
+@permission_classes([IsAdmin])
 def admin_dashboard_stats(request):
     admin_ac = get_admin_ac(request)
     return Response(utils.get_admin_dashboard_stats_data(admin_ac))
