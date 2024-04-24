@@ -80,13 +80,15 @@ def render_report(request, clearance):
     context = {'clearance': clearance, 'student': clearance.student}
     govt_logo = settings.BASE_DIR/'clearance/pdf_generators/images/bdgovt.png'
     principal_signature = settings.BASE_DIR/'clearance/pdf_generators/images/principal_signature.png'
+    cashier_signature = settings.BASE_DIR/'clearance/pdf_generators/images/cashier_signature.jpg'
     qrcode_path = get_qr_code_path(request, clearance)
     context['govt_logo'] = govt_logo
     context['student_photo'] = settings.BASE_DIR / clearance.student.profile_picture.path
     context['approvals'] = get_clearance_approvals_data(clearance)
     context['principal_signature'] = principal_signature
+    context['cashier_signature'] = cashier_signature
     context['qrcode'] = qrcode_path
-    formatted_time = datetime.now().strftime("%H:%M:%S%p, %d %B %Y")
+    formatted_time = datetime.now().strftime("%H:%M:%S%p, %d %b %Y")
     context['server_time'] = formatted_time
     html_text = render_to_string('clearance/pdf_templates/clearance_temp.html', context=context)
     fonts = {

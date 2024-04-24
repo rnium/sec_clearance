@@ -91,26 +91,33 @@
       </table>
     </div>
     <div class="administration mt-2">
-      <div class="role">
-        <span class="label">Principal:</span>
-        <span class="value">{{approvals.principal.approved_by.full_name}}</span>
+      <div class="roles">
+        <div class="role">
+          <span class="label">Principal:</span>
+          <span class="value">{{approvals.principal.approved_by.full_name}}</span>
+        </div>
+        <div class="role">
+          <span class="label">Academic Section:</span>
+          <span class="value">{{approvals.academic.approved_by.full_name}}</span>
+        </div>
+        <div class="role">
+          <span class="label">Cashier:</span>
+          <span class="value">{{approvals.cashier.approved_by.full_name}}</span>
+        </div>
       </div>
-      <div class="role">
-        <span class="label">Cashier:</span>
-        <span class="value">{{approvals.cashier.approved_by.full_name}}</span>
-      </div>
-      <div class="role">
-        <span class="label">Academic Section:</span>
-        <span class="value">{{approvals.academic.approved_by.full_name}}</span>
-      </div>
-    </div>
-    <div class="footer">
       <div class="server">
-        <img src="file:///{{qrcode}}" alt="" />
         <div class="info">
           <div class="title">SEC Clearance Portal</div>
           <div class="time">Server Time: {{server_time}}</div>
         </div>
+        <img src="file:///{{qrcode}}" alt="" />
+      </div>
+    </div>
+    <div class="footer">
+      <div class="entity">
+        <img src="file:///{{cashier_signature}}" alt="" />
+        <div class="designation">Cash Section</div>
+        <div class="campus">Sylhet Engineering College</div>
       </div>
       <div class="entity">
         <img src="file:///{{principal_signature}}" alt="" />

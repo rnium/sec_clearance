@@ -117,17 +117,45 @@
 }
 
 .administration {
-    .role {
-        span {
-            font-size: 14px;
-        }
-        .label {
-            font-family: roboto-b;
-        }
-        .value {
-            font-family: roboto;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    .roles {
+        .role {
+            span {
+                font-size: 14px;
+            }
+            .label {
+                font-family: roboto-b;
+            }
+            .value {
+                font-family: roboto;
+            }
         }
     }
+    .server {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        img {
+            width: 60px;
+            margin-right: 20px;
+        }
+    
+        .info {
+            width: 230px;
+            margin-right: 20px;
+            .title {
+                font-size: 10px;
+            }
+            .time {
+                font-size: 9px;
+                color: rgb(76, 76, 76);
+            }
+        }
+    }
+    
 }
 
 .footer {
@@ -149,24 +177,6 @@
         div {
             width: 200px;
             text-align: center
-        }
-    }
-
-    .server {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        flex-wrap: 1;
-        img {
-            width: 60px;
-        }
-    
-        .info {
-            width: 250px;
-            margin-left: 20px;
-            div {
-                font-size: 10px;
-            }
         }
     }
 }

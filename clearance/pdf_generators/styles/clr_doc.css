@@ -85,14 +85,40 @@
   width: 33.333%;
 }
 
-.administration .role span {
+.administration {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+.administration .roles .role span {
   font-size: 14px;
 }
-.administration .role .label {
+.administration .roles .role .label {
   font-family: roboto-b;
 }
-.administration .role .value {
+.administration .roles .role .value {
   font-family: roboto;
+}
+.administration .server {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.administration .server img {
+  width: 60px;
+  margin-right: 20px;
+}
+.administration .server .info {
+  width: 230px;
+  margin-right: 20px;
+}
+.administration .server .info .title {
+  font-size: 10px;
+}
+.administration .server .info .time {
+  font-size: 9px;
+  color: rgb(76, 76, 76);
 }
 
 .footer {
@@ -117,22 +143,6 @@
 .footer .entity div {
   width: 200px;
   text-align: center;
-}
-.footer .server {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  flex-wrap: 1;
-}
-.footer .server img {
-  width: 60px;
-}
-.footer .server .info {
-  width: 250px;
-  margin-left: 20px;
-}
-.footer .server .info div {
-  font-size: 10px;
 }
 
 .bgred {
