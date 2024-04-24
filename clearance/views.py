@@ -19,6 +19,8 @@ def download_clearance_report(request):
 
 
 def download_clearance_report_admin(request, reg):
+    if not hasattr(request.user, 'adminaccount'):
+        return HttpResponse('Forbidden')
     clearance = get_object_or_404(Clearance, student__registration=reg)
     if not clearance.is_all_approved:
         return HttpResponse('Clearance is not approved yet!')
