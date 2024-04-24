@@ -16,11 +16,15 @@ def create_clearance_entities(student):
     for role in AdministrativeApproval._meta.get_field('admin_role').choices:
         approval, created = AdministrativeApproval.objects.get_or_create(clearance=clearance, admin_role=role[0])
     # academic and accessory dept
-    academic_depts = Department.objects.exclude(dept_type='administrative')
+    academic_depts = Department.objects.filter(dept_type__in=['academic', 'accessory'])
     for dept in academic_depts:
         dept_approval, created = DeptApproval.objects.get_or_create(clearance=clearance, dept=dept)
         for lab in dept.lab_set.all():
             lab_approval, created = LabApproval.objects.get_or_create(clearance=clearance, lab=lab, dept_approval=dept_approval)
+    # Hall
+    if student.hall:
+        h_approval, created = DeptApproval.objects.get_or_create(clearance=clearance, dept=student.hall)
+        clerk_approval, created = ClerkApproval.objects.get_or_create(clearance=clearance, dept_approval=h_approval)
     # administrative dept
     administrative_depts = Department.objects.filter(dept_type='administrative')
     for dept in administrative_depts:
@@ -216,7 +220,7 @@ def get_dept_sections():
             'entities': []
         }
         data['entities'].append(get_entity_data(dept.head_title, 'dept_head', dept.codename, dept.head))
-        if dept.dept_type == 'administrative':
+        if dept.dept_type in ['administrative', 'hall']:
             data['entities'].append(get_entity_data(dept.clerk_title, 'dept_clerk', dept.codename, dept.clerk))
         elif dept.dept_type in ['academic', 'accessory']:
             for lab in dept.lab_set.all():
