@@ -236,6 +236,22 @@ def remarks(request):
     return Response(data)
 
 
+@api_view(['POST'])
+def delete_remarks(request):
+    query_dict = request.data
+    try:
+        approval_type = query_dict['type']
+        approval_id = query_dict['id']
+        model = get_model_by_name(modelname_mapping[approval_type])
+        app_req = get_object_or_404(model, pk=approval_id)
+        app_req.remarks = None
+        app_req.remarks_added_at = None
+        app_req.save()
+    except Exception as e:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+    return Response({'info': 'Remarks Deleted'})
+
+
 @api_view()
 def student_clearanceinfo(request):
     # student = request.user.studentaccount

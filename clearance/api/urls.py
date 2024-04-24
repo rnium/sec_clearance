@@ -17,6 +17,7 @@ urlpatterns = [
     path('assignmember/', views.assign_member, name='assign_member'),
     path('unassign-member/', views.unassign_member, name='unassign_member'),
     path('remarks/', views.remarks, name='remarks'),
+    path('remarks/delete/', views.delete_remarks, name='delete_remarks'),
     path('clearanceinfo/', views.student_clearanceinfo, name='student_clearanceinfo'),
     path('clearanceinfo/adminview/', views.clearanceinfo_as_admin, name='clearanceinfo_as_admin'),
     path('remarksinfo/', views.student_remarks_info, name='student_remarks_info'),
