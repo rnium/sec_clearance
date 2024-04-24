@@ -107,6 +107,7 @@ class PendingStudentSerializer(ModelSerializer):
 
 class ProgressiveStudentInfoSerializer(ModelSerializer):
     session = serializers.StringRelatedField()
+    hall = serializers.StringRelatedField()
     state = serializers.SerializerMethodField()
     email = serializers.SerializerMethodField()
     first_name = serializers.SerializerMethodField()

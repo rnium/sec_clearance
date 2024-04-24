@@ -23,7 +23,7 @@ class Department(models.Model):
         ordering = ['id']
     
     def __str__(self):
-        return self.name
+        return self.display_name
     
     
 class Lab(models.Model):
