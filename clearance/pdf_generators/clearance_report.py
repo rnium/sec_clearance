@@ -27,11 +27,11 @@ def get_clearance_approvals_data(clearance):
                 'lab_approval': labs,
             }
         )
-    for dept in Department.objects.filter(dept_type='hall', id=clearance.student.hall.id).order_by('id'):
+    if hall:=clearance.student.hall:
         approvals['general_depts'].append(
             {
-                'dept_approval': DeptApproval.objects.get(dept=dept, clearance=clearance),
-                'clerk_approval': ClerkApproval.objects.get(clearance=clearance, dept_approval__dept=dept),
+                'dept_approval': DeptApproval.objects.get(dept=hall, clearance=clearance),
+                'clerk_approval': ClerkApproval.objects.get(clearance=clearance, dept_approval__dept=hall),
             }
         )
     for dept in Department.objects.filter(dept_type='administrative').order_by('id'):
