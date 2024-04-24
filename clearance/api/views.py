@@ -238,7 +238,8 @@ def remarks(request):
 
 @api_view()
 def student_clearanceinfo(request):
-    student = request.user.studentaccount
+    # student = request.user.studentaccount
+    student = StudentAccount.objects.get(registration=2018338514)
     if hasattr(student, 'clearance'):
         serializer = ClearanceBasicSerializer(student.clearance)
         return Response(serializer.data)
@@ -268,7 +269,8 @@ def clearanceinfo_as_admin(request):
 
 @api_view()
 def student_remarks_info(request):
-    student = request.user.studentaccount
+    # student = request.user.studentaccount
+    student = StudentAccount.objects.get(registration=2018338514)
     return Response(utils.get_clearance_remarks(getattr(student, 'clearance')))
 
 

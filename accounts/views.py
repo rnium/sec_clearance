@@ -284,9 +284,11 @@ def student_profile_update(request):
         user.save()
     except Exception as e:
         return Response({'details':f'Cannot update user info. Error: {e}'}, status=status.HTTP_400_BAD_REQUEST)
-
-
-    student.ip_address = request.META.get('REMOTE_ADDR')
+    hall_id = request.data.get('hall')
+    if hall_id and hasattr(student, 'clearance'):
+        return Response({'details':'You Cannot Change Hall Now, as you\'ve already applied for clearance. You may contact administrators to change hall.'}, status=status.HTTP_400_BAD_REQUEST)
+    else:
+        student.hall = Department.objects.filter(dept_type='hall', pk=hall_id).first()
     if display_pic:
         if student.profile_picture is not None:
             student.profile_picture.delete(save=True)
@@ -302,7 +304,8 @@ def student_profile_update(request):
 
 @api_view()
 def progressive_studentinfo(request):
-    student = request.user.studentaccount
+    # student = request.user.studentaccount
+    student = StudentAccount.objects.get(registration=2018338514)
     serializer = ProgressiveStudentInfoSerializer(student)
     return Response(data={'info': serializer.data})
 
