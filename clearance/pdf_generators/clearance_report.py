@@ -12,7 +12,7 @@ import qrcode
 import os
 from clearance.utils import b64encode
 from django.urls import reverse
-from datetime import datetime
+from django.utils import timezone
 
 def get_clearance_approvals_data(clearance):
     approvals = {
@@ -88,7 +88,7 @@ def render_report(request, clearance):
     context['principal_signature'] = principal_signature
     context['cashier_signature'] = cashier_signature
     context['qrcode'] = qrcode_path
-    formatted_time = datetime.now().strftime("%H:%M:%S%p, %d %b %Y")
+    formatted_time = timezone.now()
     context['server_time'] = formatted_time
     html_text = render_to_string('clearance/pdf_templates/clearance_temp.html', context=context)
     fonts = {
