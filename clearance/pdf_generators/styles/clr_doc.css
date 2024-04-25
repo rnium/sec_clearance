@@ -137,12 +137,13 @@
   justify-content: center;
   align-items: center;
 }
-.footer .entity img {
-  width: 100px;
-}
 .footer .entity div {
-  width: 200px;
+  width: 300px;
   text-align: center;
+  font-family: roboto-m;
+}
+.footer .entity .signed {
+  font-family: roboto;
 }
 
 .bgred {

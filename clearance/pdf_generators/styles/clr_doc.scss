@@ -170,13 +170,13 @@
 
     .entity {
         @include flexer(column);
-
-        img {
-            width: 100px;
-        }
         div {
-            width: 200px;
-            text-align: center
+            width: 300px;
+            text-align: center;
+            font-family: roboto-m;
+        }
+        .signed {
+            font-family: roboto;
         }
     }
 }
