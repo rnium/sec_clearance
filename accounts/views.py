@@ -80,7 +80,9 @@ def admin_signup(request):
         user.delete()
         return Response({'details':f'Cannot create account. Error: {e}'}, status=status.HTTP_400_BAD_REQUEST)
     token.delete()
-    return Response(data={'info': 'Account Created Successfully'})
+    login(request, user)
+    data = get_userinfo_data(user)
+    return Response({'data': data})
 
 
 
@@ -254,6 +256,7 @@ def student_signup(request):
     except Exception as e:
         user.delete()
         return Response({'details':f'Cannot create account. Error: {e}'}, status=status.HTTP_400_BAD_REQUEST)
+    login(request, user)
     return Response(data={'info': get_userinfo_data(user)})
 
 

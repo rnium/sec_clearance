@@ -1,33 +1,28 @@
-import sib_api_v3_sdk
 from django.conf import settings
 from django.urls import reverse
 from django.template.loader import render_to_string
 from urllib.parse import urlencode
 from django.conf import settings
-from sib_api_v3_sdk import SendSmtpEmail, SendSmtpEmailSender, SendSmtpEmailTo
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
+from django.core.exceptions import ValidationError
+
+sendgrid_api_key = settings.SG_API_KEY_1
+sendgrid_from_email = settings.SG_FROM_EMAIL
 
 
-brevo_from_user = settings.BREVO_FROM_EMAIL
-brevo_api_key = settings.BREVO_API_KEY_1
-
-configuration = sib_api_v3_sdk.Configuration()
-configuration.api_key['api-key'] = brevo_api_key
-api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
-
-# Email sender information
-sender = SendSmtpEmailSender(name="SEC Clearance Portal", email=brevo_from_user)
-
-
-
-def send_html_email(receiver_email, subject, body):
-    recipient = SendSmtpEmailTo(email=receiver_email, name="User")
-    send_smtp_email = SendSmtpEmail(
-        sender=sender,
-        to=[recipient],
-        html_content=body,
-        subject=subject
-    )
-    api_instance.send_transac_email(send_smtp_email)
+def send_html_email(receiver, subject, body):
+    message = Mail(
+        from_email=(sendgrid_from_email, "SEC Clearance Portal"),
+        to_emails=receiver,
+        subject=subject,
+        html_content=body)
+    
+    sg = SendGridAPIClient(sendgrid_api_key)
+    response = sg.send(message)
+    status = response.status_code
+    if status >= 400:
+        raise ValidationError("API Error")
     
 
 def send_signup_email(request, invitation):

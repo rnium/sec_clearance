@@ -7,8 +7,8 @@ env = environ.Env()
 environ.Env.read_env()
 
 SECRET_KEY = env('SECRET_KEY')
-BREVO_API_KEY_1 = env('BREVO_API_KEY_1')
-BREVO_FROM_EMAIL = env('BREVO_FROM_EMAIL')
+SG_API_KEY_1 = env('SG_API_KEY_1')
+SG_FROM_EMAIL = env('SG_FROM_EMAIL')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
