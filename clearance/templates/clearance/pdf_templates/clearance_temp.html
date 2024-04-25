@@ -36,6 +36,14 @@
             <td>{{ student.session.session_code }}</td>
           </tr>
           <tr>
+            <td class="label">Hall</td>
+            {% if student.hall  %}
+            <td>{{ student.hall }}</td>
+            {% else %}
+            <td>Non Resident</td>
+            {% endif %}
+          </tr>
+          <tr>
             <td class="label">Applied At</td>
             <td>{{ clearance.added_at|date:'h:i:sA, j F Y' }}</td>
           </tr>
@@ -78,8 +86,8 @@
       <table class="general">
         <tr>
           <td>Department Name</td>
-          <td>Staff</td>
-          <td>In Charge</td>
+          <td>Staff Approval</td>
+          <td>In Charge Approval</td>
         </tr>
         {% for dept in approvals.general_depts %}
           <tr>
