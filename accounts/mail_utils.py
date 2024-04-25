@@ -55,3 +55,18 @@ def send_student_ac_confirmation_email(student):
     except Exception as e:
         return False
     return True
+
+
+def send_clearance_confirmation_email(student):
+    email_subject = "Clearance Approval Confirmation"
+    receiver = student.user.email
+    if receiver is None:
+        return False
+    email_body = render_to_string('accounts/clearance_confirmation.html', context={
+        "student": student,
+    })
+    try:
+        send_html_email(receiver, email_subject, email_body)
+    except Exception as e:
+        return False
+    return True

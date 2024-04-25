@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from accounts.utils import get_userinfo_data
+from accounts.mail_utils import send_clearance_confirmation_email
 from accounts.models import StudentAccount, AdminAccount
 from accounts.serializer import StudentProfileSerializer
 from clearance.models import Department, Lab, Session, Clearance
@@ -92,6 +93,8 @@ def approve_clearance_entity(request, modelname, pk):
     clearance_req.approved_by = admin_ac
     clearance_req.approved_at = timezone.now()
     clearance_req.save()
+    if clearance_req.clearance.progress == 100:
+        send_clearance_confirmation_email(clearance_req.clearance.student)
     return Response({'info': 'Clearance Request Approved'})
 
 @api_view()

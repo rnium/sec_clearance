@@ -215,7 +215,7 @@ def student_signup(request):
     if user_queryset.count():
         return Response({'details':'Email already used'}, status=status.HTTP_400_BAD_REQUEST)
     if student_ac_qs.count():
-        return Response({'details':'Student Already Signed Up'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'details':'Student With This Registration Already Signed Up'}, status=status.HTTP_400_BAD_REQUEST)
     try:
         dept_codename = request.data['department'].strip().lower()
         dept = Department.objects.get(codename=dept_codename)
