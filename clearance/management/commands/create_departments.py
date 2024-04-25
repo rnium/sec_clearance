@@ -13,11 +13,11 @@ departments = {
         'labs': [
             {
                 'codename': 'software_1_lab',
-                'name': 'Software-1 Lab',
+                'name': 'Software Lab 01',
             },
             {
                 'codename': 'software_2_lab',
-                'name': 'Software-2 Lab',
+                'name': 'Software Lab 02',
             },
             {
                 'codename': 'dld_lab_cse',
@@ -29,11 +29,11 @@ departments = {
             },
             {
                 'codename': 'net_lab',
-                'name': 'Networking Lab',
+                'name': 'Network/Research Lab',
             },
             {
-                'codename': 'atts_lab_cse',
-                'name': 'ATTS Lab',
+                'codename': 'acm_lab',
+                'name': 'ACM Lab',
             },
         ]
     },
