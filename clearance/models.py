@@ -90,6 +90,8 @@ class Clearance(models.Model):
         self.progress = percent_progress
         if percent_progress == 100:
             self.is_approved = True
+        elif self.is_approved:
+            self.is_approved = False
         self.save(*args, **kwargs)
     
     @property

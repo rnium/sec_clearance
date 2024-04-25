@@ -159,7 +159,7 @@ def dept_sections(request):
 
 
 @api_view(['POST'])
-@permission_classes([IsSecAcademic])
+@permission_classes([IsSecAdministrative])
 def assign_member(request):
     admin_ac = get_admin_ac(request)
     try:
@@ -194,7 +194,7 @@ def assign_member(request):
 
 
 @api_view(['POST'])
-@permission_classes([IsSecAcademic])
+@permission_classes([IsSecAdministrative])
 def unassign_member(request):
     try:
         role = request.data['role']
