@@ -70,3 +70,16 @@ def send_clearance_confirmation_email(student):
     except Exception as e:
         return False
     return True
+
+
+def send_admin_stats_email(admin_ac, context):
+    email_subject = "Awaiting Task Notification"
+    receiver = admin_ac.user.email
+    if receiver is None:
+        return False
+    email_body = render_to_string('accounts/admin_stats_mail.html', context=context)
+    try:
+        send_html_email(receiver, email_subject, email_body)
+    except Exception as e:
+        return False
+    return True

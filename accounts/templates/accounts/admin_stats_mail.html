@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<body>
+    {% autoescape off %}
+    <h3>Hello Sir</h3>
+    <p>This is a reminder that you have pending tasks awaiting your approval in the SEC Clearance Portal as of {{current_time|date:'h:i:s A, j M o'}}. 
+        Please review them at your earliest convenience.</p>
+    {% if clearances %}
+    <p>Pending clearance requests: <b>{{clearances}}</b></p>
+    {% endif %}
+    {% if archives %}
+    <p>Archived clearance requests: <b>{{archives}}</b></p>
+    {% endif %}
+    {% if admin_ac.user_type == 'academic' and students %}
+    <p>Pending student accounts: <b>{{students}}</b></p>
+    {% endif %}
+    {% endautoescape %}
+</body>
+</html>
