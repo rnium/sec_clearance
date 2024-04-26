@@ -15,3 +15,6 @@ COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 RUN pip install qrcode
 RUN pip install sendgrid
+RUN pip install celery
+RUN pip install django-celery-beat
+RUN pip install redis

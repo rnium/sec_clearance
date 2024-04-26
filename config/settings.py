@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'accounts.apps.AccountsConfig',
     'clearance.apps.ClearanceConfig',
+    'django_celery_beat',
 ]
 
 MIDDLEWARE = [
@@ -126,6 +127,8 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 PASSWORD_RESET_TIMEOUT = 600
+
+CELERY_BROKER_URL = "redis://localhost:6379"
 
 try:
     from .local_settings import *

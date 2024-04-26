@@ -9,3 +9,28 @@ services:
     command: python manage.py runserver 0.0.0.0:8000
     ports:
       - 8000:8000
+  
+  redis:
+    image: redis:alpine
+    container_name: clr_redis
+    ports:
+      - 6379:6379
+
+  celery:
+    build: .
+    container_name: CLR_CeleryWorker
+    volumes:
+      - .:/app
+    command: celery -A config worker -l info
+    depends_on:
+      - redis
+
+  celery_beat:
+    image: clr_doc
+    container_name: CLR_CeleryBeatWorker
+    volumes:
+      - .:/app
+    command: celery -A config beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    depends_on:
+      - redis
+      - celery
