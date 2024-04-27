@@ -49,6 +49,8 @@ class BaseAccount(models.Model):
 
     def clean(self):
         if self.phone is not None:
+            if not self.phone.isdigit():
+                raise ValidationError("Invalid phone number")
             if len(self.phone) != 11:
                 raise ValidationError("Phone number needs to be 11 digits long")
         super().clean()

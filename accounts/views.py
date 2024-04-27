@@ -50,6 +50,9 @@ def admin_signup(request):
     if len(user_queryset) > 0:
         return Response({'details':'Email already used'}, status=status.HTTP_400_BAD_REQUEST)
     photo = request.data.get('profilePhoto')
+    phone = request.data.get('phone', '')
+    if not phone.isdigit() or len(phone) != 11:
+        return Response({'details':f'Invalid Phone Number'}, status=status.HTTP_400_BAD_REQUEST)
     compressed_dp = None
     if photo:
         try:
@@ -73,6 +76,7 @@ def admin_signup(request):
     account_kwargs['dept'] = Department.objects.filter(id=token.to_user_dept_id).first()
     account_kwargs['invited_by'] = token.from_user
     account_kwargs['profile_picture'] = compressed_dp
+    account_kwargs['phone'] = phone
     try:
         admin_ac = AdminAccount(**account_kwargs)
         admin_ac.save()
@@ -146,7 +150,10 @@ def admin_profile_update(request):
         user.save()
     except Exception as e:
         return Response({'details':f'Cannot update user info. Error: {e}'}, status=status.HTTP_400_BAD_REQUEST)
-
+    if phone:=request.data.get('phone'):
+        if not phone.isdigit() or len(phone) != 11:
+            return Response({'details':f'Invalid Phone Number'}, status=status.HTTP_400_BAD_REQUEST)
+        admin_ac.phone = phone
     if display_pic:
         if admin_ac.profile_picture is not None:
             admin_ac.profile_picture.delete(save=True)
