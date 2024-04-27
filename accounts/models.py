@@ -39,6 +39,7 @@ class InviteToken(models.Model):
 
 
 class BaseAccount(models.Model):
+    phone = models.CharField(null=True, blank=True, max_length=15)
     profile_picture = models.ImageField(upload_to="profiles/dp/",
                                         null=True, 
                                         blank=True,
@@ -46,6 +47,12 @@ class BaseAccount(models.Model):
     class Meta:
         abstract = True
 
+    def clean(self):
+        if self.phone is not None:
+            if len(self.phone) != 11:
+                raise ValidationError("Phone number needs to be 11 digits long")
+        super().clean()
+    
     @property
     def avatar_url(self):
         if bool(self.profile_picture):
@@ -110,7 +117,6 @@ class AdminAccount(BaseAccount):
 
 class StudentAccount(BaseAccount):
     registration = models.IntegerField(primary_key=True, unique=True)
-    phone = models.CharField(null=True, blank=True, max_length=15)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     is_approved = models.BooleanField(default=False)
     session = models.ForeignKey(Session, on_delete=models.CASCADE)

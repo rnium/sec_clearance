@@ -9,6 +9,8 @@ environ.Env.read_env()
 SECRET_KEY = env('SECRET_KEY')
 SG_API_KEY_1 = env('SG_API_KEY_1')
 SG_FROM_EMAIL = env('SG_FROM_EMAIL')
+BULKSMS_API_KEY = env('BULKSMS_API_KEY')
+BULKSMS_SENDERID = env('BULKSMS_SENDERID')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True

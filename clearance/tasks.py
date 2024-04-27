@@ -1,12 +1,11 @@
 from celery import shared_task
 from clearance.api.utils import get_admin_dashboard_stats_data
 from accounts.models import AdminAccount
-from accounts.mail_utils import send_admin_stats_email
+from accounts.mail_utils import send_admin_stats_email, send_admin_stats_sms
 from django.utils import timezone
 
 
-def get_mail_data(admin_ac, mail_type='email'):
-    dept_data = get_admin_dashboard_stats_data(admin_ac)
+def get_mail_data(dept_data, admin_ac, mail_type='email'):
     data = {}
     data['clearances'] = 0 
     data['archives'] = 0
@@ -27,10 +26,14 @@ def get_mail_data(admin_ac, mail_type='email'):
 def send_email_notifications():
     admin_accounts = AdminAccount.objects.all()
     for ac in admin_accounts:
-        data, sendable = get_mail_data(ac)
+        dept_data = get_admin_dashboard_stats_data(ac)
+        data, sendable = get_mail_data(dept_data, ac)
         data['current_time'] = timezone.now()
         data['admin_ac'] = ac
         if sendable:
             send_admin_stats_email(ac, data)
+        data, sendable = get_mail_data(dept_data, ac, 'sms')
+        if sendable:
+            send_admin_stats_sms(ac, data)
             
     
