@@ -73,10 +73,10 @@ def get_userinfo_data(user):
         'is_superadmin': False,
     }
     if user.is_authenticated:
-        data['is_authenticated'] = True
         data['username'] = user.get_username()
     if hasattr(user, 'adminaccount'):
         admin_ac = user.adminaccount
+        data['is_authenticated'] = True
         data['account_type'] = 'admin'
         data['phone'] = admin_ac.phone
         data['user_type'] = admin_ac.user_type
@@ -85,6 +85,7 @@ def get_userinfo_data(user):
         data['is_superadmin'] = admin_ac.is_super_admin
     elif hasattr(user, 'studentaccount'):
         student_ac = user.studentaccount
+        data['is_authenticated'] = True
         data['account_type'] = 'student'
         data['phone'] = student_ac.phone
         data['user_fullname'] = student_ac.full_name

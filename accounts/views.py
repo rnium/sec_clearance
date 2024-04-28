@@ -230,7 +230,7 @@ def student_signup(request):
         return Response({'details':'Department not found'}, status=status.HTTP_404_NOT_FOUND)
     try:
         from_year, to_year = list(map(int, request.data['session'].split('-')))
-        to_year += 2000
+        to_year = (to_year % 2000) + 2000
         session = Session.objects.get(from_year=from_year, to_year=to_year, dept=dept)
     except Exception as e:
         return Response({'details':'Session not found'}, status=status.HTTP_404_NOT_FOUND)
