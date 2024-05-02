@@ -15,6 +15,9 @@ bulksms_sender_id = settings.BULKSMS_SENDERID
 
 
 def send_html_email(receiver, subject, body):
+    if settings.DEBUG:
+        print('Debug On', flush=1)
+        return
     message = Mail(
         from_email=(sendgrid_from_email, "SEC Clearance Portal"),
         to_emails=receiver,
