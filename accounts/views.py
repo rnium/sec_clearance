@@ -15,7 +15,7 @@ from django.urls import reverse
 from django.shortcuts import get_object_or_404
 from accounts.serializer import (StudentAccountSerializer, AdminAccountBasicSerializer, 
                                  PendingStudentSerializer, ProgressiveStudentInfoSerializer)
-from accounts.models import StudentAccount
+from accounts.models import StudentAccount, StudentPlaceholder
 from clearance.models import Session, Department
 from django.contrib.auth.models import User
 from django.db.models import Q
@@ -210,6 +210,7 @@ def delete_student_ac(request):
     student_ac = get_object_or_404(StudentAccount, pk=reg)
     if hasattr(student_ac, 'clearance') and student_ac.clearance.progress == 100:
         return Response(data={'details': 'Cannot Delete Now, Student received 100% clearance'}, status=status.HTTP_400_BAD_REQUEST)
+    StudentPlaceholder.objects.get_or_create(registration=student_ac.registration, session=student_ac.session)
     student_ac.user.delete()
     return Response(data={'info': 'Account Deleted'})
 
@@ -217,23 +218,16 @@ def delete_student_ac(request):
 @api_view(['POST'])
 def student_signup(request):
     email = request.data['email']
+    reg_no = request.data.get('registration_no')
     user_queryset = User.objects.filter(Q(email=email) | Q(username=email))
-    student_ac_qs = StudentAccount.objects.filter(registration=request.data.get('registration_no'))
+    student_ac_qs = StudentAccount.objects.filter(registration=reg_no)
     if user_queryset.count():
         return Response({'details':'Email already used'}, status=status.HTTP_400_BAD_REQUEST)
     if student_ac_qs.count():
         return Response({'details':'Student With This Registration Already Signed Up'}, status=status.HTTP_400_BAD_REQUEST)
-    try:
-        dept_codename = request.data['department'].strip().lower()
-        dept = Department.objects.get(codename=dept_codename)
-    except Exception as e:
-        return Response({'details':'Department not found'}, status=status.HTTP_404_NOT_FOUND)
-    try:
-        from_year, to_year = list(map(int, request.data['session'].split('-')))
-        to_year = (to_year % 2000) + 2000
-        session = Session.objects.get(from_year=from_year, to_year=to_year, dept=dept)
-    except Exception as e:
-        return Response({'details':'Session not found'}, status=status.HTTP_404_NOT_FOUND)
+    placeholder = StudentPlaceholder.objects.filter(registration=reg_no).first()
+    if placeholder is None:
+        return Response({'details':'Your registration is not registered in the database'}, status=status.HTTP_404_NOT_FOUND)
     try:
         compressed_dp = compress_image(request.data.get('profilePhoto'))
     except Exception as e:
@@ -252,8 +246,8 @@ def student_signup(request):
     hall = Department.objects.filter(dept_type='hall', pk=request.data.get('hall')).first()
     account_kwargs = {}
     account_kwargs['user'] = user
-    account_kwargs['session'] = session
-    account_kwargs['registration'] = request.data.get('registration_no')
+    account_kwargs['session'] = placeholder.session
+    account_kwargs['registration'] = reg_no
     account_kwargs['hall'] = hall
     account_kwargs['phone'] = request.data.get('phone')
     account_kwargs['profile_picture'] = compressed_dp
@@ -264,6 +258,7 @@ def student_signup(request):
         user.delete()
         return Response({'details':f'Cannot create account. Error: {e}'}, status=status.HTTP_400_BAD_REQUEST)
     login(request, user)
+    placeholder.delete()
     return Response(data={'info': get_userinfo_data(user)})
 
 
