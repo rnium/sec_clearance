@@ -115,7 +115,16 @@ class AdminAccount(BaseAccount):
     def dept_clerks(self):
         clerks = Department.objects.filter(clerk=self)
         return clerks
-        
+
+
+
+class StudentPlaceholder(models.Model):
+    registration = models.IntegerField(primary_key=True, unique=True)
+    session = models.ForeignKey(Session, on_delete=models.CASCADE)
+    
+    class Meta:
+        ordering = ["registration"]
+       
 
 class StudentAccount(BaseAccount):
     registration = models.IntegerField(primary_key=True, unique=True)

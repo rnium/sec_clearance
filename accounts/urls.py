@@ -14,6 +14,7 @@ urlpatterns = [
     path('resetpassoword/', views.reset_password, name='reset_password'),
     path('sendrecoverymail/', views.send_recovery_email, name='send_recovery_email'),
     path('api/admin/signup/', views.admin_signup, name='admin_signup'),
+    path('processregexcel/', views.process_reg_excel, name='process_reg_excel'),
     path('pendingstudents/', views.PendingStudents.as_view(), name='pending_students'),
     path('studentac/approve/', views.approve_student_ac, name='approve_studentac'),
     path('studentac/approveall/', views.approve_all_student_ac, name='approve_all_student_ac'),

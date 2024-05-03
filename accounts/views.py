@@ -405,6 +405,13 @@ def delete_account(request):
     return Response({'info': f'Account of {name} has been deleted'})
 
 
+
+@api_view(['POST'])
+def process_reg_excel(request):
+    print(request.data, flush=1)
+    return Response()
+
+
 @api_view()
 @permission_classes([IsSecAdministrative])
 def search_member(request):

@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from accounts.utils import get_userinfo_data
 from accounts.mail_utils import send_clearance_confirmation_email
 from accounts.models import StudentAccount, AdminAccount
-from accounts.serializer import StudentProfileSerializer
+from accounts.serializer import StudentProfileSerializer, StudentPlaceHolderSerializer
 from clearance.models import Department, Lab, Session, Clearance
 from clearance.api.utils import (create_clearance_entities, get_administrative_clearance_requests, 
                                  get_dept_head_clearance_requests, get_dept_clerk_clearance_requests, 
@@ -221,8 +221,14 @@ def session_students(request):
     session_id = request.GET.get('sessionid')
     session = get_object_or_404(Session, pk=session_id)
     students_qs = session.studentaccount_set.all()
+    placeholders_qs = session.studentplaceholder_set.all()
     serializer = StudentProfileSerializer(students_qs, many=True)
-    return Response(serializer.data)
+    serializer2 = StudentPlaceHolderSerializer(placeholders_qs, many=True)
+    data = {
+        'students': serializer.data,
+        'placeholders': serializer2.data,
+    }
+    return Response(data)
 
 
 @api_view(['POST'])

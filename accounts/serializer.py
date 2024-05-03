@@ -105,6 +105,13 @@ class StudentProfileSerializer(ModelSerializer):
         return obj.user.last_name
 
 
+class StudentPlaceHolderSerializer(ModelSerializer):
+    session = serializers.StringRelatedField()
+    
+    class Meta:
+        model = models.StudentPlaceholder
+        fields = "__all__"
+
 class PendingStudentSerializer(ModelSerializer):
     session = serializers.StringRelatedField()
     name = serializers.SerializerMethodField()
