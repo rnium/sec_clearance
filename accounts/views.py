@@ -226,8 +226,12 @@ def student_signup(request):
     if student_ac_qs.count():
         return Response({'details':'Student With This Registration Already Signed Up'}, status=status.HTTP_400_BAD_REQUEST)
     placeholder = StudentPlaceholder.objects.filter(registration=reg_no).first()
+    academic = AdminAccount.objects.filter(user_type='academic').first()
+    academic_mail = ':('
+    if academic:
+        academic_mail = academic.user.email
     if placeholder is None:
-        return Response({'details':'Your registration is not registered in the database'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'details':f'Your registration is not in the system. Email `{academic_mail}` to add you'}, status=status.HTTP_404_NOT_FOUND)
     try:
         compressed_dp = compress_image(request.data.get('profilePhoto'))
     except Exception as e:
@@ -402,6 +406,7 @@ def delete_account(request):
 
 
 @api_view(['POST'])
+@permission_classes([IsSecAdministrative])
 def process_reg_excel(request):
     success, info = utils.process_reg_placeholder_excel(request)
     if not success:
