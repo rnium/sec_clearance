@@ -408,8 +408,10 @@ def delete_account(request):
 
 @api_view(['POST'])
 def process_reg_excel(request):
-    print(request.data, flush=1)
-    return Response()
+    success, info = utils.process_reg_placeholder_excel(request)
+    if not success:
+        return Response(data={'details': info}, status=status.HTTP_400_BAD_REQUEST)
+    return Response({'info': info})
 
 
 @api_view()

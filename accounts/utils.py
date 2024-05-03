@@ -1,22 +1,24 @@
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
-from accounts.models import AdminAccount, StudentAccount
+from accounts.models import AdminAccount, StudentAccount, StudentPlaceholder
 from accounts.serializer import AdminAccountSerializer
-from clearance.models import Department, DeptApproval, ClerkApproval
+from clearance.models import Department, DeptApproval, ClerkApproval, Session
 from pathlib import Path
 from PIL import Image
 from io import BytesIO
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
-
+import openpyxl
+import re
 
 def validate_image_extension(value):
     valid_extensions = ['.'+n for n in settings.ALLOWED_IMAGE_EXTENSIONS]
     ext = Path(value.name).suffix
     if not ext.lower() in valid_extensions:
-        raise ValidationError('Invalid file type. Allowed file types are: {}'.format(', '.join(valid_extensions)))
+        raise ValidationError('Invalid file type. Allowed file types are: {}'.format(
+            ', '.join(valid_extensions)))
 
 
 def compress_image(image):
@@ -37,7 +39,7 @@ def compress_image(image):
 
     # Crop the center portion of the image
     center_cropped_image = img.crop((left, upper, right, lower))
-    formatted_img = center_cropped_image.resize((500,500))
+    formatted_img = center_cropped_image.resize((500, 500))
     img_format = img.format.lower()
     img_io = BytesIO()
     formatted_img.save(img_io, format=img_format, quality=50)
@@ -92,7 +94,7 @@ def get_userinfo_data(user):
         data['avatar_url'] = student_ac.avatar_url
     return data
 
-    
+
 def get_amdin_roles(admin_ac):
     roles = []
     if admin_ac.user_type in [utype[0] for utype in admin_ac._meta.get_field('user_type').choices[:3]]:
@@ -127,7 +129,7 @@ def get_amdin_roles(admin_ac):
                 'title': str(lab),
             }
         )
-    
+
     return roles
 
 
@@ -145,7 +147,8 @@ def get_members_data():
             section['accounts'].append(serializer.data)
     data.append(section)
     for dept in Department.objects.all():
-        dept_acs = sorted(list(ac_qs.filter(dept=dept)), key=lambda ac: ac.department_set.all().count(), reverse=True)
+        dept_acs = sorted(list(ac_qs.filter(
+            dept=dept)), key=lambda ac: ac.department_set.all().count(), reverse=True)
         section = {'title': dept.display_name, 'accounts': []}
         if len(dept_acs):
             serializer = AdminAccountSerializer(dept_acs, many=True)
@@ -169,16 +172,20 @@ def get_members_data():
 
 def adapt_hall_change_to_clearancce(clearance, prev_hall, new_hall):
     if prev_hall:
-        hall_dept_approval = DeptApproval.objects.filter(clearance=clearance, dept=prev_hall)
+        hall_dept_approval = DeptApproval.objects.filter(
+            clearance=clearance, dept=prev_hall)
         hall_dept_approval.delete()
     if new_hall:
-        h_approval, created = DeptApproval.objects.get_or_create(clearance=clearance, dept=new_hall)
-        clerk_approval, created = ClerkApproval.objects.get_or_create(clearance=clearance, dept_approval=h_approval)
+        h_approval, created = DeptApproval.objects.get_or_create(
+            clearance=clearance, dept=new_hall)
+        clerk_approval, created = ClerkApproval.objects.get_or_create(
+            clearance=clearance, dept_approval=h_approval)
     clearance.update_stats()
-        
+
 
 def update_student_profile_as_admin(data):
-    student = get_object_or_404(StudentAccount, registration=data.get('registration'))
+    student = get_object_or_404(
+        StudentAccount, registration=data.get('registration'))
     user = student.user
     fname = data.get('first_name')
     lname = data.get('last_name')
@@ -191,10 +198,72 @@ def update_student_profile_as_admin(data):
         user_updatable = True
     if user_updatable:
         user.save()
-    new_hall = Department.objects.filter(dept_type='hall', pk=data.get('hall_id')).first()
+    new_hall = Department.objects.filter(
+        dept_type='hall', pk=data.get('hall_id')).first()
     if student.hall != new_hall:
         prev_hall = student.hall
         student.hall = new_hall
         student.save()
         if hasattr(student, 'clearance'):
-            adapt_hall_change_to_clearancce(student.clearance, prev_hall, new_hall)
+            adapt_hall_change_to_clearancce(
+                student.clearance, prev_hall, new_hall)
+
+
+def get_registrations_from_excel(excel_file):
+    buffer = BytesIO(excel_file.read())
+    wb = openpyxl.load_workbook(buffer)
+    sheet = wb[wb.sheetnames[0]]
+    rows = list(sheet.rows)
+    header = [cell.value.lower().strip(
+    ) if cell.value else None for cell in rows[0]]
+    data_rows = rows[1:]
+    reg_col_idx = header.index('reg')
+    registrations = []
+    for r in range(len(data_rows)):
+        if reg:=data_rows[r][reg_col_idx].value:
+            if str(reg).isdigit():
+                registrations.append(reg)
+    return registrations
+
+
+def get_session_from_filename(dept_code, filename):
+    print(dept_code, flush=1)
+    pat = re.compile(r'\d{4}-\d{2,4}')
+    code_match = pat.search(filename)
+    if not code_match:
+        raise ValidationError('Filename Does not contain session code')
+    from_year, to_year = map(int, code_match.group().split('-'))
+    to_year = (to_year % 2000) + 2000
+    session = Session.objects.get(from_year=from_year, to_year=to_year, dept__codename=dept_code)
+    return session
+
+
+def process_reg_placeholder_excel(request):
+    dept_code = request.data.get('dept', '')
+    excel_file = request.FILES.get('excel')
+    if excel_file is None:
+        return False, "No Excel File"
+    try:
+        session= get_session_from_filename(dept_code, excel_file.name)
+        registrations = get_registrations_from_excel(excel_file)
+    except Exception as e:
+        return False, str(e)
+    counts = {
+        'deleted': 0,
+        'created': 0,
+    }
+    for reg in registrations:
+        student_ac_qs =  StudentAccount.objects.filter(registration=reg)
+        if student_ac_qs.count():
+            continue
+        try:
+            sph, created = StudentPlaceholder.objects.get_or_create(registration=reg, session=session)
+        except Exception as e:
+            return False, str(e)
+        if created:
+            counts['created'] += 1
+    dangling_sph = StudentPlaceholder.objects.filter(session=session).exclude(registration__in=registrations)
+    counts['deleted'] = dangling_sph.count()
+    dangling_sph.delete()
+    return True, f"{counts['created']} registrations added & {counts['deleted']} registrations deleted"
+    

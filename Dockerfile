@@ -19,3 +19,4 @@ RUN pip install celery
 RUN pip install django-celery-beat
 RUN pip install redis
 RUN pip install requests
+RUN pip install openpyxl
