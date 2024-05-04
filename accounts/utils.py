@@ -226,10 +226,15 @@ def get_registrations_from_excel(excel_file):
     return registrations
 
 
-def get_session_from_filename(dept_code, filename):
-    print(dept_code, flush=1)
-    pat = re.compile(r'\d{4}-\d{2,4}')
-    code_match = pat.search(filename)
+def get_session_from_filename(filename):
+    filename = filename.lower()
+    dept_pat = re.compile(r'eee|cse|ce')
+    session_pat = re.compile(r'\d{4}-\d{2,4}')
+    dept_match = dept_pat.search(filename)
+    if not dept_match:
+        raise ValidationError('Department not matched. Please mention CSE/EEE/CE in the filename')
+    dept_code = dept_match.group()
+    code_match = session_pat.search(filename)
     if not code_match:
         raise ValidationError('Filename Does not contain session code')
     from_year, to_year = map(int, code_match.group().split('-'))
@@ -239,14 +244,15 @@ def get_session_from_filename(dept_code, filename):
 
 
 def process_reg_placeholder_excel(request):
-    dept_code = request.data.get('dept', '')
     excel_file = request.FILES.get('excel')
     if excel_file is None:
         return False, "No Excel File"
     try:
-        session= get_session_from_filename(dept_code, excel_file.name)
+        session= get_session_from_filename(excel_file.name)
         registrations = get_registrations_from_excel(excel_file)
     except Exception as e:
+        if type(e) == list:
+            return False, e[0]
         return False, str(e)
     counts = {
         'deleted': 0,
@@ -265,5 +271,5 @@ def process_reg_placeholder_excel(request):
     dangling_sph = StudentPlaceholder.objects.filter(session=session).exclude(registration__in=registrations)
     counts['deleted'] = dangling_sph.count()
     dangling_sph.delete()
-    return True, f"{counts['created']} registrations added & {counts['deleted']} registrations deleted"
+    return True, f"{counts['created']} added, {counts['deleted']} deleted | {excel_file.name}"
     
