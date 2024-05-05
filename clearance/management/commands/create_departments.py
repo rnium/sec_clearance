@@ -31,6 +31,10 @@ departments = {
                 'codename': 'net_lab',
                 'name': 'Network/Research Lab',
             },
+            {
+                'codename': 'central_computer_center',
+                'name': 'Central Computer lab/ACM lab',
+            }
         ]
     },
     'ce': {
@@ -161,11 +165,11 @@ departments = {
         },
         'labs': []
     },
-    'cash_section': {
+    'account_section': {
         'meta': {
-            'codename': 'cash_section',
-            'name': 'Cash Section',
-            'display_name': 'Cash Section',
+            'codename': 'account_section',
+            'name': 'Account Section',
+            'display_name': 'Account Section',
             'dept_type': 'administrative',
             'head_title': 'In Charge',
         },
@@ -211,16 +215,7 @@ departments = {
         },
         'labs': []
     },
-    'central_computer_center': {
-        'meta': {
-            'codename': 'central_computer_center',
-            'name': 'Central Computer lab/ACM lab',
-            'display_name': 'Central Computer lab/ACM lab',
-            'dept_type': 'administrative',
-            'head_title': 'In Charge',
-        },
-        'labs': []
-    },
+    
 }
 
 

@@ -32,6 +32,9 @@ class Lab(models.Model):
     name = models.CharField(max_length=50)
     incharge = models.ForeignKey('accounts.AdminAccount', null=True, blank=True, on_delete=models.SET_NULL)
     
+    class Meta:
+        ordering = ["id"]
+    
     def __str__(self) -> str:
         return f"{self.name}, {self.dept.codename.upper()}"
 
