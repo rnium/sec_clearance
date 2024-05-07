@@ -16,21 +16,18 @@ class IsStudent(BasePermission):
 
 class IsSecAcademic(BasePermission):
     def has_permission(self, request, view):
-        return True
         if hasattr(request.user, 'adminaccount') and request.user.adminaccount.user_type == 'academic':
             return True
         return False
 
 class IsSecAdministrative(BasePermission):
     def has_permission(self, request, view):
-        return True
         if hasattr(request.user, 'adminaccount') and request.user.adminaccount.user_type in ['principal', 'academic']:
             return True
         return False
 
 class IsSecAdministrativeIncludingCashier(BasePermission):
     def has_permission(self, request, view):
-        return True
         if hasattr(request.user, 'adminaccount') and request.user.adminaccount.user_type in ['principal', 'academic', 'cashier']:
             return True
         return False

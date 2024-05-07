@@ -93,6 +93,8 @@ def send_admin_stats_email(admin_ac, context):
 
 
 def send_admin_stats_sms(admin_ac, context):
+    if settings.DEBUG:
+        return
     if admin_ac.phone == None:
         return False
     msg = "Dear Sir, \nYou have the following tasks that request your approval."

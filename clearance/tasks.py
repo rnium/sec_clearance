@@ -32,8 +32,58 @@ def send_email_notifications():
         data['admin_ac'] = ac
         if sendable:
             send_admin_stats_email(ac, data)
+
+
+@shared_task
+def send_general_user_sms():
+    admin_accounts = AdminAccount.objects.filter(user_type='general')
+    non_head_admin_accounts = [ac for ac in admin_accounts if ac.head_of_the_departments.count() == 0]
+    for ac in non_head_admin_accounts:
+        dept_data = get_admin_dashboard_stats_data(ac)
         data, sendable = get_mail_data(dept_data, ac, 'sms')
         if sendable:
             send_admin_stats_sms(ac, data)
+
+
+@shared_task
+def send_dept_head_sms():
+    admin_accounts = AdminAccount.objects.filter(user_type='general')
+    head_admin_accounts = [ac for ac in admin_accounts if ac.head_of_the_departments.count() > 0]
+    for ac in head_admin_accounts:
+        dept_data = get_admin_dashboard_stats_data(ac)
+        data, sendable = get_mail_data(dept_data, ac, 'sms')
+        if sendable:
+            send_admin_stats_sms(ac, data)
+
+
+@shared_task
+def send_cashier_sms():
+    admin_accounts = AdminAccount.objects.filter(user_type='cashier')
+    for ac in admin_accounts:
+        dept_data = get_admin_dashboard_stats_data(ac)
+        data, sendable = get_mail_data(dept_data, ac, 'sms')
+        if sendable:
+            send_admin_stats_sms(ac, data)
+
+
+@shared_task
+def send_principal_sms():
+    admin_accounts = AdminAccount.objects.filter(user_type='principal')
+    for ac in admin_accounts:
+        dept_data = get_admin_dashboard_stats_data(ac)
+        data, sendable = get_mail_data(dept_data, ac, 'sms')
+        if sendable:
+            send_admin_stats_sms(ac, data)
+
+
+@shared_task
+def send_sec_academic_sms():
+    admin_accounts = AdminAccount.objects.filter(user_type='academic')
+    for ac in admin_accounts:
+        dept_data = get_admin_dashboard_stats_data(ac)
+        data, sendable = get_mail_data(dept_data, ac, 'sms')
+        if sendable:
+            send_admin_stats_sms(ac, data)
+
             
     
