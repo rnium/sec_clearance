@@ -7,6 +7,7 @@ from django.templatetags.static import static
 from clearance.models import Department, Session
 from django.utils import timezone
 from django.core.exceptions import ValidationError
+from solo.models import SingletonModel
 
 
 account_types = (
@@ -117,7 +118,6 @@ class AdminAccount(BaseAccount):
         return clerks
 
 
-
 class StudentPlaceholder(models.Model):
     registration = models.IntegerField(primary_key=True, unique=True)
     session = models.ForeignKey(Session, on_delete=models.CASCADE)
@@ -164,3 +164,8 @@ class StudentAccount(BaseAccount):
             return 4
         else:
             return 0
+        
+        
+class StudentNotice(SingletonModel):
+    notice = models.CharField(max_length=1000, null=True, blank=True)
+    added_at = models.DateTimeField(auto_now_add=True)

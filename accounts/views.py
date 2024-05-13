@@ -1,6 +1,6 @@
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.generics import ListAPIView, RetrieveAPIView, DestroyAPIView, CreateAPIView
+from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view, permission_classes
 from django.template.loader import render_to_string
@@ -13,9 +13,9 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth import update_session_auth_hash
 from django.urls import reverse
 from django.shortcuts import get_object_or_404
-from accounts.serializer import (StudentAccountSerializer, AdminAccountBasicSerializer, 
+from accounts.serializer import (StudentAccountSerializer, AdminAccountBasicSerializer, StudentNoticeSerializer,
                                  PendingStudentSerializer, ProgressiveStudentInfoSerializer)
-from accounts.models import StudentAccount, StudentPlaceholder
+from accounts.models import StudentAccount, StudentPlaceholder, StudentNotice
 from clearance.models import Session, Department
 from django.contrib.auth.models import User
 from django.db.models import Q
@@ -26,10 +26,41 @@ from accounts.mail_utils import send_signup_email, send_html_email, send_student
 from accounts.models import AdminAccount, InviteToken
 from django.utils import timezone
 from django.http import HttpResponse
-from clearance.api.permission import IsAdmin, IsSecAcademic, IsSecAdministrative, IsSecAdministrativeIncludingCashier, IsStudent
+from clearance.api.permission import (IsAdmin, IsSecAcademic, IsSecAdministrative, 
+                                      IsSecAdministrativeIncludingCashier, IsStudent, IsAcademicOrNonAcademicReadOnly)
 from django.db.models import Q
 from datetime import timedelta
 
+
+class NoticeView(RetrieveUpdateDestroyAPIView):
+    serializer_class = StudentNoticeSerializer
+    permission_classes = [IsAcademicOrNonAcademicReadOnly]
+    queryset = StudentNotice.objects.all()
+    
+    def get_object(self):
+        return StudentNotice.get_solo()
+    
+    def get_notice_response(self):
+        notice_obj = self.get_object()
+        serializer = self.get_serializer(notice_obj)
+        return Response(serializer.data)
+    
+    def post(self, request):
+        notice_obj = self.get_object()
+        notice_obj.notice = request.data.get('notice')
+        notice_obj.added_at = timezone.now()
+        notice_obj.save()
+        return self.get_notice_response()
+    
+    def delete(self, request):
+        notice_obj = self.get_object()
+        notice_obj.notice = None
+        notice_obj.save()
+        return self.get_notice_response()
+        
+    
+        
+    
 
 @api_view()
 def validate_token(request):

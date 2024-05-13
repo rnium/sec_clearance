@@ -22,6 +22,7 @@ urlpatterns = [
     path('student/signup/', views.student_signup, name='student_signup'),
     path('student/updateprofile/', views.student_profile_update, name='student_profile_update'),
     path('student/byadmin/updateprofile/', views.student_profile_update_by_admin, name='student_profile_update_by_admin'),
+    path('student/noticeboard/', views.NoticeView.as_view(), name='noticeboard_view'),
     path('admin/updateprofile/', views.admin_profile_update, name='admin_profile_update'),
     path('progressive-studentinfo/', views.progressive_studentinfo, name='progressive_studentinfo'),
     path('admin-roles/', views.admin_roles, name='admin_roles'),

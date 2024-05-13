@@ -154,3 +154,9 @@ class ProgressiveStudentInfoSerializer(ModelSerializer):
     
     def get_avatar_url(self, obj):
         return obj.avatar_url
+
+
+class StudentNoticeSerializer(ModelSerializer):
+    class Meta:
+        model = models.StudentNotice
+        fields = "__all__"
