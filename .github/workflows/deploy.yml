@@ -1,0 +1,25 @@
+name: Deploy Updates
+
+on:
+  push:
+    branches:
+      - main
+
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          port: 22
+          script: |
+            cd /home/rony/sec_clearance
+            source venv/bin/activate
+            git pull origin
+            python manage.py migrate
+            systemctl reload-or-restart uwsgi
