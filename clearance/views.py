@@ -32,6 +32,8 @@ def download_clearance_report_admin(request, reg):
 def verify_clearance(request, b64_code):
     try:
         reg, clr_pk = b64decode(b64_code).split('-')
+        if not clr_pk.isdigit():
+            raise ValueError()
     except Exception as e:
         return render(request, 'clearance/verify_clearance.html', context={'message': 'Invalid Link'})
     clearance = Clearance.objects.filter(student__registration=reg, pk=clr_pk).first()
