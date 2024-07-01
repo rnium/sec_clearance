@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404
 
 def download_clearance_report(request):
     if not hasattr(request.user, 'studentaccount'):
-        return HttpResponse('Not a Student Account')
+        return HttpResponse('Please login to your student account to continue')
     clearance = getattr(request.user.studentaccount, 'clearance')
     if clearance is None or not clearance.is_all_approved:
         return HttpResponse('Clearance is not approved yet!')
