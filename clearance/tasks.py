@@ -28,9 +28,9 @@ def send_email_notifications():
     for ac in admin_accounts:
         dept_data = get_admin_dashboard_stats_data(ac)
         data, sendable = get_mail_data(dept_data, ac)
-        data['current_time'] = timezone.now()
-        data['admin_ac'] = ac
         if sendable:
+            data['current_time'] = timezone.now()
+            data['admin_ac'] = ac
             send_admin_stats_email(ac, data)
 
 

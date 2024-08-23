@@ -69,6 +69,7 @@ def validate_token(request):
     if not token or not token.is_valid():
         return Response({'details':'Invalid Token'}, status=status.HTTP_400_BAD_REQUEST)
     return Response({'info':'Valid Token'})
+
  
 @api_view(['POST'])
 def admin_signup(request):
@@ -120,7 +121,6 @@ def admin_signup(request):
     return Response({'data': data})
 
 
-
 @api_view(['POST'])
 def api_login(request):
     user = authenticate(
@@ -139,14 +139,13 @@ def api_logout(request):
     logout(request)
     return Response({'info': 'Logged Out'})
 
+
 class PendingStudents(ListAPIView):
     serializer_class = PendingStudentSerializer
     permission_classes = [IsSecAcademic]
     def get_queryset(self):
         dept = self.request.GET.get('dept')
         return StudentAccount.objects.filter(is_approved=False, session__dept__codename=dept).order_by('user__date_joined')
-    
-    
 
 
 @api_view(['POST'])

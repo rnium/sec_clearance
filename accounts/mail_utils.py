@@ -16,7 +16,7 @@ bulksms_sender_id = settings.BULKSMS_SENDERID
 
 def send_html_email(receiver, subject, body):
     if settings.DEBUG:
-        print('Debug On', flush=1)
+        print('Cant Send While Debug On', flush=1)
         return
     message = Mail(
         from_email=(sendgrid_from_email, "SEC Clearance Portal"),
@@ -92,10 +92,27 @@ def send_admin_stats_email(admin_ac, context):
     return True
 
 
-def send_admin_stats_sms(admin_ac, context):
+def send_sms(to, message):
     if settings.DEBUG:
-        return
+        print('Cant Send While Debug On', flush=1)
+        return False
+    data = {
+        'api_key': bulksms_api_key,
+        'type': 'text',
+        'number': to,
+        'senderid': bulksms_sender_id,
+        'message': message
+    }
+    res = requests.post('http://bulksmsbd.net/api/smsapi',  data)
+    code = res.json()['response_code']
+    if code != 202:
+        return False
+    return True
+
+
+def send_admin_stats_sms(admin_ac, context):
     if admin_ac.phone == None:
+        print('No Phone for {}'.format(str(admin_ac)), flush=1)
         return False
     msg = "Dear Sir, \nYou have the following tasks that request your approval."
     if context['clearances'] > 0:
@@ -103,16 +120,5 @@ def send_admin_stats_sms(admin_ac, context):
     if admin_ac.user_type == 'academic' and context['students']:
         msg += f"\nStudent accounts: {context['students']}"
     msg += "\nRegards\nSECCLEARANCE.COM"
-    data = {
-        'api_key': bulksms_api_key,
-        'type': 'text',
-        'number': admin_ac.phone,
-        'senderid': bulksms_sender_id,
-        'message': msg
-    }
-    res = requests.post('http://bulksmsbd.net/api/smsapi',  data)
-    code = res.json()['response_code']
-    if code != 202:
-        return False
-    return True
+    return send_sms(admin_ac.phone, msg)
 
