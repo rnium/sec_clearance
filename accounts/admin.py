@@ -20,6 +20,7 @@ class StudentAdmin(admin.ModelAdmin, PhotoDisplayMixin):
 class AdminAcAdmin(admin.ModelAdmin, PhotoDisplayMixin):
     list_display = ('name', 'photo', 'phone', 'dept', 'user_type', 'last_seen')
     list_filter = ('dept', 'user_type')
+    ordering = ['-last_seen']
     
     @admin.display(description="Admin Name")
     def name(self, obj):
